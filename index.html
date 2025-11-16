@@ -143,11 +143,6 @@ h2{color:#333;font-size:20px;}
   <button class="btn" onclick="alert('听写功能开发中，即将上线！')">进入听写练习</button>
 </div>
 
-<div class="section">
-  <h3 class="section-title">🔍 翻译-造句逻辑练习</h3>
-  <button class="btn" onclick="alert('翻译功能开发中，即将上线！')">进入翻译练习</button>
-</div>
-
 <script>
 // 短文数据：完全替换为你提供的12篇短文
 const textosFijos = [
@@ -209,6 +204,8 @@ const ReadingHandler = {
     
     // 显示文章内容并保留对话格式
     lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
+    // 新增：将按钮文字改为“刷新阅读”
+    document.getElementById('refreshBtn').textContent = '刷新阅读';
     },
 
 
