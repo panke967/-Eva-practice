@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>欢迎来到Eva的练习小课堂 / Bienvenidos al mini-aula de práctica de Eva</title>
+<style>
+body{background:#fff9e6;font-family:Arial,sans-serif;color:#333;padding:20px}
+h1,h2{text-align:center}
+h1{color:#d2691e}
+.section{margin:20px 0;padding:15px;background:#fff4cc;border-radius:10px;box-shadow:2px 2px 5px rgba(0,0,0,.1)}
+button{display:block;margin:10px auto;padding:10px 20px;background:#ffd27f;border:none;border-radius:5px;cursor:pointer;font-size:16px}
+button:hover{background:#ffc04d}
+/* 高亮词样式 */
+.highlight{color:#c45500;font-weight:bold;cursor:pointer;border-bottom:1px dotted #c45500}
+/* 弹出卡片 */
+.tooltip{position:absolute;background:#fff;border:1px solid #ccc;border-radius:6px;padding:8px 12px;font-size:14px;box-shadow:2px 2px 6px rgba(0,0,0,.15);z-index:999;display:none}
+</style>
+</head>
+<body>
+
+<h1>欢迎来到Eva的练习小课堂</h1>
+<h1>Bienvenidos al mini-aula de práctica de Eva</h1>
+
+<audio autoplay loop>
+  <source src="river_flows_in_you.mp3" type="audio/mpeg">
+  Tu navegador no soporta el audio.
+</audio>
+
+<!-- 阅读板块 -->
+<div class="section" id="section1">
+  <h2>阅读-单词强化复习</h2>
+  <button onclick="generarLectura()">进入</button>
+  <div id="lectura" style="margin-top:15px;line-height:1.7"></div>
+</div>
+
+<!-- 其余板块（保持原样） -->
+<div class="section" id="section1">
+  <h2>听写-单词熟悉复习</h2>
+  <button onclick="generarLectura()">进入</button>
+  <div id="lectura" style="margin-top:15px;line-height:1.7"></div>
+</div>
+<div class="section" id="section2">
+  <h2>翻译-造句逻辑练习</h2>
+  <button onclick="alert('这里是造句逻辑练习板块')">进入</button>
+</div>
+<div class="section" id="section3">
+  <h2>改错-单词运用锻炼</h2>
+  <button onclick="alert('这里是单词运用锻炼板块')">进入</button>
+</div>
+
+<!--  tooltip 卡片  -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ============  词汇库（CSV 内容已转义）  ============ */
+const vocab = [
+{es:"por qué",  cn:"为什么",       pos:"adv."},
+{es:"hablar",  cn:"谈论",         pos:"intr."},
+{es:"más",     cn:"更多地",       pos:"adv."},
+{es:"vida",    cn:"生活",         pos:"f."},
+{es:"España",  cn:"西班牙",       pos:"国家名"},
+{es:"casualidad",cn:"偶然性",     pos:"f."},
+{es:"alegría", cn:"欢乐，欣喜",   pos:"f."},
+{es:"ver",     cn:"看见",         pos:"tr."},
+{es:"te",      cn:"你（宾格/与格）",pos:"pron."},
+{es:"qué",     cn:"什么",         pos:"pron."},
+{es:"hacer",   cn:"做，干",       pos:"tr."},
+{es:"por",     cn:"在…为了…",     pos:"prep."},
+{es:"aquí",    cn:"这里",         pos:"adv."},
+{es:"venir",   cn:"来",           pos:"intr."},
+{es:"curso",   cn:"学年，教程",   pos:"m."},
+{es:"verano",  cn:"夏天",         pos:"m."},
+{es:"organizar",cn:"组织",        pos:"intr."},
+{es:"estos",   cn:"这些",         pos:"adj."},
+{es:"año",     cn:"年",           pos:"m."},
+{es:"medio",   cn:"半",           pos:"adj."},
+{es:"doctorado",cn:"博士学位",    pos:"m."},
+{es:"sin",     cn:"没有",         pos:"prep."},
+{es:"saber",   cn:"知道",         pos:"tr."},
+{es:"lo",      cn:"您/他/她/它（宾格）",pos:"pron."},
+{es:"en realidad",cn:"实际上",   pos:"loc.adv."},
+{es:"haber",   cn:"有",           pos:"v.imp."},
+{es:"decir",   cn:"说",           pos:"tr."},
+{es:"lo mismo",cn:"同样的事情",   pos:"—"},
+{es:"en punto",cn:"整点",         pos:"loc.adv."},
+{es:"comedor", cn:"饭厅，食堂",   pos:"m."},
+{es:"comenzar",cn:"开始",         pos:"tr./intr."},
+{es:"nueve",   cn:"九",           pos:"num."},
+{es:"leer",    cn:"读，看，阅读", pos:"tr./intr."},
+{es:"repasar", cn:"复习",         pos:"tr."},
+{es:"lección", cn:"功课",         pos:"f."},
+{es:"estudiado",cn:"学过的",      pos:"p.p."},
+{es:"prepararse",cn:"准备",       pos:"prnl."},
+{es:"nuevo",   cn:"新",           pos:"adj."},
+{es:"ocho",    cn:"八",           pos:"num."},
+{es:"salir",   cn:"离开",         pos:"intr."},
+{es:"residencia",cn:"公寓",       pos:"f."},
+{es:"facultad",cn:"（院）系",      pos:"f."},
+{es:"metro",   cn:"地铁",         pos:"m."},
+{es:"horario", cn:"作息时间",     pos:"m."},
+{es:"apretado",cn:"挤压的，紧凑的",pos:"adj."},
+{es:"eso",     cn:"那",           pos:"pron."},
+{es:"antes de",cn:"在…之前",      pos:"loc.adv."},
+{es:"jornada", cn:"工作日",       pos:"f."},
+{es:"real",    cn:"真正的",       pos:"adj."},
+{es:"al mediodía",cn:"中午",     pos:"loc.adv."},
+{es:"almorzar",cn:"吃午饭",       pos:"intr."},
+{es:"campus",  cn:"大学校园",     pos:"m."},
+{es:"quedarse",cn:"呆，留在",     pos:"prnl."},
+{es:"biblioteca",cn:"图书馆",    pos:"f."},
+{es:"casi",    cn:"几乎",         pos:"adv."},
+{es:"universitario",cn:"大学的", pos:"adj."},
+{es:"si",      cn:"如果",         pos:"conj."},
+{es:"nos",     cn:"我们（宾格/与格）",pos:"pron."},
+{es:"quedar",  cn:"剩下，还有",   pos:"intr."},
+{es:"algo",    cn:"一点，一些",   pos:"pron."},
+{es:"apenas",  cn:"几乎没有",     pos:"adv."},
+{es:"respirar",cn:"呼吸",         pos:"tr./intr."},
+{es:"almuerzo",cn:"午餐",         pos:"m."},
+{es:"descansar",cn:"休息",        pos:"intr."},
+{es:"hora",    cn:"小时",         pos:"f."},
+{es:"por la tarde",cn:"下午",    pos:"loc.adv."},
+{es:"deporte", cn:"运动",         pos:"m."},
+{es:"por la noche",cn:"晚上",    pos:"loc.adv."},
+{es:"trabajo de casa",cn:"作业", pos:"m."},
+{es:"acostarse",cn:"上床睡觉",   pos:"prnl."},
+{es:"once",    cn:"十一",         pos:"num."},
+{es:"estudiantil",cn:"学生的",   pos:"adj."},
+{es:"aunque",  cn:"虽然",         pos:"conj."},
+{es:"terminar",cn:"结束",         pos:"tr."},
+{es:"cansado", cn:"累的，疲劳的", pos:"adj."}
+];
+
+/* ============  只含陈述式现在时的句子模板  ============ */
+const templates=[
+/* 0 */ "Yo {verbo} en la {lugar} todos los días.",
+/* 1 */ "Mi {sustantivo} y yo {verbo} a las {numero} en punto.",
+/* 2 */ "Ella {verbo} {sustantivo} nuevo y {verbo2} más tarde.",
+/* 3 */ "Por la tarde, nosotros {verbo} en la {lugar} sin {sustantivo2}.",
+/* 4 */ "Antes de {infinitivo}, él {verbo} estos {sustantivo} y {verbo2} aquí.",
+/* 5 */ "¿Por qué {verbo} tú {sustantivo}? Porque lo {verbo2} interesante.",
+/* 6 */ "En realidad, yo no {verbo} mucho {sustantivo}, apenas {verbo2}.",
+/* 7 */ "España es {adj} y mi vida aquí es {adj2}.",
+/* 8 */ "Si yo {verbo} en la residencia, yo {verbo2} en la biblioteca.",
+/* 9 */ "Después del curso, nos {verbo} en el campus y {verbo2} deporte."
+];
+
+/* ============  辅助：随机  ============ */
+const rand=(arr)=>arr[Math.floor(Math.random()*arr.length)];
+const shuffle=(arr)=>{for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]]}return arr};
+
+/* ============  生成短文  ============ */
+function generarLectura(){
+  // 先随机挑 10~14 个词
+  const seleccion=shuffle(vocab).slice(0,10+Math.floor(Math.random()*5));
+  const palabrasMap={}; // es -> {cn,pos}
+  seleccion.forEach(w=>palabrasMap[w.es]=w);
+
+  // 简单“替换”生成句子
+  const reemplazar=(tpl)=>{
+    return tpl
+      .replace(/\{verbo\}/g, ()=>rand(["hablo","comes","ve","hacemos","leen","repasa","preparo","salgo","almorzamos","descansan"]))
+      .replace(/\{verbo2\}/g,()=>rand(["vengo","digo","leo","comienzo","estudio","termino","respiro"]))
+      .replace(/\{sustantivo\}/g,()=>rand(seleccion.filter(x=>x.pos.includes("m.")||x.pos.includes("f."))).es)
+      .replace(/\{sustantivo2\}/g,()=>rand(seleccion.filter(x=>x.pos.includes("m.")||x.pos.includes("f."))).es)
+      .replace(/\{lugar\}/g,()=>rand(["facultad","biblioteca","residencia","comedor","campus"]))
+      .replace(/\{numero\}/g,()=>rand(["ocho","nueve","once"]))
+      .replace(/\{adj\}/g,()=>rand(["nuevo","real","universitario","apretado"]))
+      .replace(/\{adj2\}/g,()=>rand(["cansada","alegre","interesante","casi perfecta"]))
+      .replace(/\{infinitivo\}/g,()=>rand(["comer","dormir","salir","llegar"]));
+  };
+
+  // 随机选 4 句组成短文
+  const parrafos=shuffle(templates).slice(0,4).map(reemplazar);
+  let texto=parrafos.join(" ");
+
+  // 高亮词汇
+  const reg=new RegExp("\\b("+Object.keys(palabrasMap).join("|")+")\\b","gi");
+  texto=texto.replace(reg,(match)=>{
+    const w=palabrasMap[match.toLowerCase()]||palabrasMap[match];
+    if(!w)return match;
+    return `<span class="highlight" data-es="${w.es}" data-cn="${w.cn}" data-pos="${w.pos}">${match}</span>`;
+  });
+
+  document.getElementById("lectura").innerHTML=texto;
+  adjuntarTooltip();
+}
+
+/* ============  点击高亮 → 弹出卡片  ============ */
+function adjuntarTooltip(){
+  const tooltip=document.getElementById("tooltip");
+  document.querySelectorAll(".highlight").forEach(span=>{
+    span.addEventListener("click",e=>{
+      const es=e.target.dataset.es;
+      const cn=e.target.dataset.cn;
+      const pos=e.target.dataset.pos;
+      tooltip.innerHTML=`<strong>${es}</strong><br>词性：${pos}<br>中文：${cn}`;
+      tooltip.style.display="block";
+      tooltip.style.left=e.pageX+10+"px";
+      tooltip.style.top=e.pageY+10+"px";
+      setTimeout(()=>tooltip.style.display="none",3000);
+    });
+  });
+  // 点击别处关闭
+  document.addEventListener("click",e=>{
+    if(!e.target.classList.contains("highlight"))tooltip.style.display="none";
+  });
+}
+</script>
+
+</body>
+</html>
