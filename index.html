@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>欢迎来到Eva的练习小课堂 / Bienvenidos al mini-aula de práctica de Eva</title>
+<style>
+/* 全局样式：统一字体为 Times New Roman，简洁学习风 */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body{
+  background:#fff9e6;
+  font-family: "Times New Roman", serif; /* 全局字体统一为 Times New Roman */
+  color:#333;
+  padding:20px;
+  margin:0;
+}
+
+h1,h2{text-align:center;margin:15px 0;}
+h1{color:#d2691e;font-size:24px;}
+h2{color:#333;font-size:20px;}
+
+/* 标题样式：还原原始文本，字体保持 Times New Roman */
+.page-title {
+  text-align: center;
+  color: #d2691e;
+  font-size: 28px;
+  margin-bottom: 8px;
+  font-family: "Times New Roman", serif;
+}
+.page-subtitle {
+  text-align: center;
+  color: #666;
+  font-size: 18px;
+  margin-bottom: 30px;
+  font-weight: normal;
+  font-family: "Times New Roman", serif;
+}
+
+/* 板块样式 */
+.section {
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  padding: 25px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease;
+}
+.section:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
+.section-title {
+  color: #333;
+  font-size: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #f0f0f0;
+  font-family: "Times New Roman", serif;
+}
+
+/* 按钮样式：字体统一为 Times New Roman */
+.btn {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #ffd27f;
+  border: none;
+  border-radius: 8px;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Times New Roman", serif;
+}
+.btn:hover {
+  background: #ffc04d;
+  transform: translateY(-2px);
+}
+.btn:active { transform: translateY(0); }
+
+/* 阅读内容样式：西语单词字体确保为 Times New Roman */
+.reading-container { position: relative; }
+.reading-content {
+  font-size: 17px;
+  line-height: 2.2;
+  padding-left: 20px;
+  margin-top: 25px;
+  font-family: "Times New Roman", serif;
+}
+
+/* 音乐控制器 */
+#musicBtn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: #ffd27f;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: all 0.3s ease;
+  font-family: "Times New Roman", serif;
+}
+#musicBtn:hover {
+  background: #ffc04d;
+  transform: scale(1.05);
+}
+</style>
+</head>
+<body>
+<!-- 页面标题：严格还原原始文本，未做任何修改 -->
+<h1>欢迎来到Eva的练习小课堂</h1>
+<h1>Bienvenidos al mini-aula de práctica de Eva</h1>
+
+<!-- 音乐控制器 -->
+<button id="musicBtn" title="播放/暂停">▶</button>
+<audio id="bgMusic" loop>
+  <source src="river_flows_in_you.mp3" type="audio/mpeg">
+  Tu navegador no soporta el audio.
+</audio>
+
+<!-- 阅读练习板块（核心） -->
+<div class="section">
+  <h3 class="section-title">📖 阅读-单词强化复习</h3>
+  <button id="refreshBtn" class="btn">进入阅读练习</button>
+
+<!-- 阅读内容容器 -->
+  <div class="reading-container">
+    <div class="reading-content" id="lectura"></div>
+  </div>
+</div>
+
+
+<!-- 其他练习板块 -->
+<div class="section">
+  <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
+  <button class="btn" onclick="alert('听写功能开发中，即将上线！')">进入听写练习</button>
+</div>
+
+<div class="section">
+  <h3 class="section-title">🔍 翻译-造句逻辑练习</h3>
+  <button class="btn" onclick="alert('翻译功能开发中，即将上线！')">进入翻译练习</button>
+</div>
+
+<script>
+// 短文数据：完全替换为你提供的12篇短文
+const textosFijos = [
+  // 短文1
+  "Susana es de Perú, de Lima. Ella está en Madrid con su familia. Hoy ella no va al campus. Ella y su hermano mayor desayunan café y leche. Su hermano trabaja en el banco. Ellos se levantan tarde. Por la noche, salen a conocer la ciudad.",
+
+  // 短文2
+  "Mi amigo Juan vive en una casa grande. Él tiene dos habitaciones. Por la tarde, Juan vuelve del instituto. Primero, él se cepilla los dientes en el cuarto de baño. Luego, su abuela prepara la cena. Nosotros comemos un poco de pan y carne con alegría.",
+
+  // 短文3
+  "Nosotros somos de China. Vivimos en este país. Estudiamos lengua y cultura. Vemos la vida universitaria con alegría. Hacemos muchos trabajos de casa. Cada día es nuevo y volvemos a empezar.",
+
+  // 短文4
+  "Víctor y Pablo organizan su horario. Ellos están muy ocupados. Leen la lección y repasan en la biblioteca. Salen del campus a las nueve. Ellos vienen a la residencia y duermen. Los años de doctorado son apretados.",
+
+  // 短文5
+  "Yo desayuno con mi familia. Mi hermana se peina después de desayunar. Luego vamos a la escuela juntos. Yo tomo el metro y ella toma el autobús. Yo vuelvo a casa por la tarde. Preparo la cena sin descansar.",
+
+  // 短文6
+  "Ustedes tienen que presentarse ante la clase. Dicen su nombre. Luego hablan de su país. Todos escuchan bien. Después, el profesor hace preguntas. Aplaudimos y decimos 《gracias》 al terminar.",
+
+  // 短文7
+  "Mi familia vive en Lima. Mi hermano mayor estudia en la universidad. Mi hermana menor va a la escuela. Mi madre es profesora de inglés. Mi padre es médico. Yo estoy aquí en Madrid, pero voy a volver en verano.",
+
+  // 短文8
+  "Ellos vienen al comedor al mediodía. Almuerzan juntos. Hoy hablan de su país. Ellos son latinoamericanos: uno es cubano y el otro es peruano. Terminan de comer a la una en punto y van a la biblioteca.",
+
+  // 短文9
+  "—¿Qué haces tú aquí por la mañana? <br> —Yo preparo mi doctorado. <br>—¿Por qué vienes al campus? <br>—Porque quiero terminar antes del verano. <br>—¿Estás contento con el horario? <br>—Sí, estoy contento, pero es muy apretado.",
+
+  // 短文10
+  "Nosotros estudiamos lengua en la universidad. Vivimos en la residencia cerca del campus. Por la noche repasamos la lección. Queremos terminar el curso con alegría. Hablamos de la vida en España sin descansar mucho.",
+
+  // 短文11
+  "Yo me llamo Ana. Soy estudiante de español. Mi amigo Paco es chileno y es estudiante también. Conocemos a un profesor de China. Decimos《mucho gusto》al profesor. Él es de China, pero vive aquí.",
+
+  // 短文12
+  "Tomás se levanta temprano por la mañana. Él desayuna en casa con su padre. Su padre trabaja en el hospital. Después, Tomás toma el autobús para el instituto. Por la tarde, él vuelve a casa y hace la tarea."
+];
+
+// 页面核心功能
+const ReadingHandler = {
+  init() {
+    this.bindEvents();
+  },
+
+  bindEvents() {
+    // 刷新短文按钮事件：点击切换12篇短文
+    document.getElementById('refreshBtn').addEventListener('click', () => this.loadRandomText());
+    // 音乐控制器事件
+    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
+  },
+
+  // 加载随机短文（从12篇中随机选择）
+  loadRandomText() {
+    const randomIdx = Math.floor(Math.random() * textosFijos.length);
+    const text = textosFijos[randomIdx];
+    const lecturaDiv = document.getElementById('lectura');
+    
+    // 显示文章内容并保留对话格式
+    lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
+    },
+
+
+  // 音乐播放/暂停控制
+toggleMusic() {
+    const musicBtn = document.getElementById('musicBtn');
+    const bgMusic = document.getElementById('bgMusic');
+    const isPlaying = !bgMusic.paused;
+
+    if (isPlaying) {
+      bgMusic.pause();
+      musicBtn.textContent = '▶';
+    } else {
+      bgMusic.play().then(() => {
+        musicBtn.textContent = '❚❚';
+      }).catch(err => {
+        console.log('音乐播放被拦截：', err);
+        alert('请手动允许浏览器播放音频');
+      });
+    }
+  }
+};
+
+// 页面加载完成后初始化
+window.addEventListener('DOMContentLoaded', () => {
+  ReadingHandler.init();
+});
+
+</script>
+</body>
+</html>
