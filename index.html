@@ -142,7 +142,7 @@ h2{color:#333;font-size:20px;}
   <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
   <button id="dictadoStart" class="btn">进入听写练习</button>
 
-  <!-- 点进后显示的区域 -->
+<!-- 点进后显示的区域 -->
 <div id="dictadoBox" style="display:none;margin-top:15px;">
   <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
   <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
@@ -154,9 +154,11 @@ h2{color:#333;font-size:20px;}
     </div>
     <!-- 结果提示（居中显示） -->
     <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
-    <!-- 下一个按钮（单独一行，居中） -->
-    <div style="margin-top:5px;">
+    <!-- 下一个按钮 + 结束听写按钮（同一行居中，保持样式一致） -->
+    <div style="margin-top:5px;display:flex;gap:10px;">
       <button id="dictadoNext" class="btn" disabled>下一个</button>
+      <!-- 新增：结束听写按钮（和下一个按钮样式一致，用btn类） -->
+      <button id="dictadoEnd" class="btn">结束听写</button>
     </div>
   </div>
 </div>
@@ -258,75 +260,139 @@ window.addEventListener('DOMContentLoaded', () => {
 /* ========== 听写模块（4步流程） ========== */
 const DictadoHandler = {
   palabras: [],
+  usedIndexes: [], // 新增：记录已使用过的单词索引
   idx: 0,
   correct: 0,
   total: 0,
   isChecked: false,
   currentWord: null,
+  wrongWords: [], // 存储错词的数组（含输入和正确答案）
+
+  // 结束听写方法
+  endDictado() {
+    // 1. 隐藏听写区域
+    document.getElementById('dictadoBox').style.display = 'none';
+    // 2. 计算正确率（保留2位小数）
+    const accuracy = this.total > 0 ? (this.correct / this.total * 100).toFixed(2) : 0;
+    // 3. 生成错词列表HTML（无错词显示提示）
+    let wrongListHtml = '';
+    if (this.wrongWords.length > 0) {
+      wrongListHtml = this.wrongWords.map((item, index) => `
+        <li style="margin: 8px 0; line-height: 1.5;">
+          ${index + 1}. 你的输入：<span style="color:red;">${item.input}</span> → 
+          正确答案：<span style="color:green;">${item.correctEs}</span>（${item.cn}）
+        </li>
+      `).join('');
+    } else {
+      wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
+    }
+    // 4. 弹窗显示结果
+    const resultHtml = `
+      <div style="font-size: 16px; line-height: 2; padding: 10px;">
+        <p>📊 听写结果：</p>
+        <p>总题数：${this.total} 道</p>
+        <p>正确数：${this.correct} 道</p>
+        <p>正确率：${accuracy}%</p>
+        <p style="margin-top: 15px; font-weight: bold;">❌ 错词复习：</p>
+        <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
+      </div>
+    `;
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
+      max-width: 500px; width: 90%; z-index: 9999;
+    `;
+    popup.innerHTML = resultHtml + '<button id="closePopup" style="margin-top: 15px; padding: 8px 20px; background: #d93025; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>';
+    const mask = document.createElement('div');
+    mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
+    document.body.appendChild(mask);
+    document.body.appendChild(popup);
+    // 关闭弹窗
+    document.getElementById('closePopup').addEventListener('click', () => {
+      document.body.removeChild(popup);
+      document.body.removeChild(mask);
+    });
+    // 5. 重置听写状态（下次打开重新开始）
+    this.resetDictado();
+  },
+
+  // 重置听写状态
+  resetDictado() {
+    this.correct = 0;
+    this.total = 0;
+    this.wrongWords = [];
+    this.isChecked = false;
+    this.currentWord = null;
+    this.usedIndexes = []; // 新增这一行
+    document.getElementById('dictadoInput').value = '';
+    document.getElementById('dictadoResult').textContent = '';
+    document.getElementById('dictadoCheck').disabled = false;
+    document.getElementById('dictadoNext').disabled = true;
+  },
 
   init() {
     this.cargarCSV();
     this.bindEvents();
   },
 
-  // 👉 修复3：加逗号分隔
   async cargarCSV() {
-  try {
-    const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
-    const texts = await Promise.all(
-      csvFiles.map(async (file) => {
-        const res = await fetch(file);
-        if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
-        return res.text();
-      })
-    );
+    try {
+      const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
+      const texts = await Promise.all(
+        csvFiles.map(async (file) => {
+          const res = await fetch(file);
+          if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
+          return res.text();
+        })
+      );
 
-    this.palabras = []; // 清空数组，避免重复加载
+      this.palabras = []; // 清空数组，避免重复加载
 
-    texts.forEach(text => {
-      const lines = text.trim().split('\n');
-      const dataLines = lines.slice(1); // 跳过表头
+      texts.forEach(text => {
+        const lines = text.trim().split('\n');
+        const dataLines = lines.slice(1); // 跳过表头
 
-      dataLines.forEach((line, lineIdx) => {
-        const cleanLine = line.trim()
-          .replace(/^"|"$/g, '') // ❶ 去掉整行前后的双引号（Excel 自动加的）
-          .replace(/,,+/g, ',') // 合并连续逗号
-          .replace(/^,|,$/g, ''); // 去掉行首/行尾逗号
+        dataLines.forEach((line, lineIdx) => {
+          const cleanLine = line.trim()
+            .replace(/^"|"$/g, '') // 去掉整行前后的双引号
+            .replace(/,,+/g, ',') // 合并连续逗号
+            .replace(/^,|,$/g, ''); // 去掉行首/行尾逗号
 
-        if (!cleanLine) return; // 跳过空行
+          if (!cleanLine) return; // 跳过空行
 
-        // 按英文逗号分割，得到字段数组
-        const parts = cleanLine.split(',').map(s => {
-          // ❷ 去掉每个字段前后的双引号（单个字段被引号包裹的情况）
-          return s.trim().replace(/^"|"$/g, '')
-            .replace(/，/g, '') // 去掉中文逗号
-            .replace(/\s+/g, ' '); // 多余空格合并成一个
-        }).filter(Boolean);
+          // 按英文逗号分割，得到字段数组
+          const parts = cleanLine.split(',').map(s => {
+            // 去掉每个字段前后的双引号
+            return s.trim().replace(/^"|"$/g, '')
+              .replace(/，/g, '') // 去掉中文逗号
+              .replace(/\s+/g, ' '); // 多余空格合并成一个
+          }).filter(Boolean);
 
-        // ❸ 兼容「词性为空」的情况：如果只有2个字段，默认词性填「未分类」
-        let es, cn, pos;
-        if (parts.length === 3) {
-          [es, cn, pos] = parts;
-        } else if (parts.length === 2) {
-          [es, cn] = parts;
-          pos = '未分类'; // 空词性默认值
-        } else {
-          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
-          return;
-        }
+          // 兼容「词性为空」的情况
+          let es, cn, pos;
+          if (parts.length === 3) {
+            [es, cn, pos] = parts;
+          } else if (parts.length === 2) {
+            [es, cn] = parts;
+            pos = '未分类'; // 空词性默认值
+          } else {
+            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
+            return;
+          }
 
-        // ❹ 最终清理西语字段（避免隐藏字符）
-        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
-        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
+          // 最终清理西语字段（避免隐藏字符）
+          const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
+          this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
+        });
       });
-    });
 
-    console.log(`共加载 ${this.palabras.length} 个单词`);
-    if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
-  } catch (err) {
-    alert('❌ 单词加载失败：' + err.message);
-    console.error(err);
-  }
+      console.log(`共加载 ${this.palabras.length} 个单词`);
+      if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
+    } catch (err) {
+      alert('❌ 单词加载失败：' + err.message);
+      console.error(err);
+    }
   },
 
   bindEvents() {
@@ -346,9 +412,16 @@ const DictadoHandler = {
       this.nuevaPalabra();
     });
 
-    // 4. 回车键提交（输入后按回车也能验证，可选保留）
+    // 4. 回车键提交
     document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.verificar();
+    });
+
+    // 5. 结束听写按钮
+    document.getElementById('dictadoEnd').addEventListener('click', () => {
+      if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
+        this.endDictado();
+      }
     });
   },
 
@@ -360,64 +433,93 @@ const DictadoHandler = {
   },
 
   nuevaPalabra() {
-    if (this.palabras.length === 0) return;
+  if (this.palabras.length === 0) return;
 
-    // 1. 重置状态（必须有！）
-    this.isChecked = false;
-    const checkBtn = document.getElementById('dictadoCheck');
-    const nextBtn = document.getElementById('dictadoNext');
-    checkBtn.disabled = false; // 启用「确定」
-    nextBtn.disabled = true;  // 禁用「下一个」
+  // 1. 重置状态
+  this.isChecked = false;
+  const checkBtn = document.getElementById('dictadoCheck');
+  const nextBtn = document.getElementById('dictadoNext');
+  checkBtn.disabled = false; // 启用「确定」
+  nextBtn.disabled = true;  // 禁用「下一个」
 
-    // 2. 随机选新单词（确保和上一个不同）
-    let randomIdx;
-    do {
-      randomIdx = Math.floor(Math.random() * this.palabras.length);
-    } while (this.palabras[randomIdx] === this.currentWord && this.palabras.length > 1);
-    this.currentWord = this.palabras[randomIdx]; // 更新当前单词
+  // 2. 过滤未使用的单词索引
+  const availableIndexes = this.palabras
+    .map((_, index) => index)
+    .filter(index => !this.usedIndexes.includes(index));
 
-    // 3. 显示新的中文+词性（和原来一样，保留）
-    document.getElementById('dictadoPrompt').innerHTML = 
-      `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+  // 如果所有单词都已使用，重置已使用列表（循环使用）
+  if (availableIndexes.length === 0) {
+    this.usedIndexes = [];
+    return this.nuevaPalabra(); // 递归重新调用
+  }
 
-    // 4. 清空输入框和结果（必须有！）
-    document.getElementById('dictadoInput').value = '';
-    document.getElementById('dictadoResult').textContent = '';
-    document.getElementById('dictadoInput').focus();
+  // 3. 从未使用的索引中随机选择
+  const randomIdx = availableIndexes[
+    Math.floor(Math.random() * availableIndexes.length)
+  ];
+  this.currentWord = this.palabras[randomIdx];
+  this.usedIndexes.push(randomIdx); // 记录已使用的索引
+
+  // 4. 显示新的中文+词性
+  document.getElementById('dictadoPrompt').innerHTML = 
+    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+
+  // 5. 清空输入框和结果
+  document.getElementById('dictadoInput').value = '';
+  document.getElementById('dictadoResult').textContent = '';
+  document.getElementById('dictadoInput').focus();
   },
 
-  // 👉 修复2：新增 removeAccents 辅助函数
+  // 去除重音符号辅助函数
   removeAccents(str) {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   },
 
-verificar() {
-  if (this.isChecked) return;
-  const input = document.getElementById('dictadoInput').value.trim();
-  if (!input) return;
+  verificar() {
+    if (this.isChecked) return;
+    const input = document.getElementById('dictadoInput').value.trim();
+    if (!input) return;
 
-  const correctEs = this.currentWord.es.trim()
-    .replace(/[\u2000-\u206F\uFEFF\u00A0\u00AD]/g, '') // 清理特殊字符
-    .replace(/\s+/g, '');
+    const correctEs = this.currentWord.es.trim();
+    let correctForms;
+    if (correctEs.includes(',')) {
+      correctForms = correctEs.split(',')
+        .map(form => {
+          const trimForm = form.trim();
+          return trimForm === 'na' ? 'a' : trimForm;
+        })
+        .filter(Boolean);
+    } else {
+      correctForms = [correctEs];
+    }
 
-  // 直接严格匹配（去掉所有多余处理）
-  const isCorrect = input === correctEs;
+    const isCorrect = correctForms.includes(input);
+    const resultBox = document.getElementById('dictadoResult');
 
-  const resultBox = document.getElementById('dictadoResult');
-  if (isCorrect) {
-    resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
-    this.correct++;
-  } else {
-    resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${correctEs}</span>`;
+    if (isCorrect) {
+      resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
+      this.correct++;
+    } else {
+      resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${correctEs}</span>`;
+      // 记录错词（避免重复添加同一道题的错误）
+      const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
+      if (!isDuplicate) {
+        this.wrongWords.push({
+          input: input, // 学生的错误输入
+          correctEs: correctEs, // 正确答案
+          cn: this.currentWord.cn // 中文释义
+        });
+      }
+    }
+
+    this.isChecked = true;
+    document.getElementById('dictadoCheck').disabled = true;
+    document.getElementById('dictadoNext').disabled = false;
+    this.total++;
   }
+};
 
-  this.isChecked = true;
-  document.getElementById('dictadoCheck').disabled = true;
-  document.getElementById('dictadoNext').disabled = false;
-  this.total++;
-}; 
-
-// ****** 关键：页面加载完成后初始化 ******
+// 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => DictadoHandler.init());
 </script>
 
