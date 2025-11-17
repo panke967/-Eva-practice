@@ -271,48 +271,62 @@ const DictadoHandler = {
 
   // 👉 修复3：加逗号分隔
   async cargarCSV() {
-    try {
-      const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
-      const texts = await Promise.all(
-        csvFiles.map(async (file) => {
-          const res = await fetch(file);
-          if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
-          return res.text();
-        })
-      );
+  try {
+    const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
+    const texts = await Promise.all(
+      csvFiles.map(async (file) => {
+        const res = await fetch(file);
+        if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
+        return res.text();
+      })
+    );
 
-      // 清空数组（避免重复加载）
-      this.palabras = [];
+    this.palabras = []; // 清空数组，避免重复加载
 
-      texts.forEach(text => {
-        const lines = text.trim().split('\n');
-        // 跳过表头（如果CSV第一行是 "es,cn,pos" 这类表头，就保留 slice(1)；如果没有表头，就删掉 slice(1)）
-        const dataLines = lines.slice(1); 
+    texts.forEach(text => {
+      const lines = text.trim().split('\n');
+      const dataLines = lines.slice(1); // 跳过表头
 
-        dataLines.forEach((line, lineIdx) => {
-          if (!line.trim()) return; // 跳过空行
-          // 支持中英文逗号，分割后去重、去空格、去引号
-          const parts = line.trim().split(',').map(s => {
-            // 先去掉中文逗号、前后空格、引号
-            return s.replace(/，/g, '').replace(/^"|"$/g, '').trim();
-          }).filter(Boolean);
-          // 确保每行有 3 个字段（西语、中文、词性）
-          if (parts.length === 3) {
-            const [es, cn, pos] = parts;
-            this.palabras.push({ es, cn, pos });
-          } else {
-            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（需满足 "西语,中文,词性"）`);
-          }
-        });
+      dataLines.forEach((line, lineIdx) => {
+        const cleanLine = line.trim()
+          .replace(/^"|"$/g, '') // ❶ 去掉整行前后的双引号（Excel 自动加的）
+          .replace(/,,+/g, ',') // 合并连续逗号
+          .replace(/^,|,$/g, ''); // 去掉行首/行尾逗号
+
+        if (!cleanLine) return; // 跳过空行
+
+        // 按英文逗号分割，得到字段数组
+        const parts = cleanLine.split(',').map(s => {
+          // ❷ 去掉每个字段前后的双引号（单个字段被引号包裹的情况）
+          return s.trim().replace(/^"|"$/g, '')
+            .replace(/，/g, '') // 去掉中文逗号
+            .replace(/\s+/g, ' '); // 多余空格合并成一个
+        }).filter(Boolean);
+
+        // ❸ 兼容「词性为空」的情况：如果只有2个字段，默认词性填「未分类」
+        let es, cn, pos;
+        if (parts.length === 3) {
+          [es, cn, pos] = parts;
+        } else if (parts.length === 2) {
+          [es, cn] = parts;
+          pos = '未分类'; // 空词性默认值
+        } else {
+          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
+          return;
+        }
+
+        // ❹ 最终清理西语字段（避免隐藏字符）
+        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
+        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
       });
+    });
 
-      // 打印加载结果（方便调试，可选）
-      console.log(`共加载 ${this.palabras.length} 个单词`);
-      if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
-    } catch (err) {
-      alert('❌ 单词加载失败：' + err.message);
-      console.error(err);
-    }
+    console.log(`共加载 ${this.palabras.length} 个单词`);
+    if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
+  } catch (err) {
+    alert('❌ 单词加载失败：' + err.message);
+    console.error(err);
+  }
   },
 
   bindEvents() {
