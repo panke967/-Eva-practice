@@ -291,7 +291,10 @@ async cargarCSV() {
       dataLines.forEach((line, lineIdx) => {
         if (!line.trim()) return; // 跳过空行
         // 支持中英文逗号，分割后去重、去空格、去引号
-        const parts = line.split(/,|，/).map(s => s.replace(/^"|"$/g, '').trim()).filter(Boolean);
+        const parts = line.trim().split(',').map(s => {
+       // 先去掉中文逗号、前后空格、引号
+        return s.replace(/，/g, '').replace(/^"|"$/g, '').trim();
+        }).filter(Boolean);
         // 确保每行有 3 个字段（西语、中文、词性）
         if (parts.length === 3) {
           const [es, cn, pos] = parts;
