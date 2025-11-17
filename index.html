@@ -269,137 +269,144 @@ const DictadoHandler = {
     this.bindEvents();
   },
 
-async cargarCSV() {
-  try {
-    const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
-    const texts = await Promise.all(
-      csvFiles.map(async (file) => {
-        const res = await fetch(file);
-        if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
-        return res.text();
-      })
-    );
+  // 👉 修复3：加逗号分隔
+  async cargarCSV() {
+    try {
+      const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
+      const texts = await Promise.all(
+        csvFiles.map(async (file) => {
+          const res = await fetch(file);
+          if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
+          return res.text();
+        })
+      );
 
-    // 清空数组（避免重复加载）
-    this.palabras = [];
+      // 清空数组（避免重复加载）
+      this.palabras = [];
 
-    texts.forEach(text => {
-      const lines = text.trim().split('\n');
-      // 跳过表头（如果CSV第一行是 "es,cn,pos" 这类表头，就保留 slice(1)；如果没有表头，就删掉 slice(1)）
-      const dataLines = lines.slice(1); 
+      texts.forEach(text => {
+        const lines = text.trim().split('\n');
+        // 跳过表头（如果CSV第一行是 "es,cn,pos" 这类表头，就保留 slice(1)；如果没有表头，就删掉 slice(1)）
+        const dataLines = lines.slice(1); 
 
-      dataLines.forEach((line, lineIdx) => {
-        if (!line.trim()) return; // 跳过空行
-        // 支持中英文逗号，分割后去重、去空格、去引号
-        const parts = line.trim().split(',').map(s => {
-       // 先去掉中文逗号、前后空格、引号
-        return s.replace(/，/g, '').replace(/^"|"$/g, '').trim();
-        }).filter(Boolean);
-        // 确保每行有 3 个字段（西语、中文、词性）
-        if (parts.length === 3) {
-          const [es, cn, pos] = parts;
-          this.palabras.push({ es, cn, pos });
-        } else {
-          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（需满足 "西语,中文,词性"）`);
-        }
+        dataLines.forEach((line, lineIdx) => {
+          if (!line.trim()) return; // 跳过空行
+          // 支持中英文逗号，分割后去重、去空格、去引号
+          const parts = line.trim().split(',').map(s => {
+            // 先去掉中文逗号、前后空格、引号
+            return s.replace(/，/g, '').replace(/^"|"$/g, '').trim();
+          }).filter(Boolean);
+          // 确保每行有 3 个字段（西语、中文、词性）
+          if (parts.length === 3) {
+            const [es, cn, pos] = parts;
+            this.palabras.push({ es, cn, pos });
+          } else {
+            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（需满足 "西语,中文,词性"）`);
+          }
+        });
       });
-    });
 
-    // 打印加载结果（方便调试，可选）
-    console.log(`共加载 ${this.palabras.length} 个单词`);
-    if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
-  } catch (err) {
-    alert('❌ 单词加载失败：' + err.message);
-    console.error(err);
-  }
-},
+      // 打印加载结果（方便调试，可选）
+      console.log(`共加载 ${this.palabras.length} 个单词`);
+      if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
+    } catch (err) {
+      alert('❌ 单词加载失败：' + err.message);
+      console.error(err);
+    }
+  },
 
   bindEvents() {
-  // 1. 进入听写练习按钮（点击显示区域+加载第一个单词）
-  document.getElementById('dictadoStart').addEventListener('click', () => {
-    document.getElementById('dictadoBox').style.display = 'block';
-    this.nuevaPalabra();
-  });
+    // 1. 进入听写练习按钮（点击显示区域+加载第一个单词）
+    document.getElementById('dictadoStart').addEventListener('click', () => {
+      document.getElementById('dictadoBox').style.display = 'block';
+      this.nuevaPalabra();
+    });
 
-  // 2. 确定按钮（点击验证答案）
-  document.getElementById('dictadoCheck').addEventListener('click', () => {
-    this.verificar();
-  });
+    // 2. 确定按钮（点击验证答案）
+    document.getElementById('dictadoCheck').addEventListener('click', () => {
+      this.verificar();
+    });
 
-  // 3. 下一个按钮（点击加载新单词）
-  document.getElementById('dictadoNext').addEventListener('click', () => {
-    this.nuevaPalabra();
-  });
+    // 3. 下一个按钮（点击加载新单词）
+    document.getElementById('dictadoNext').addEventListener('click', () => {
+      this.nuevaPalabra();
+    });
 
-  // 4. 回车键提交（输入后按回车也能验证，可选保留）
-  document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') this.verificar();
-  });
+    // 4. 回车键提交（输入后按回车也能验证，可选保留）
+    document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') this.verificar();
+    });
   },
 
   mostrarPrimera() {
-  document.getElementById('dictadoBox').style.display = 'block';
-  document.getElementById('dictadoNext').textContent = '下一个';
-  document.getElementById('dictadoNext').disabled = true;
-  this.nuevaPalabra();
+    document.getElementById('dictadoBox').style.display = 'block';
+    document.getElementById('dictadoNext').textContent = '下一个';
+    document.getElementById('dictadoNext').disabled = true;
+    this.nuevaPalabra();
   },
 
   nuevaPalabra() {
-  if (this.palabras.length === 0) return;
+    if (this.palabras.length === 0) return;
 
-  // 1. 重置状态（必须有！）
-  this.isChecked = false;
-  const checkBtn = document.getElementById('dictadoCheck');
-  const nextBtn = document.getElementById('dictadoNext');
-  checkBtn.disabled = false; // 启用「确定」
-  nextBtn.disabled = true;  // 禁用「下一个」
+    // 1. 重置状态（必须有！）
+    this.isChecked = false;
+    const checkBtn = document.getElementById('dictadoCheck');
+    const nextBtn = document.getElementById('dictadoNext');
+    checkBtn.disabled = false; // 启用「确定」
+    nextBtn.disabled = true;  // 禁用「下一个」
 
-  // 2. 随机选新单词（确保和上一个不同）
-  let randomIdx;
-  do {
-    randomIdx = Math.floor(Math.random() * this.palabras.length);
-  } while (this.palabras[randomIdx] === this.currentWord && this.palabras.length > 1);
-  this.currentWord = this.palabras[randomIdx]; // 更新当前单词
+    // 2. 随机选新单词（确保和上一个不同）
+    let randomIdx;
+    do {
+      randomIdx = Math.floor(Math.random() * this.palabras.length);
+    } while (this.palabras[randomIdx] === this.currentWord && this.palabras.length > 1);
+    this.currentWord = this.palabras[randomIdx]; // 更新当前单词
 
-  // 3. 显示新的中文+词性（和原来一样，保留）
-  document.getElementById('dictadoPrompt').innerHTML = 
-    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+    // 3. 显示新的中文+词性（和原来一样，保留）
+    document.getElementById('dictadoPrompt').innerHTML = 
+      `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
 
-  // 4. 清空输入框和结果（必须有！）
-  document.getElementById('dictadoInput').value = '';
-  document.getElementById('dictadoResult').textContent = '';
-  document.getElementById('dictadoInput').focus();
+    // 4. 清空输入框和结果（必须有！）
+    document.getElementById('dictadoInput').value = '';
+    document.getElementById('dictadoResult').textContent = '';
+    document.getElementById('dictadoInput').focus();
   },
 
-verificar() {
-  if (this.isChecked) return;
-  const input = document.getElementById('dictadoInput').value.trim().toLowerCase();
-  if (!input) return;
+  // 👉 修复2：新增 removeAccents 辅助函数
+  removeAccents(str) {
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  },
 
-  // 处理阴阳性单词：分割出阳性和阴性形式（比如 "chino, na" → ["chino", "china"]）
-  const correctEs = this.currentWord.es.trim().toLowerCase().replace(/^"|"$/g, '');
-  const correctForms = correctEs.split(',')
-    .map(form => this.removeAccents(form.trim().replace('na', 'a'))) // 把 "na" 替换成 "a"，得到阴性形式
-    .filter(Boolean);
+  verificar() {
+    if (this.isChecked) return;
+    const input = document.getElementById('dictadoInput').value.trim().toLowerCase();
+    if (!input) return;
 
-  // 输入去重音，和所有正确形式匹配
-  const inputWithoutAccents = this.removeAccents(input);
-  const isCorrect = correctForms.includes(inputWithoutAccents);
+    // 处理阴阳性单词：分割出阳性和阴性形式（比如 "chino, na" → ["chino", "china"]）
+    const correctEs = this.currentWord.es.trim().toLowerCase().replace(/^"|"$/g, '');
+    const correctForms = correctEs.split(',')
+      .map(form => this.removeAccents(form.trim().replace('na', 'a'))) // 把 "na" 替换成 "a"，得到阴性形式
+      .filter(Boolean);
 
-  const resultBox = document.getElementById('dictadoResult');
-  if (isCorrect) {
-    resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
-    this.correct++;
-  } else {
-    // 显示完整阴阳性形式，让学生明确正确写法
-    resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${this.currentWord.es}</span>`;
+    // 输入去重音，和所有正确形式匹配
+    const inputWithoutAccents = this.removeAccents(input);
+    const isCorrect = correctForms.includes(inputWithoutAccents);
+
+    const resultBox = document.getElementById('dictadoResult');
+    if (isCorrect) {
+      resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
+      this.correct++;
+    } else {
+      // 显示完整阴阳性形式，让学生明确正确写法
+      resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${this.currentWord.es}</span>`;
+    }
+
+    this.isChecked = true;
+    document.getElementById('dictadoCheck').disabled = true;
+    document.getElementById('dictadoNext').disabled = false;
+    this.total++;
   }
-
-  this.isChecked = true;
-  document.getElementById('dictadoCheck').disabled = true;
-  document.getElementById('dictadoNext').disabled = false;
-  this.total++;
-}
+}; 
 
 // ****** 关键：页面加载完成后初始化 ******
 window.addEventListener('DOMContentLoaded', () => DictadoHandler.init());
