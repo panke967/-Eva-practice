@@ -262,6 +262,7 @@ const DictadoHandler = {
   correct: 0,
   total: 0,
   isChecked: false,
+  currentWord: null,
 
   init() {
     this.cargarCSV();
@@ -296,14 +297,26 @@ async cargarCSV() {
 },
 
   bindEvents() {
-    // 修改后（保持初始按钮的事件绑定）
-document.getElementById('dictadoStart').addEventListener('click', () => this.mostrarPrimera());
-// 新增下一个按钮的事件绑定
- document.getElementById('dictadoNext').addEventListener('click', () => this.nuevaPalabra());
-    document.getElementById('dictadoCheck').addEventListener('click', () => this.verificar());
-    document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') this.verificar();
-    });
+  // 1. 进入听写练习按钮（点击显示区域+加载第一个单词）
+  document.getElementById('dictadoStart').addEventListener('click', () => {
+    document.getElementById('dictadoBox').style.display = 'block';
+    this.nuevaPalabra();
+  });
+
+  // 2. 确定按钮（点击验证答案）
+  document.getElementById('dictadoCheck').addEventListener('click', () => {
+    this.verificar();
+  });
+
+  // 3. 下一个按钮（点击加载新单词）
+  document.getElementById('dictadoNext').addEventListener('click', () => {
+    this.nuevaPalabra();
+  });
+
+  // 4. 回车键提交（输入后按回车也能验证，可选保留）
+  document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') this.verificar();
+  });
   },
 
   mostrarPrimera() {
@@ -314,18 +327,27 @@ document.getElementById('dictadoStart').addEventListener('click', () => this.mos
   },
 
   nuevaPalabra() {
-  if (this.palabras.length === 0) { alert('⚠️ 未加载到任何单词'); return; }
-  
-  // 重置状态（关键）
-  this.isChecked = false; // ← 重置为未检查
-  document.getElementById('dictadoCheck').disabled = false; // ← 启用「确定」按钮
-  document.getElementById('dictadoNext').disabled = true; // ← 禁用「下一个」按钮（需先检查答案）
+  if (this.palabras.length === 0) return;
 
-  // 原有逻辑不变（随机选单词、显示提示、清空输入框）
-  this.idx = Math.floor(Math.random() * this.palabras.length);
-  const w = this.palabras[this.idx];
-  document.getElementById('dictadoPrompt').innerHTML =
-    `<span style="font-size:20px;color:#d93025;">${w.cn}</span>　<span style="color:#666;">(${w.pos})</span>`;
+  // 1. 重置状态（必须有！）
+  this.isChecked = false;
+  const checkBtn = document.getElementById('dictadoCheck');
+  const nextBtn = document.getElementById('dictadoNext');
+  checkBtn.disabled = false; // 启用「确定」
+  nextBtn.disabled = true;  // 禁用「下一个」
+
+  // 2. 随机选新单词（确保和上一个不同）
+  let randomIdx;
+  do {
+    randomIdx = Math.floor(Math.random() * this.palabras.length);
+  } while (this.palabras[randomIdx] === this.currentWord && this.palabras.length > 1);
+  this.currentWord = this.palabras[randomIdx]; // 更新当前单词
+
+  // 3. 显示新的中文+词性（和原来一样，保留）
+  document.getElementById('dictadoPrompt').innerHTML = 
+    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+
+  // 4. 清空输入框和结果（必须有！）
   document.getElementById('dictadoInput').value = '';
   document.getElementById('dictadoResult').textContent = '';
   document.getElementById('dictadoInput').focus();
