@@ -128,7 +128,11 @@ h2{color:#333;font-size:20px;}
 <!-- 阅读练习板块（核心） -->
 <div class="section">
   <h3 class="section-title">📖 阅读-单词强化复习</h3>
-  <button id="refreshBtn" class="btn">进入阅读练习</button>
+  <!-- 新增按钮容器，用于对齐按钮 -->
+  <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <button id="refreshBtn" class="btn">进入阅读练习</button>
+    <button id="nextTextBtn" class="btn" style="display: none;">下一篇</button>
+  </div>
 
 <!-- 阅读内容容器 -->
   <div class="reading-container">
@@ -141,6 +145,26 @@ h2{color:#333;font-size:20px;}
 <div class="section">
   <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
   <button id="dictadoStart" class="btn">进入听写练习</button>
+
+<!-- 在听写板块的HTML中添加隐藏的弹窗结构 -->
+<div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+  <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px;">
+    <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif;">请输入你的信息</h3>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div>
+        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">姓名：</label>
+        <input type="text" id="studentName" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
+      </div>
+      <div>
+        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">学号：</label>
+        <input type="text" id="studentId" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
+      </div>
+      <button id="confirmInfoBtn" class="btn" style="width: 100%;">确认</button>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- 点进后显示的区域 -->
 <div id="dictadoBox" style="display:none;margin-top:15px;">
@@ -167,8 +191,6 @@ h2{color:#333;font-size:20px;}
     </div>
   </div>
 </div>
-
-
 
 <script>
 // 短文数据：完全替换为你提供的12篇短文
@@ -210,15 +232,17 @@ const textosFijos = [
   "Tomás se levanta temprano por la mañana. Él desayuna en casa con su padre. Su padre trabaja en el hospital. Después, Tomás toma el autobús para el instituto. Por la tarde, él vuelve a casa y hace la tarea."
 ];
 
-// 页面核心功能
+// 修改ReadingHandler对象
 const ReadingHandler = {
   init() {
-  this.bindEvents();
-},
+    this.bindEvents();
+  },
 
   bindEvents() {
     // 刷新短文按钮事件：点击切换12篇短文
     document.getElementById('refreshBtn').addEventListener('click', () => this.loadRandomText());
+    // 下一篇按钮事件
+    document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
     // 音乐控制器事件
     document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
   },
@@ -231,11 +255,15 @@ const ReadingHandler = {
     
     // 显示文章内容并保留对话格式
     lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
-    },
-
+    
+    // 显示下一篇按钮，隐藏/禁用进入阅读按钮
+    document.getElementById('refreshBtn').disabled = true;
+    document.getElementById('refreshBtn').style.opacity = "0.6";
+    document.getElementById('nextTextBtn').style.display = "inline-block";
+  },
 
   // 音乐播放/暂停控制
-toggleMusic() {
+  toggleMusic() {
     const musicBtn = document.getElementById('musicBtn');
     const bgMusic = document.getElementById('bgMusic');
     const isPlaying = !bgMusic.paused;
@@ -265,13 +293,15 @@ window.addEventListener('DOMContentLoaded', () => {
 /* ========== 听写模块（4步流程） ========== */
 const DictadoHandler = {
   palabras: [],
-  usedIndexes: [], // 新增：记录已使用过的单词索引
+  usedIndexes: [], // 记录已使用过的单词索引
   idx: 0,
   correct: 0,
   total: 0,
   isChecked: false,
   currentWord: null,
   wrongWords: [], // 存储错词的数组（含输入和正确答案）
+  studentName: '',  // 学生姓名
+  studentId: '',    // 学号
 
   // 结束听写方法
   endDictado() {
@@ -291,10 +321,13 @@ const DictadoHandler = {
     } else {
       wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
     }
-    // 4. 弹窗显示结果
+    // 4. 弹窗显示结果（包含学生信息）
     const resultHtml = `
       <div style="font-size: 16px; line-height: 2; padding: 10px;">
-        <p>📊 听写结果：</p>
+        <p>📝 学生信息：</p>
+        <p>姓名：${this.studentName}</p>
+        <p>学号：${this.studentId}</p>
+        <p style="margin-top: 15px;">📊 听写结果：</p>
         <p>总题数：${this.total} 道</p>
         <p>正确数：${this.correct} 道</p>
         <p>正确率：${accuracy}%</p>
@@ -329,7 +362,9 @@ const DictadoHandler = {
     this.wrongWords = [];
     this.isChecked = false;
     this.currentWord = null;
-    this.usedIndexes = []; // 新增这一行
+    this.usedIndexes = [];
+    this.studentName = '';  // 重置学生姓名
+    this.studentId = '';    // 重置学号
     document.getElementById('dictadoInput').value = '';
     document.getElementById('dictadoResult').textContent = '';
     document.getElementById('dictadoCheck').disabled = false;
@@ -339,6 +374,31 @@ const DictadoHandler = {
   init() {
     this.cargarCSV();
     this.bindEvents();
+    this.createInfoPopup(); // 创建信息输入弹窗
+  },
+
+  // 创建学生信息输入弹窗
+  createInfoPopup() {
+    const popup = document.createElement('div');
+    popup.id = 'studentInfoPopup';
+    popup.style.cssText = 'display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;';
+    popup.innerHTML = `
+      <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px;">
+        <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif;">请输入你的信息</h3>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">姓名：</label>
+            <input type="text" id="studentName" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
+          </div>
+          <div>
+            <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">学号：</label>
+            <input type="text" id="studentId" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
+          </div>
+          <button id="confirmInfoBtn" class="btn" style="width: 100%;">确认</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(popup);
   },
 
   async cargarCSV() {
@@ -401,28 +461,51 @@ const DictadoHandler = {
   },
 
   bindEvents() {
-    // 1. 进入听写练习按钮（点击显示区域+加载第一个单词）
+    // 1. 进入听写练习按钮（点击显示信息弹窗）
     document.getElementById('dictadoStart').addEventListener('click', () => {
-      document.getElementById('dictadoBox').style.display = 'block';
-      this.nuevaPalabra();
+      document.getElementById('studentInfoPopup').style.display = 'flex';
     });
 
-    // 2. 确定按钮（点击验证答案）
+    // 2. 确认信息按钮事件
+    document.getElementById('confirmInfoBtn').addEventListener('click', () => {
+      const name = document.getElementById('studentName').value.trim();
+      const id = document.getElementById('studentId').value.trim();
+      
+      if (!name || !id) {
+        alert('请输入姓名和学号');
+        return;
+      }
+      
+      // 保存学生信息
+      this.studentName = name;
+      this.studentId = id;
+      
+      // 隐藏弹窗并开始听写
+      document.getElementById('studentInfoPopup').style.display = 'none';
+      document.getElementById('dictadoBox').style.display = 'block';
+      this.nuevaPalabra();
+      
+      // 清空输入框，方便下次输入
+      document.getElementById('studentName').value = '';
+      document.getElementById('studentId').value = '';
+    });
+
+    // 3. 确定按钮（点击验证答案）
     document.getElementById('dictadoCheck').addEventListener('click', () => {
       this.verificar();
     });
 
-    // 3. 下一个按钮（点击加载新单词）
+    // 4. 下一个按钮（点击加载新单词）
     document.getElementById('dictadoNext').addEventListener('click', () => {
       this.nuevaPalabra();
     });
 
-    // 4. 回车键提交
+    // 5. 回车键提交
     document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.verificar();
     });
 
-    // 5. 结束听写按钮
+    // 6. 结束听写按钮
     document.getElementById('dictadoEnd').addEventListener('click', () => {
       if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
         this.endDictado();
@@ -438,41 +521,41 @@ const DictadoHandler = {
   },
 
   nuevaPalabra() {
-  if (this.palabras.length === 0) return;
+    if (this.palabras.length === 0) return;
 
-  // 1. 重置状态
-  this.isChecked = false;
-  const checkBtn = document.getElementById('dictadoCheck');
-  const nextBtn = document.getElementById('dictadoNext');
-  checkBtn.disabled = false; // 启用「确定」
-  nextBtn.disabled = true;  // 禁用「下一个」
+    // 1. 重置状态
+    this.isChecked = false;
+    const checkBtn = document.getElementById('dictadoCheck');
+    const nextBtn = document.getElementById('dictadoNext');
+    checkBtn.disabled = false; // 启用「确定」
+    nextBtn.disabled = true;  // 禁用「下一个」
 
-  // 2. 过滤未使用的单词索引
-  const availableIndexes = this.palabras
-    .map((_, index) => index)
-    .filter(index => !this.usedIndexes.includes(index));
+    // 2. 过滤未使用的单词索引
+    const availableIndexes = this.palabras
+      .map((_, index) => index)
+      .filter(index => !this.usedIndexes.includes(index));
 
-  // 如果所有单词都已使用，重置已使用列表（循环使用）
-  if (availableIndexes.length === 0) {
-    this.usedIndexes = [];
-    return this.nuevaPalabra(); // 递归重新调用
-  }
+    // 如果所有单词都已使用，重置已使用列表（循环使用）
+    if (availableIndexes.length === 0) {
+      this.usedIndexes = [];
+      return this.nuevaPalabra(); // 递归重新调用
+    }
 
-  // 3. 从未使用的索引中随机选择
-  const randomIdx = availableIndexes[
-    Math.floor(Math.random() * availableIndexes.length)
-  ];
-  this.currentWord = this.palabras[randomIdx];
-  this.usedIndexes.push(randomIdx); // 记录已使用的索引
+    // 3. 从未使用的索引中随机选择
+    const randomIdx = availableIndexes[
+      Math.floor(Math.random() * availableIndexes.length)
+    ];
+    this.currentWord = this.palabras[randomIdx];
+    this.usedIndexes.push(randomIdx); // 记录已使用的索引
 
-  // 4. 显示新的中文+词性
-  document.getElementById('dictadoPrompt').innerHTML = 
-    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+    // 4. 显示新的中文+词性
+    document.getElementById('dictadoPrompt').innerHTML = 
+      `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
 
-  // 5. 清空输入框和结果
-  document.getElementById('dictadoInput').value = '';
-  document.getElementById('dictadoResult').textContent = '';
-  document.getElementById('dictadoInput').focus();
+    // 5. 清空输入框和结果
+    document.getElementById('dictadoInput').value = '';
+    document.getElementById('dictadoResult').textContent = '';
+    document.getElementById('dictadoInput').focus();
   },
 
   // 去除重音符号辅助函数
@@ -527,8 +610,6 @@ const DictadoHandler = {
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => DictadoHandler.init());
 </script>
-
-
 
 
 </body>
