@@ -170,6 +170,10 @@ h2{color:#333;font-size:20px;}
 <div id="dictadoBox" style="display:none;margin-top:15px;">
   <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
   <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
+    <!-- 新增计数显示（就在这行添加） -->
+    <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
+      已听写：<span id="dictadoTotalCount">0</span> 题
+    </div>
     <div id="dictadoPrompt" style="font-size:20px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
     <!-- 输入框+确定按钮 容器（水平居中） -->
     <div style="display:flex;align-items:center;gap:10px;">
@@ -369,6 +373,7 @@ const DictadoHandler = {
     document.getElementById('dictadoResult').textContent = '';
     document.getElementById('dictadoCheck').disabled = false;
     document.getElementById('dictadoNext').disabled = true;
+    document.getElementById('dictadoTotalCount').textContent = '0';
   },
 
   init() {
@@ -604,6 +609,8 @@ const DictadoHandler = {
     document.getElementById('dictadoCheck').disabled = true;
     document.getElementById('dictadoNext').disabled = false;
     this.total++;
+    // 新增这行代码，更新显示的计数
+    document.getElementById('dictadoTotalCount').textContent = this.total;
   }
 };
 
