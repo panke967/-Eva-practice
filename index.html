@@ -156,7 +156,7 @@ h2{color:#333;font-size:20px;}
     <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
     <!-- 下一个按钮（单独一行，居中） -->
     <div style="margin-top:5px;">
-      <button id="dictadoStart" class="btn" disabled>下一个</button>
+      <button id="dictadoNext" class="btn" disabled>下一个</button>
     </div>
   </div>
 </div>
@@ -295,10 +295,11 @@ async cargarCSV() {
   }
 },
 
-
-
   bindEvents() {
-    document.getElementById('dictadoStart').addEventListener('click', () => this.mostrarPrimera());
+    // 修改后（保持初始按钮的事件绑定）
+document.getElementById('dictadoStart').addEventListener('click', () => this.mostrarPrimera());
+// 新增下一个按钮的事件绑定
+ document.getElementById('dictadoNext').addEventListener('click', () => this.nuevaPalabra());
     document.getElementById('dictadoCheck').addEventListener('click', () => this.verificar());
     document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.verificar();
@@ -307,8 +308,8 @@ async cargarCSV() {
 
   mostrarPrimera() {
   document.getElementById('dictadoBox').style.display = 'block';
-  document.getElementById('dictadoStart').textContent = '下一个';
-  document.getElementById('dictadoStart').disabled = true; // ← 初始禁用「下一个」
+  document.getElementById('dictadoNext').textContent = '下一个';
+  document.getElementById('dictadoNext').disabled = true;
   this.nuevaPalabra();
   },
 
@@ -318,7 +319,7 @@ async cargarCSV() {
   // 重置状态（关键）
   this.isChecked = false; // ← 重置为未检查
   document.getElementById('dictadoCheck').disabled = false; // ← 启用「确定」按钮
-  document.getElementById('dictadoStart').disabled = true; // ← 禁用「下一个」按钮（需先检查答案）
+  document.getElementById('dictadoNext').disabled = true; // ← 禁用「下一个」按钮（需先检查答案）
 
   // 原有逻辑不变（随机选单词、显示提示、清空输入框）
   this.idx = Math.floor(Math.random() * this.palabras.length);
@@ -347,7 +348,7 @@ async cargarCSV() {
 
   this.isChecked = true; // ← 标记为已检查
   document.getElementById('dictadoCheck').disabled = true; // ← 禁用「确定」按钮（避免重复提交）
-  document.getElementById('dictadoStart').disabled = false; // ← 启用「下一个」按钮
+  document.getElementById('dictadoNext').disabled = false; // ← 启用「下一个」按钮
   }
 };
 
