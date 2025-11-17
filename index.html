@@ -271,28 +271,43 @@ const DictadoHandler = {
 
 async cargarCSV() {
   try {
+    const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
     const texts = await Promise.all(
-      ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'].map(async (u) => {
-        const response = await fetch(u);
-        if (!response.ok) throw new Error(`文件 ${u} 加载失败`);
-        return response.text();
+      csvFiles.map(async (file) => {
+        const res = await fetch(file);
+        if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
+        return res.text();
       })
     );
-    texts.forEach(t => {
-      const lines = t.trim().split('\n').slice(1); // 跳过表头
-      lines.forEach(l => {
-        // 兼容英文逗号和中文逗号分隔，同时处理可能的引号
-        const [es, cn, pos] = l.split(/,|，/).map(s => s.replace(/^"|"$/g, '').trim());
-        if (es && cn && pos) this.palabras.push({ es, cn, pos });
+
+    // 清空数组（避免重复加载）
+    this.palabras = [];
+
+    texts.forEach(text => {
+      const lines = text.trim().split('\n');
+      // 跳过表头（如果CSV第一行是 "es,cn,pos" 这类表头，就保留 slice(1)；如果没有表头，就删掉 slice(1)）
+      const dataLines = lines.slice(1); 
+
+      dataLines.forEach((line, lineIdx) => {
+        if (!line.trim()) return; // 跳过空行
+        // 支持中英文逗号，分割后去重、去空格、去引号
+        const parts = line.split(/,|，/).map(s => s.replace(/^"|"$/g, '').trim()).filter(Boolean);
+        // 确保每行有 3 个字段（西语、中文、词性）
+        if (parts.length === 3) {
+          const [es, cn, pos] = parts;
+          this.palabras.push({ es, cn, pos });
+        } else {
+          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（需满足 "西语,中文,词性"）`);
+        }
       });
     });
-    // 若词库为空，提示用户
-    if (this.palabras.length === 0) {
-      alert('⚠️ 未加载到任何单词，请检查：1. CSV 文件是否存在 2. 文件路径是否正确 3. 是否用本地服务器打开');
-    }
+
+    // 打印加载结果（方便调试，可选）
+    console.log(`共加载 ${this.palabras.length} 个单词`);
+    if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
   } catch (err) {
-    alert('❌ CSV 加载失败：' + err.message + '\n建议：1. 确认 CSV 和 HTML 在同一目录 2. 用 VS Code Live Server 打开');
-    console.error('CSV 加载错误：', err); // 控制台输出详细错误（方便排查）
+    alert('❌ 单词加载失败：' + err.message);
+    console.error(err);
   }
 },
 
