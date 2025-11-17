@@ -152,18 +152,15 @@ h2{color:#333;font-size:20px;}
       <input id="dictadoInput" type="text" placeholder="请输入西语单词" style="padding:8px;width:260px;font-family:'Times New Roman',serif;border:none;border-bottom:2px solid #d93025;background:transparent;outline:none;">
       <button id="dictadoCheck" class="btn">确定</button>
     </div>
-    <!-- 新增提示文字 -->
-    <div style="font-size:12px;color:#666;line-height:1.6;text-align:left;width:260px;">
-      1. 请各位同学使用英语/西语键盘输入<br>
-      2. 有阴阳性的单词请写全（使用逗号隔开）<br>
-      3. 除专有名词需首字母大写，其余单词默认首字母为小写
+    <!-- 新增提示文字（不自动换行，优化排版） -->
+    <div style="font-size:12px;color:#666;line-height:1.8;text-align:left;width:100%;max-width:450px;padding:0 10px;">
+      1. 请各位同学使用英语/西语键盘输入　　2. 有阴阳性的单词请写全（使用逗号隔开）　　3. 除专有名词需首字母大写，其余单词默认首字母为小写
     </div>
     <!-- 结果提示（居中显示） -->
     <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
     <!-- 下一个按钮 + 结束听写按钮（同一行居中，保持样式一致） -->
     <div style="margin-top:5px;display:flex;gap:10px;">
       <button id="dictadoNext" class="btn" disabled>下一个</button>
-      <!-- 新增：结束听写按钮（和下一个按钮样式一致，用btn类） -->
       <button id="dictadoEnd" class="btn">结束听写</button>
     </div>
   </div>
