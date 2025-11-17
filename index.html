@@ -143,25 +143,17 @@ h2{color:#333;font-size:20px;}
   <button id="dictadoStart" class="btn">进入听写练习</button>
 
   <!-- 点进后显示的区域 -->
-<div id="dictadoBox" style="display:none;margin-top:15px;">
-  <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
-  <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
-    <div id="dictadoPrompt" style="font-size:20px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
-    <!-- 输入框+确定按钮 容器（水平居中） -->
-    <div style="display:flex;align-items:center;gap:10px;">
-      <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
-       style="padding:8px;width:260px;font-family:'Times New Roman',serif;border:none;border-bottom:2px solid #d93025;background:transparent;outline:none;">
-      <button id="dictadoCheck" class="btn">确定</button>
-    </div>
-    <!-- 结果提示（居中显示） -->
-    <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
-    <!-- 下一个按钮（单独一行，居中） -->
-    <div style="margin-top:5px;">
-      <button id="dictadoStart" class="btn" disabled>下一个</button>
+  <div id="dictadoBox" style="display:none;margin-top:15px;">
+    <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
+    <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
+      <!-- 其他内容省略 -->
+      <!-- 下一个按钮（单独一行，居中） -->
+      <div style="margin-top:5px;">
+        <button id="dictadoNext" class="btn" disabled>下一个</button>
+      </div>
     </div>
   </div>
 </div>
-
 
 
 <script>
@@ -211,14 +203,32 @@ const ReadingHandler = {
 },
 
   bindEvents() {
-    // 刷新短文按钮事件：点击切换12篇短文
-    document.getElementById('refreshBtn').addEventListener('click', () => this.loadRandomText());
-    // 音乐控制器事件
-    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
-    // 新增：输入框失焦时不执行判断
-  document.getElementById('dictadoInput').addEventListener('blur', () => {
-    // 什么都不做，确保只有点击确定才判断
-    });
+  // 「进入听写」按钮事件
+  const dictadoStartBtn = document.getElementById('dictadoStart');
+  const dictadoNextBtn = document.getElementById('dictadoNext');
+  
+  dictadoStartBtn.addEventListener('click', () => {
+    const dictadoBox = document.getElementById('dictadoBox');
+    dictadoBox.style.display = 'block';
+    dictadoStartBtn.style.display = 'none'; // 隐藏开始按钮
+    dictadoNextBtn.style.display = 'inline-block'; // 显示下一个按钮
+    this.nuevaPalabra(); // 加载第一个单词
+  });
+
+  // 「下一个」按钮事件
+  dictadoNextBtn.addEventListener('click', () => {
+    this.nuevaPalabra();
+  });
+
+  // 「确定」按钮事件
+  document.getElementById('dictadoCheck').addEventListener('click', () => {
+    this.verificar();
+  });
+
+  // 回车键提交
+  document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') this.verificar();
+  });
   },
 
   // 加载随机短文（从12篇中随机选择）
@@ -328,9 +338,9 @@ const DictadoHandler = {
     // 重置状态（关键：确保按钮正常切换）
     this.isChecked = false;
     const dictadoCheckBtn = document.getElementById('dictadoCheck');
-    const dictadoStartBtn = document.getElementById('dictadoStart');
-    dictadoCheckBtn.disabled = false; // 启用确定按钮
-    dictadoStartBtn.disabled = true; // 禁用下一个按钮
+    const dictadoNextBtn = document.getElementById('dictadoNext'); 
+    dictadoCheckBtn.disabled = false;
+    dictadoNextBtn.disabled = true; 
 
     // 随机加载单词
     this.idx = Math.floor(Math.random() * this.palabras.length);
@@ -362,8 +372,8 @@ const DictadoHandler = {
 
     // 检查后状态切换
     this.isChecked = true;
-    document.getElementById('dictadoCheck').disabled = true; // 禁用确定
-    document.getElementById('dictadoStart').disabled = false; // 启用下一个
+    document.getElementById('dictadoCheck').disabled = true;
+    document.getElementById('dictadoNext').disabled = false; 
   }
 };
 
@@ -372,7 +382,6 @@ window.addEventListener('DOMContentLoaded', () => {
   ReadingHandler.init();
   DictadoHandler.init();
 });
-</script>
 
 
 
