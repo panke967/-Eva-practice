@@ -378,34 +378,32 @@ const DictadoHandler = {
   },
 
   verificar() {
-    if (this.isChecked) return;
-    const input = document.getElementById('dictadoInput').value.trim().toLowerCase();
-    if (!input) return;
+  if (this.isChecked) return;
+  const input = document.getElementById('dictadoInput').value.trim(); // 只去前后空格，保留大小写+重音
+  if (!input) return;
 
-    // 处理阴阳性单词：分割出阳性和阴性形式（比如 "chino, na" → ["chino", "china"]）
-    const correctEs = this.currentWord.es.trim().toLowerCase().replace(/^"|"$/g, '');
-    const correctForms = correctEs.split(',')
-      .map(form => this.removeAccents(form.trim().replace('na', 'a'))) // 把 "na" 替换成 "a"，得到阴性形式
-      .filter(Boolean);
+  // 处理阴阳性单词：分割出阳性和阴性形式（仅替换 "na" 为 "a"，保留大小写+重音）
+  const correctEs = this.currentWord.es.trim().replace(/^"|"$/g, ''); // 保留原始答案的大小写+重音
+  const correctForms = correctEs.split(',')
+    .map(form => form.trim().replace('na', 'a')) // 仅处理阴阳性（chino, na → chino/china），不碰大小写和重音
+    .filter(Boolean);
 
-    // 输入去重音，和所有正确形式匹配
-    const inputWithoutAccents = this.removeAccents(input);
-    const isCorrect = correctForms.includes(inputWithoutAccents);
+  // 严格匹配：输入需和正确形式（大小写+重音）完全一致（仅阴阳性二选一）
+  const isCorrect = correctForms.includes(input);
 
-    const resultBox = document.getElementById('dictadoResult');
-    if (isCorrect) {
-      resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
-      this.correct++;
-    } else {
-      // 显示完整阴阳性形式，让学生明确正确写法
-      resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${this.currentWord.es}</span>`;
-    }
-
-    this.isChecked = true;
-    document.getElementById('dictadoCheck').disabled = true;
-    document.getElementById('dictadoNext').disabled = false;
-    this.total++;
+  const resultBox = document.getElementById('dictadoResult');
+  if (isCorrect) {
+    resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
+    this.correct++;
+  } else {
+    // 显示完整阴阳性+原始大小写+重音的正确答案
+    resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${this.currentWord.es}</span>`;
   }
+
+  this.isChecked = true;
+  document.getElementById('dictadoCheck').disabled = true;
+  document.getElementById('dictadoNext').disabled = false;
+  this.total++;
 }; 
 
 // ****** 关键：页面加载完成后初始化 ******
