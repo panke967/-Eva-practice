@@ -143,17 +143,24 @@ h2{color:#333;font-size:20px;}
   <button id="dictadoStart" class="btn">进入听写练习</button>
 
   <!-- 点进后显示的区域 -->
-  <div id="dictadoBox" style="display:none;margin-top:15px;">
-    <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
-    <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
-      <!-- 其他内容省略 -->
-      <!-- 下一个按钮（单独一行，居中） -->
-      <div style="margin-top:5px;">
-        <button id="dictadoNext" class="btn" disabled>下一个</button>
-      </div>
+<div id="dictadoBox" style="display:none;margin-top:15px;">
+  <!-- 新增居中容器：让提示、输入框、按钮都居中 -->
+  <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
+    <div id="dictadoPrompt" style="font-size:20px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
+    <!-- 输入框+确定按钮 容器（水平居中） -->
+    <div style="display:flex;align-items:center;gap:10px;">
+      <input id="dictadoInput" type="text" placeholder="请输入西语单词" style="padding:8px;width:260px;font-family:'Times New Roman',serif;border:none;border-bottom:2px solid #d93025;background:transparent;outline:none;">
+      <button id="dictadoCheck" class="btn">确定</button>
+    </div>
+    <!-- 结果提示（居中显示） -->
+    <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
+    <!-- 下一个按钮（单独一行，居中） -->
+    <div style="margin-top:5px;">
+      <button id="dictadoStart" class="btn" disabled>下一个</button>
     </div>
   </div>
 </div>
+
 
 
 <script>
@@ -203,32 +210,10 @@ const ReadingHandler = {
 },
 
   bindEvents() {
-  // 「进入听写」按钮事件
-  const dictadoStartBtn = document.getElementById('dictadoStart');
-  const dictadoNextBtn = document.getElementById('dictadoNext');
-  
-  dictadoStartBtn.addEventListener('click', () => {
-    const dictadoBox = document.getElementById('dictadoBox');
-    dictadoBox.style.display = 'block';
-    dictadoStartBtn.style.display = 'none'; // 隐藏开始按钮
-    dictadoNextBtn.style.display = 'inline-block'; // 显示下一个按钮
-    this.nuevaPalabra(); // 加载第一个单词
-  });
-
-  // 「下一个」按钮事件
-  dictadoNextBtn.addEventListener('click', () => {
-    this.nuevaPalabra();
-  });
-
-  // 「确定」按钮事件
-  document.getElementById('dictadoCheck').addEventListener('click', () => {
-    this.verificar();
-  });
-
-  // 回车键提交
-  document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') this.verificar();
-  });
+    // 刷新短文按钮事件：点击切换12篇短文
+    document.getElementById('refreshBtn').addEventListener('click', () => this.loadRandomText());
+    // 音乐控制器事件
+    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
   },
 
   // 加载随机短文（从12篇中随机选择）
@@ -240,6 +225,7 @@ const ReadingHandler = {
     // 显示文章内容并保留对话格式
     lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
     },
+
 
   // 音乐播放/暂停控制
 toggleMusic() {
@@ -261,127 +247,113 @@ toggleMusic() {
   }
 };
 
+// 页面加载完成后初始化
+window.addEventListener('DOMContentLoaded', () => {
+  ReadingHandler.init();
+});
+
 </script>
 
 <script>
-/* ========== 听写模块（修复后完整代码） ========== */
+/* ========== 听写模块（4步流程） ========== */
 const DictadoHandler = {
   palabras: [],
   idx: 0,
   correct: 0,
   total: 0,
-  isChecked: false, // 标记是否已检查答案
+  isChecked: false,
 
   init() {
     this.cargarCSV();
     this.bindEvents();
   },
 
-  async cargarCSV() {
-    try {
-      const texts = await Promise.all(
-        ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'].map(async (u) => {
-          const response = await fetch(u);
-          if (!response.ok) throw new Error(`文件 ${u} 加载失败`);
-          return response.text();
-        })
-      );
-      texts.forEach(t => {
-        const lines = t.trim().split('\n').slice(1);
-        lines.forEach(l => {
-          const [es, cn, pos] = l.split(/,|，/).map(s => s.replace(/^"|"$/g, '').trim());
-          if (es && cn && pos) this.palabras.push({ es, cn, pos });
-        });
+async cargarCSV() {
+  try {
+    const texts = await Promise.all(
+      ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'].map(async (u) => {
+        const response = await fetch(u);
+        if (!response.ok) throw new Error(`文件 ${u} 加载失败`);
+        return response.text();
+      })
+    );
+    texts.forEach(t => {
+      const lines = t.trim().split('\n').slice(1); // 跳过表头
+      lines.forEach(l => {
+        // 兼容英文逗号和中文逗号分隔，同时处理可能的引号
+        const [es, cn, pos] = l.split(/,|，/).map(s => s.replace(/^"|"$/g, '').trim());
+        if (es && cn && pos) this.palabras.push({ es, cn, pos });
       });
-      if (this.palabras.length === 0) {
-        alert('⚠️ 未加载到任何单词，请检查CSV文件是否正确');
-      }
-    } catch (err) {
-      alert('❌ CSV 加载失败：' + err.message);
-      console.error('CSV 加载错误：', err);
+    });
+    // 若词库为空，提示用户
+    if (this.palabras.length === 0) {
+      alert('⚠️ 未加载到任何单词，请检查：1. CSV 文件是否存在 2. 文件路径是否正确 3. 是否用本地服务器打开');
     }
-  },
+  } catch (err) {
+    alert('❌ CSV 加载失败：' + err.message + '\n建议：1. 确认 CSV 和 HTML 在同一目录 2. 用 VS Code Live Server 打开');
+    console.error('CSV 加载错误：', err); // 控制台输出详细错误（方便排查）
+  }
+},
+
+
 
   bindEvents() {
-    // 「进入听写/下一个」按钮事件（核心修复）
-    const dictadoStartBtn = document.getElementById('dictadoStart');
-    dictadoStartBtn.addEventListener('click', () => {
-      const dictadoBox = document.getElementById('dictadoBox');
-      if (dictadoBox.style.display === 'none' || dictadoBox.style.display === '') {
-        // 首次点击：显示听写区域 + 加载第一个单词
-        dictadoBox.style.display = 'block';
-        dictadoStartBtn.textContent = '下一个';
-        this.nuevaPalabra(); // 直接加载第一个单词
-      } else {
-        // 后续点击：加载下一个单词
-        this.nuevaPalabra();
-      }
-    });
-
-    // 「确定」按钮事件（只有点击才判断）
-    document.getElementById('dictadoCheck').addEventListener('click', () => {
-      this.verificar();
-    });
-
-    // 可选：保留回车键提交（不需要可删掉）
+    document.getElementById('dictadoStart').addEventListener('click', () => this.mostrarPrimera());
+    document.getElementById('dictadoCheck').addEventListener('click', () => this.verificar());
     document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') this.verificar();
     });
   },
 
+  mostrarPrimera() {
+  document.getElementById('dictadoBox').style.display = 'block';
+  document.getElementById('dictadoStart').textContent = '下一个';
+  document.getElementById('dictadoStart').disabled = true; // ← 初始禁用「下一个」
+  this.nuevaPalabra();
+  },
+
   nuevaPalabra() {
-    if (this.palabras.length === 0) {
-      alert('⚠️ 未加载到任何单词');
-      return;
-    }
+  if (this.palabras.length === 0) { alert('⚠️ 未加载到任何单词'); return; }
+  
+  // 重置状态（关键）
+  this.isChecked = false; // ← 重置为未检查
+  document.getElementById('dictadoCheck').disabled = false; // ← 启用「确定」按钮
+  document.getElementById('dictadoStart').disabled = true; // ← 禁用「下一个」按钮（需先检查答案）
 
-    // 重置状态（关键：确保按钮正常切换）
-    this.isChecked = false;
-    const dictadoCheckBtn = document.getElementById('dictadoCheck');
-    const dictadoNextBtn = document.getElementById('dictadoNext'); 
-    dictadoCheckBtn.disabled = false;
-    dictadoNextBtn.disabled = true; 
-
-    // 随机加载单词
-    this.idx = Math.floor(Math.random() * this.palabras.length);
-    const w = this.palabras[this.idx];
-    document.getElementById('dictadoPrompt').innerHTML =
-      `<span style="font-size:20px;color:#d93025;">${w.cn}</span>　<span style="color:#666;">(${w.pos})</span>`;
-    document.getElementById('dictadoInput').value = '';
-    document.getElementById('dictadoResult').textContent = '';
-    document.getElementById('dictadoInput').focus();
+  // 原有逻辑不变（随机选单词、显示提示、清空输入框）
+  this.idx = Math.floor(Math.random() * this.palabras.length);
+  const w = this.palabras[this.idx];
+  document.getElementById('dictadoPrompt').innerHTML =
+    `<span style="font-size:20px;color:#d93025;">${w.cn}</span>　<span style="color:#666;">(${w.pos})</span>`;
+  document.getElementById('dictadoInput').value = '';
+  document.getElementById('dictadoResult').textContent = '';
+  document.getElementById('dictadoInput').focus();
   },
 
   verificar() {
-    // 防重复提交 + 空输入不判断
-    if (this.isChecked || !document.getElementById('dictadoInput').value.trim()) {
-      return;
-    }
+  if (this.isChecked) return;
 
-    const input = document.getElementById('dictadoInput').value.trim().toLowerCase();
-    const correct = this.palabras[this.idx].es.toLowerCase();
-    const resBox = document.getElementById('dictadoResult');
-    this.total++;
+  const input = document.getElementById('dictadoInput').value.trim().toLowerCase();
+  const correct = this.palabras[this.idx].es.toLowerCase();
+  const resBox = document.getElementById('dictadoResult');
+  this.total++;
+  
+  if (input === correct) {
+    this.correct++;
+    resBox.innerHTML = `<span style="color:green;">✅ 正确！</span>`;
+  } else {
+    resBox.innerHTML = `<span style="color:red;">❌ 正确写法：${this.palabras[this.idx].es}</span>`;
+  }
 
-    if (input === correct) {
-      this.correct++;
-      resBox.innerHTML = `<span style="color:green;">✅ 正确！</span>`;
-    } else {
-      resBox.innerHTML = `<span style="color:red;">❌ 正确写法：${this.palabras[this.idx].es}</span>`;
-    }
-
-    // 检查后状态切换
-    this.isChecked = true;
-    document.getElementById('dictadoCheck').disabled = true;
-    document.getElementById('dictadoNext').disabled = false; 
+  this.isChecked = true; // ← 标记为已检查
+  document.getElementById('dictadoCheck').disabled = true; // ← 禁用「确定」按钮（避免重复提交）
+  document.getElementById('dictadoStart').disabled = false; // ← 启用「下一个」按钮
   }
 };
 
-// 合并初始化事件（确保只执行一次）
-window.addEventListener('DOMContentLoaded', () => {
-  ReadingHandler.init();
-  DictadoHandler.init();
-});
+// ****** 关键：页面加载完成后初始化 ******
+window.addEventListener('DOMContentLoaded', () => DictadoHandler.init());
+</script>
 
 
 
