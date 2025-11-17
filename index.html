@@ -391,27 +391,24 @@ const DictadoHandler = {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   },
 
-  verificar() {
+verificar() {
   if (this.isChecked) return;
-  const input = document.getElementById('dictadoInput').value.trim(); // 只去前后空格，保留大小写+重音
+  const input = document.getElementById('dictadoInput').value.trim();
   if (!input) return;
 
-  // 处理阴阳性单词：分割出阳性和阴性形式（仅替换 "na" 为 "a"，保留大小写+重音）
-  const correctEs = this.currentWord.es.trim().replace(/^"|"$/g, ''); // 保留原始答案的大小写+重音
-  const correctForms = correctEs.split(',')
-    .map(form => form.trim().replace('na', 'a')) // 仅处理阴阳性（chino, na → chino/china），不碰大小写和重音
-    .filter(Boolean);
+  const correctEs = this.currentWord.es.trim()
+    .replace(/[\u2000-\u206F\uFEFF\u00A0\u00AD]/g, '') // 清理特殊字符
+    .replace(/\s+/g, '');
 
-  // 严格匹配：输入需和正确形式（大小写+重音）完全一致（仅阴阳性二选一）
-  const isCorrect = correctForms.includes(input);
+  // 直接严格匹配（去掉所有多余处理）
+  const isCorrect = input === correctEs;
 
   const resultBox = document.getElementById('dictadoResult');
   if (isCorrect) {
     resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
     this.correct++;
   } else {
-    // 显示完整阴阳性+原始大小写+重音的正确答案
-    resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${this.currentWord.es}</span>`;
+    resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${correctEs}</span>`;
   }
 
   this.isChecked = true;
