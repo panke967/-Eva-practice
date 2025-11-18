@@ -357,44 +357,62 @@ const DictadoHandler = {
       wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
     }
     // 新增：计算耗时和完成时间
-  const endTime = Date.now();
-  const totalMs = endTime - this.startTime;
-  const minutes = Math.floor(totalMs / 60000);
-  const seconds = Math.floor((totalMs % 60000) / 1000);
-  const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  const finishTime = new Date(endTime).toLocaleString('zh-CN'); // 本地时间格式（如 2024/5/20 16:30:45）
+     const endTime = Date.now();
+     const totalMs = endTime - this.startTime;
+     const minutes = Math.floor(totalMs / 60000);
+     const seconds = Math.floor((totalMs % 60000) / 1000);
+     const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+     const finishTime = new Date(endTime).toLocaleString('zh-CN'); // 本地时间格式（如 2024/5/20 16:30:45）
 
-    const resultHtml = `
-      <div style="font-size: 16px; line-height: 2; padding: 10px;">
-        <p>📝 学生信息：</p>
-        <p>姓名：${this.studentName}</p>
-        <p>学号：${this.studentId}</p>
-        <p style="margin-top: 15px;">📊 听写结果：</p>
-        <p>总题数：${this.total} 道</p>
-        <p>正确数：${this.correct} 道</p>
-        <p>正确率：${accuracy}%</p>
-        <p>完成时间：${finishTime}</p>
-        <p>总耗时：${formattedTime}</p>
-        <p style="margin-top: 15px; font-weight: bold;">❌ 错词复习：</p>
-        <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
-      </div>
-    `;
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
-      max-width: 500px; width: 90%; z-index: 9999;
-    `;
-    popup.innerHTML = resultHtml + '<button id="closePopup" style="margin-top: 15px; padding: 8px 20px; background: #d93025; color: white; border: none; border-radius: 4px; cursor: pointer;">关闭</button>';
-    const mask = document.createElement('div');
-    mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
-    document.body.appendChild(mask);
-    document.body.appendChild(popup);
-    document.getElementById('closePopup').addEventListener('click', () => {
-      document.body.removeChild(popup);
-      document.body.removeChild(mask);
-    });
-    this.resetDictado();
+   const resultHtml = `
+  <div style="font-size: 16px; line-height: 2; padding: 10px;">
+    <p>📝 学生信息：</p>
+    <p>姓名：${this.studentName}</p>
+    <p>学号：${this.studentId}</p>
+    <p style="margin-top: 15px;">📊 听写结果：</p>
+    <p>总题数：${this.total} 道</p>
+    <p>正确数：${this.correct} 道</p>
+    <p>正确率：${accuracy}%</p>
+    <p>完成时间：${finishTime}</p>
+    <p>总耗时：${formattedTime}</p>
+    <p style="margin-top: 15px; font-weight: bold;">❌ 错词复习：</p>
+    <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
+  </div>
+`;
+
+// 1. 创建弹窗元素 → 2. 设样式 → 3. 填内容（顺序不能乱）
+const popup = document.createElement('div');
+// 弹窗样式（缩小尺寸+滚动+留顶部空间）
+popup.style.cssText = `
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
+  max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
+`;
+// 弹窗内容（含左上角+底部关闭按钮）
+popup.innerHTML = `
+  <button id="popupCloseTop" style="position: absolute; top: 10px; left: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
+  ${resultHtml}
+  <button id="popupCloseBottom" style="margin-top: 15px; padding: 8px 20px; background: #d93025; color: white; border: none; border-radius: 4px; cursor: pointer; display: block; margin-left: auto; margin-right: auto;">关闭</button>
+`;
+
+// 创建遮罩
+const mask = document.createElement('div');
+mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
+// 挂载到页面
+document.body.appendChild(mask);
+document.body.appendChild(popup);
+
+// 绑定两个关闭按钮事件
+document.getElementById('popupCloseTop').addEventListener('click', () => {
+  document.body.removeChild(popup);
+  document.body.removeChild(mask);
+});
+document.getElementById('popupCloseBottom').addEventListener('click', () => {
+  document.body.removeChild(popup);
+  document.body.removeChild(mask);
+});
+
+this.resetDictado();
   },
 
   resetDictado() {
@@ -716,7 +734,7 @@ document.getElementById('translationCheck').addEventListener('click', () => {
   const currentWord = this.words[this.currentIndex];
   const answerEl = document.getElementById('translationAnswer');
   // 显示正确答案（含单元）
-  answerEl.textContent = `正确答案：${currentWord.es}（${currentWord.pos}）`;
+  answerEl.textContent = `正确答案：${currentWord.es}`;
   answerEl.style.display = 'block';
 
   // 核心修复：简化计数判断
