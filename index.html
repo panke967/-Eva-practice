@@ -140,7 +140,7 @@ h2{color:#333;font-size:20px;}
     <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
       已翻译：<span id="translationTotalCount">0</span> 题
     </div>
-       <div style="font-size: 22px; color: #cc6633; margin-bottom: 25px; text-align: center; font-weight: bold;">
+       <div style="font-size: 20px; color: #d93025; margin-bottom: 10px; text-align: center;">
       <span id="translationPrompt"></span>
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
@@ -166,7 +166,9 @@ h2{color:#333;font-size:20px;}
         检查核对
       </button>
     </div>
-    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #666; font-weight: bold;"></div>
+     <!-- 正确答案显示区域 -->
+    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #00CCFF; font-weight: bold;"></div>
+    <!-- 下一句/结束练习按钮 -->
     <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
       <button id="translationNext" style="background-color: #f0c888; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; display: none;">
         下一句
@@ -213,13 +215,14 @@ h2{color:#333;font-size:20px;}
       padding:8px;
       width:260px;
       font-family:'Times New Roman',serif;
+      font-size: 16px;
       border:none;
       border-bottom:2px solid #d93025;
       background:transparent;
       outline:none;">
       <button id="dictadoCheck" class="btn">确定</button>
     </div>
-    <div style="font-size:16px;color:#666;line-height:1.6;text-align:left;width:260px;">
+    <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width:260px;">
       1. 请各位同学使用英语/西语键盘输入<br>
       2. 有阴阳性的单词请写全（使用逗号隔开）<br>
       3. 除专有名词需首字母大写，其余单词默认首字母为小写
