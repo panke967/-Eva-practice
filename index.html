@@ -162,21 +162,22 @@ h2{color:#333;font-size:20px;}
         word-break: break-word;
         overflow-y: hidden;
 "></textarea>
-      <button id="translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 2px;">
+      <button id="translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 2px;font-family:'Times New Roman',serif;">
         检查核对
       </button>
     </div>
      <!-- 正确答案显示区域 -->
     <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #00CCFF; font-weight: bold;"></div>
-    <!-- 下一句/结束练习按钮 -->
+    <!-- 下一句/结束练习按钮（修改后：去掉display:none，添加初始disabled） -->
     <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-      <button id="translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; display: none;">
+    <!-- 去掉display: none，添加disabled（初始禁用） -->
+      <button id="translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
         下一句
       </button>
-      <button id="translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+      <button id="translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
         结束练习
-      </button>
-    </div>
+       </button>
+      </div>
   </div>
 </div>
 
@@ -625,67 +626,67 @@ const TranslationHandler = {
     }
   },
 
-  bindEvents() {
-    // 修复：绑定到正确的translationStart按钮
-    document.getElementById('translationStart').addEventListener('click', () => {
-      if (this.words.length === 0) {
-        alert('词汇数据加载中，请稍后再试');
-        return;
-      }
-      document.getElementById('translationBox').style.display = 'block';
-      this.nextWord();
-    });
-
-    document.getElementById('translationCheck').addEventListener('click', () => {
-      const answerEl = document.getElementById('translationAnswer');
-      answerEl.textContent = `正确答案：${this.words[this.currentIndex].es}`;
-      answerEl.style.display = 'block';
-      document.getElementById('translationCheck').style.display = 'none';
-      document.getElementById('translationNext').style.display = 'inline-block';
-    });
-
-    document.getElementById('translationNext').addEventListener('click', () => {
-      this.nextWord();
-    });
-
-    document.getElementById('translationEnd').addEventListener('click', () => {
-      if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
-        document.getElementById('translationBox').style.display = 'none';
-        this.reset();
-      }
-    });
-
-    document.getElementById('translationInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        const checkBtn = document.getElementById('translationCheck');
-        if (checkBtn.style.display !== 'none') {
-          checkBtn.click();
-        }
-      }
-    });
-  },
-
-  nextWord() {
-    document.getElementById('translationInput').value = '';
-    document.getElementById('translationAnswer').style.display = 'none';
-    document.getElementById('translationCheck').style.display = 'inline-block';
-    document.getElementById('translationNext').style.display = 'none';
-
-    if (this.usedIndexes.length >= this.words.length) {
-      this.usedIndexes = [];
+bindEvents() {
+  // 修复：绑定到正确的translationStart按钮
+  document.getElementById('translationStart').addEventListener('click', () => {
+    if (this.words.length === 0) {
+      alert('词汇数据加载中，请稍后再试');
+      return;
     }
+    document.getElementById('translationBox').style.display = 'block';
+    this.nextWord();
+  });
 
-    let randomIdx;
-    do {
-      randomIdx = Math.floor(Math.random() * this.words.length);
-    } while (this.usedIndexes.includes(randomIdx));
+  document.getElementById('translationCheck').addEventListener('click', () => {
+    const answerEl = document.getElementById('translationAnswer');
+    answerEl.textContent = `正确答案：${this.words[this.currentIndex].es}`;
+    answerEl.style.display = 'block';
+    // 启用下一句按钮
+    document.getElementById('translationNext').disabled = false;
+  });
 
-    this.currentIndex = randomIdx;
-    this.usedIndexes.push(randomIdx);
-    document.getElementById('translationPrompt').textContent = this.words[randomIdx].cn;
-    this.totalCount++;
-    document.getElementById('translationTotalCount').textContent = this.totalCount;
-    document.getElementById('translationInput').focus();
+  document.getElementById('translationNext').addEventListener('click', () => {
+    this.nextWord();
+  });
+
+  document.getElementById('translationEnd').addEventListener('click', () => {
+    if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
+      document.getElementById('translationBox').style.display = 'none';
+      this.reset();
+    }
+  });
+
+  document.getElementById('translationInput').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const checkBtn = document.getElementById('translationCheck');
+      if (!checkBtn.disabled) {
+        checkBtn.click();
+      }
+    }
+  });
+},
+
+nextWord() {
+  document.getElementById('translationInput').value = '';
+  document.getElementById('translationAnswer').style.display = 'none';
+  // 禁用下一句按钮（切换题目后需重新提交答案）
+  document.getElementById('translationNext').disabled = true;
+
+  if (this.usedIndexes.length >= this.words.length) {
+    this.usedIndexes = [];
+  }
+
+  let randomIdx;
+  do {
+    randomIdx = Math.floor(Math.random() * this.words.length);
+  } while (this.usedIndexes.includes(randomIdx));
+
+  this.currentIndex = randomIdx;
+  this.usedIndexes.push(randomIdx);
+  document.getElementById('translationPrompt').textContent = this.words[randomIdx].cn;
+  this.totalCount++;
+  document.getElementById('translationTotalCount').textContent = this.totalCount;
+  document.getElementById('translationInput').focus();
   },
 
   reset() {
