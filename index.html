@@ -630,7 +630,6 @@ const TranslationHandler = {
     this.bindEvents();
   },
 
-// 翻译模块：加载CSV（修改为支持3列：es+cn+pos）
 async loadCSV(filePath) {
   try {
     const response = await fetch(filePath);
@@ -638,31 +637,44 @@ async loadCSV(filePath) {
     
     const text = await response.text();
     const lines = text.trim().split('\n');
-    this.words = []; // 清空原有数组
-    
-    // 遍历CSV行（跳过表头行，从第2行开始）
-    for (let i = 1; i < lines.length; i++) {
+    this.words = [];
+
+    for (let i = 1; i < lines.length; i++) { // 跳过表头
       const line = lines[i].trim();
-      if (!line) continue; // 跳过空行
-      
-      // 拆分3列数据（西语,中文,单元）
-      const [es, cn, pos] = line.split(',').map(item => item.trim());
-      
-      // 只保留3列都完整的行（避免格式错误行）
-      if (es && cn && pos) {
-        this.words.push({ 
-          es: es,       // 西语（答案）
-          cn: cn,       // 中文（题目）
-          pos: pos      // 单元（新增：用于显示）
-        });
+      if (!line) continue;
+
+      // 核心：处理双引号包裹的字段（支持字段内含逗号）
+      let parts = [];
+      let inQuotes = false;
+      let currentPart = '';
+      for (const char of line) {
+        if (char === '"') {
+          inQuotes = !inQuotes; // 遇到双引号，切换“是否在引号内”状态
+        } else if (char === ',' && !inQuotes) {
+          // 只有“不在引号内”的逗号，才是列分隔符
+          parts.push(currentPart.trim());
+          currentPart = '';
+        } else {
+          currentPart += char; // 其他字符追加到当前字段
+        }
+      }
+      // 添加最后一列，并移除首尾双引号
+      parts.push(currentPart.trim().replace(/^"|"$/g, ''));
+
+      // 确保解析出3列，才添加到单词数组
+      if (parts.length === 3) {
+        const [es, cn, pos] = parts;
+        if (es && cn && pos) {
+          this.words.push({ es, cn, pos });
+        }
+      } else {
+        console.warn(`翻译CSV第${i+1}行格式错误：${line}（解析出${parts.length}列，需3列）`);
       }
     }
-    
+
     console.log('翻译词汇加载完成，共', this.words.length, '个（含单元信息）');
-    if (this.words.length === 0) alert('⚠️ 翻译CSV未加载到有效数据，请检查格式');
   } catch (err) {
-    alert('翻译词汇表加载失败：' + err.message);
-    console.error('翻译模块错误:', err);
+    alert('翻译CSV加载失败：' + err.message);
   }
 },
 
