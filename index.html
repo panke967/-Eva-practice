@@ -140,15 +140,63 @@ h2{color:#333;font-size:20px;}
   </div>
 </div>
 
+<!-- 🌐 翻译-词汇强化练习 -->
+<div class="section">
+  <h3 class="section-title">🌐翻译-词汇强化练习</h3>
+  <!-- 新增按钮容器，用于对齐按钮 -->
+  <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+    <button id="refreshBtn" class="btn">进入翻译练习</button>
+  </div>
+
+  <!-- 练习区域（初始隐藏） -->
+  <div id="translationBox" style="display: none; margin-top: 15px;">
+    <!-- 计数显示 -->
+    <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
+      已练习：<span id="translationTotalCount">0</span> 题
+    </div>
+    
+    <!-- 中文提示 -->
+    <div style="font-size: 18px; color: #333; margin-bottom: 15px; text-align: center;">
+      请翻译成西班牙语：<span id="translationPrompt" style="font-weight: bold;"></span>
+    </div>
+    
+    <!-- 输入框和检查按钮 -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+      <input id="translationInput" type="text" placeholder="请输入西班牙语翻译" 
+             style="padding: 6px 10px; width: 260px; border: none; border-bottom: 2px solid #cc6633; background: transparent; outline: none; font-size: 16px;">
+      <button id="translationCheck" style="background-color: #f0c888; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+        检查核对
+      </button>
+    </div>
+    
+    <!-- 正确答案显示（初始隐藏） -->
+    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #2a9d8f; font-weight: bold;"></div>
+    
+    <!-- 操作按钮 -->
+    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
+      <button id="translationNext" style="background-color: #f0c888; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; display: none;">
+        下一句
+      </button>
+      <button id="translationEnd" style="background-color: #f0c888; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 16px;">
+        结束练习
+      </button>
+    </div>
+  </div>
+</div>
+
 
 <!-- ✍️ 听写-单词熟悉复习 -->
 <div class="section">
   <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
   <button id="dictadoStart" class="btn">进入听写练习</button>
 
-<!-- 在听写板块的HTML中添加隐藏的弹窗结构 -->
+<!-- 在听写板块的HTML中添加隐藏的弹窗结构（带关闭按钮） -->
 <div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-  <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px;">
+  <!-- 弹窗主体（添加相对定位，用于关闭按钮绝对定位） -->
+  <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
+    <!-- 新增关闭按钮（左上角） -->
+    <button id="closePopupBtn" style="position: absolute; top: 10px; left: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
+    
     <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif;">请输入你的信息</h3>
     <div style="display: flex; flex-direction: column; gap: 15px;">
       <div>
@@ -163,7 +211,6 @@ h2{color:#333;font-size:20px;}
     </div>
   </div>
 </div>
-
 
 
 <!-- 点进后显示的区域 -->
@@ -200,6 +247,7 @@ h2{color:#333;font-size:20px;}
     </div>
   </div>
 </div>
+
 
 <script>
 // 短文数据：完全替换为你提供的12篇短文
@@ -500,6 +548,11 @@ const DictadoHandler = {
       document.getElementById('studentId').value = '';
     });
 
+       // 新增：关闭弹窗按钮事件（关键代码）
+    document.getElementById('closePopupBtn').addEventListener('click', () => {
+    document.getElementById('studentInfoPopup').style.display = 'none'; // 隐藏弹窗
+    });
+
     // 3. 确定按钮（点击验证答案）
     document.getElementById('dictadoCheck').addEventListener('click', () => {
       this.verificar();
@@ -652,6 +705,134 @@ playPronunciation(word) {
 
 // 页面加载完成后初始化
 window.addEventListener('DOMContentLoaded', () => DictadoHandler.init());
+</script>
+
+<script>
+/* ========== 翻译练习模块（保持风格一致） ========== */
+const TranslationHandler = {
+  words: [],          // 存储CSV数据
+  usedIndexes: [],    // 已使用的索引
+  currentIndex: -1,   // 当前题索引
+  totalCount: 0,      // 总练习数
+
+  // 初始化：加载CSV并绑定事件
+  init() {
+    // 复用听写模块的CSV加载逻辑（保持数据格式一致）
+    this.loadCSV('fanyi.csv'); // 替换为你的CSV文件路径
+    this.bindEvents();
+  },
+
+  // 加载CSV文件
+  loadCSV(filePath) {
+    fetch(filePath)
+      .then(response => response.text())
+      .then(text => {
+        const lines = text.trim().split('\n');
+        // 跳过表头，解析数据行
+        for (let i = 1; i < lines.length; i++) {
+          const line = lines[i].trim();
+          if (!line) continue;
+          const [es, cn] = line.split(',').map(item => item.trim());
+          if (es && cn) {
+            this.words.push({ es, cn });
+          }
+        }
+        console.log('翻译词汇加载完成，共', this.words.length, '个');
+      })
+      .catch(err => {
+        alert('翻译词汇表加载失败：' + err.message);
+      });
+  },
+
+  // 绑定事件
+  bindEvents() {
+    // 开始练习
+    document.getElementById('translationStart').addEventListener('click', () => {
+      if (this.words.length === 0) {
+        alert('词汇数据加载中，请稍后再试');
+        return;
+      }
+      document.getElementById('translationBox').style.display = 'block';
+      this.nextWord();
+    });
+
+    // 检查答案（显示正确答案）
+    document.getElementById('translationCheck').addEventListener('click', () => {
+      const answerEl = document.getElementById('translationAnswer');
+      answerEl.textContent = `正确答案：${this.words[this.currentIndex].es}`;
+      answerEl.style.display = 'block';
+      // 显示下一个按钮，隐藏检查按钮
+      document.getElementById('translationCheck').style.display = 'none';
+      document.getElementById('translationNext').style.display = 'inline-block';
+    });
+
+    // 下一个单词
+    document.getElementById('translationNext').addEventListener('click', () => {
+      this.nextWord();
+    });
+
+    // 结束练习
+    document.getElementById('translationEnd').addEventListener('click', () => {
+      if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
+        document.getElementById('translationBox').style.display = 'none';
+        this.reset();
+      }
+    });
+
+    // 回车键提交
+    document.getElementById('translationInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const checkBtn = document.getElementById('translationCheck');
+        if (checkBtn.style.display !== 'none') {
+          checkBtn.click();
+        }
+      }
+    });
+  },
+
+  // 加载下一个单词
+  nextWord() {
+    // 重置输入和答案区
+    document.getElementById('translationInput').value = '';
+    document.getElementById('translationAnswer').style.display = 'none';
+    // 显示检查按钮，隐藏下一个按钮
+    document.getElementById('translationCheck').style.display = 'inline-block';
+    document.getElementById('translationNext').style.display = 'none';
+
+    // 所有单词都用过则重置索引池
+    if (this.usedIndexes.length >= this.words.length) {
+      this.usedIndexes = [];
+    }
+
+    // 随机选一个未使用的单词
+    let randomIdx;
+    do {
+      randomIdx = Math.floor(Math.random() * this.words.length);
+    } while (this.usedIndexes.includes(randomIdx));
+
+    this.currentIndex = randomIdx;
+    this.usedIndexes.push(randomIdx);
+    // 显示中文提示
+    document.getElementById('translationPrompt').textContent = this.words[randomIdx].cn;
+    // 更新计数
+    this.totalCount++;
+    document.getElementById('translationTotalCount').textContent = this.totalCount;
+    // 聚焦输入框
+    document.getElementById('translationInput').focus();
+  },
+
+  // 重置练习状态
+  reset() {
+    this.totalCount = 0;
+    this.usedIndexes = [];
+    document.getElementById('translationTotalCount').textContent = '0';
+  }
+};
+
+// 页面加载完成后初始化
+window.addEventListener('DOMContentLoaded', () => {
+  TranslationHandler.init();
+});
 </script>
 
 
