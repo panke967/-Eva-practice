@@ -144,7 +144,7 @@ h2{color:#333;font-size:20px;}
       <span id="translationPrompt"></span>
     </div>
     <!-- 检查核对的按钮 -->
-    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;padding-left: 120px;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;padding-left: 50px;">
       <textarea id="translationInput" placeholder="请输入西班牙语翻译"
     oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"
     style="
@@ -211,7 +211,7 @@ h2{color:#333;font-size:20px;}
       已听写：<span id="dictadoTotalCount">0</span> 题
     </div>
     <div id="dictadoPrompt" style="font-size:20px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
-    <div style="display:flex;align-items:center;gap:10px;padding-left: 120px;">
+    <div style="display:flex;align-items:center;gap:10px;">
       <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
       style="
       padding:8px;
@@ -662,15 +662,6 @@ bindEvents() {
     if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
       document.getElementById('translationBox').style.display = 'none';
       this.reset();
-    }
-  });
-
-  document.getElementById('translationInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const checkBtn = document.getElementById('translationCheck');
-      if (!checkBtn.disabled) {
-        checkBtn.click();
-      }
     }
   });
 },
