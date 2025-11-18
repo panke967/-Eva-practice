@@ -264,7 +264,7 @@ const ReadingHandler = {
 
   // 解析 CSV 内容（处理 CSV 格式，提取短文）
   parseCSV(csvText) {
-    const lines = csvtext.trim().split('\n'); // 按行分割 CSV
+    const lines = csvText.trim().split('\n'); // 按行分割 CSV
     this.texts = [];
 
     // 遍历 CSV 行，提取有效短文（跳过表头和空行）
