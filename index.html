@@ -339,6 +339,8 @@ const DictadoHandler = {
   wrongWords: [],
   studentName: '',
   studentId: '',
+  startTime: null, // 记录听写开始时间（毫秒时间戳）
+  isDictadoStarted: false, // 标记是否已开始听写（避免重复计时）
 
   endDictado() {
     document.getElementById('dictadoBox').style.display = 'none';
@@ -354,6 +356,14 @@ const DictadoHandler = {
     } else {
       wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
     }
+    // 新增：计算耗时和完成时间
+  const endTime = Date.now();
+  const totalMs = endTime - this.startTime;
+  const minutes = Math.floor(totalMs / 60000);
+  const seconds = Math.floor((totalMs % 60000) / 1000);
+  const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  const finishTime = new Date(endTime).toLocaleString('zh-CN'); // 本地时间格式（如 2024/5/20 16:30:45）
+
     const resultHtml = `
       <div style="font-size: 16px; line-height: 2; padding: 10px;">
         <p>📝 学生信息：</p>
@@ -363,6 +373,8 @@ const DictadoHandler = {
         <p>总题数：${this.total} 道</p>
         <p>正确数：${this.correct} 道</p>
         <p>正确率：${accuracy}%</p>
+        <p>完成时间：${finishTime}</p>
+        <p>总耗时：${formattedTime}</p>
         <p style="margin-top: 15px; font-weight: bold;">❌ 错词复习：</p>
         <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
       </div>
@@ -399,6 +411,8 @@ const DictadoHandler = {
     document.getElementById('dictadoCheck').disabled = false;
     document.getElementById('dictadoNext').disabled = true;
     document.getElementById('dictadoTotalCount').textContent = '0';
+    this.startTime = null; // 清空开始时间，下次开始时重新记录
+    this.isDictadoStarted = false; // 重置“已开始”标记，允许重新计时
   },
 
   init() {
@@ -484,6 +498,12 @@ const DictadoHandler = {
       
       document.getElementById('studentName').value = '';
       document.getElementById('studentId').value = '';
+
+      // 新增：记录开始时间（只在第一次点击时记录）
+  if (!this.isDictadoStarted) {
+    this.startTime = Date.now(); // 记录当前毫秒时间戳
+    this.isDictadoStarted = true; // 标记为已开始，避免重复记录
+  }
     });
 
     document.getElementById('closePopupBtn').addEventListener('click', () => {
