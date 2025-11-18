@@ -389,10 +389,25 @@ popup.style.cssText = `
   max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
 `;
 // 弹窗内容（含左上角+底部关闭按钮）
+
 popup.innerHTML = `
-  <button id="popupCloseTop" style="position: absolute; top: 10px; left: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
+  <!-- 核心修改：position从absolute改为fixed，其余样式不变 -->
+  <button id="popupCloseTop" style="
+    position: fixed; /* 改为fixed，固定在窗口位置，不跟随滚动 */
+    top: calc(15% + 10px); /* 弹窗top是50%，减去弹窗高度的一半（35vh），再加10px内边距 → 15% = 50% - 35% */
+    left: calc(50% - 180px); /* 弹窗left是50%，减去弹窗宽度的一半（180px = 360px/2，360px是400px-20px*2内边距） */
+    background: transparent; border: none; font-size: 22px; 
+    color: #666; cursor: pointer; padding: 5px;
+    z-index: 10000; /* 确保按钮在弹窗之上，不被遮挡 */
+  ">×</button>
   ${resultHtml}
-  <button id="popupCloseBottom" style="margin-top: 15px; padding: 8px 20px; background: #d93025; color: white; border: none; border-radius: 4px; cursor: pointer; display: block; margin-left: auto; margin-right: auto;">关闭</button>
+  <button id="popupCloseBottom" style="
+    margin-top: 15px; padding: 8px 20px; 
+    background: #d93025; color: white; 
+    border: none; border-radius: 4px; cursor: pointer;
+    display: block; margin-left: auto; margin-right: auto;">
+    关闭
+  </button>
 `;
 
 // 创建遮罩
