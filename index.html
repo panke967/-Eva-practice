@@ -630,30 +630,42 @@ const TranslationHandler = {
     this.bindEvents();
   },
 
-  // 改为async/await风格加载CSV
-  async loadCSV(filePath) {
-    try {
-      const response = await fetch(filePath);
-      if (!response.ok) throw new Error(`HTTP错误，状态码: ${response.status}`);
+// 翻译模块：加载CSV（修改为支持3列：es+cn+pos）
+async loadCSV(filePath) {
+  try {
+    const response = await fetch(filePath);
+    if (!response.ok) throw new Error(`HTTP错误，状态码: ${response.status}`);
+    
+    const text = await response.text();
+    const lines = text.trim().split('\n');
+    this.words = []; // 清空原有数组
+    
+    // 遍历CSV行（跳过表头行，从第2行开始）
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue; // 跳过空行
       
-      const text = await response.text();
-      const lines = text.trim().split('\n');
+      // 拆分3列数据（西语,中文,单元）
+      const [es, cn, pos] = line.split(',').map(item => item.trim());
       
-      for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        const [es, cn] = line.split(',').map(item => item.trim());
-        if (es && cn) {
-          this.words.push({ es, cn });
-        }
+      // 只保留3列都完整的行（避免格式错误行）
+      if (es && cn && pos) {
+        this.words.push({ 
+          es: es,       // 西语（答案）
+          cn: cn,       // 中文（题目）
+          pos: pos      // 单元（新增：用于显示）
+        });
       }
-      console.log('翻译词汇加载完成，共', this.words.length, '个');
-    } catch (err) {
-      alert('翻译词汇表加载失败：' + err.message);
-      console.error('翻译模块错误:', err);
     }
-  },
+    
+    console.log('翻译词汇加载完成，共', this.words.length, '个（含单元信息）');
+    if (this.words.length === 0) alert('⚠️ 翻译CSV未加载到有效数据，请检查格式');
+  } catch (err) {
+    alert('翻译词汇表加载失败：' + err.message);
+    console.error('翻译模块错误:', err);
+  }
+},
+
 
 bindEvents() {
   // 修复：绑定到正确的translationStart按钮
@@ -697,7 +709,6 @@ bindEvents() {
 nextWord() {
   document.getElementById('translationInput').value = '';
   document.getElementById('translationAnswer').style.display = 'none';
-  // 禁用下一句按钮（切换题目后需重新提交答案）
   document.getElementById('translationNext').disabled = true;
 
   if (this.usedIndexes.length >= this.words.length) {
@@ -711,11 +722,12 @@ nextWord() {
 
   this.currentIndex = randomIdx;
   this.usedIndexes.push(randomIdx);
-  document.getElementById('translationPrompt').textContent = this.words[randomIdx].cn;
-  // 删掉这行：加载题目时不再计数（移到提交答案后）
-  // this.totalCount++;
-  // 删掉这行：计数由check事件更新
-  // document.getElementById('translationTotalCount').textContent = this.totalCount;
+  
+  // 关键修改：显示“中文 + （单元）”（如“好（1单元）”）
+  const currentWord = this.words[randomIdx];
+  document.getElementById('translationPrompt').textContent = 
+    `${currentWord.cn}（${currentWord.pos}）`; // 拼接中文和单元信息
+  
   document.getElementById('translationInput').focus();
 },
 
