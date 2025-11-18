@@ -620,13 +620,12 @@ const DictadoHandler = {
 
 // 翻译模块（使用async/await统一风格）
 const TranslationHandler = {
-  words: [],
-  usedIndexes: [],
-  currentIndex: -1,
-  totalCount: 0,
-
-  async init() {
-    await this.loadCSV('fanyi.csv');
+  words: [], // 存储翻译数据
+  totalCount: 0, // 总翻译数量
+  usedIndexes: [], // 已使用的题目索引
+  countedIndexes: [], // 新增：已计数的题目索引（标记哪些题已经加过数）
+  init() {
+    this.loadCSV('fanyi.csv');
     this.bindEvents();
   },
 
@@ -693,18 +692,23 @@ bindEvents() {
     document.getElementById('translationTotalCount').textContent = '0';
   });
 
-  document.getElementById('translationCheck').addEventListener('click', () => {
-    const answerEl = document.getElementById('translationAnswer');
-    answerEl.textContent = `正确答案：${this.words[this.currentIndex].es}`;
-    answerEl.style.display = 'block';
-    // 提交答案后再计数+1（关键修复）
-    if (!this.usedIndexes.includes(this.currentIndex) || this.totalCount === 0) {
-      this.totalCount++;
-      document.getElementById('translationTotalCount').textContent = this.totalCount;
-    }
-    // 启用下一句按钮
-    document.getElementById('translationNext').disabled = false;
-  });
+document.getElementById('translationCheck').addEventListener('click', () => {
+  const currentWord = this.words[this.currentIndex];
+  const answerEl = document.getElementById('translationAnswer');
+  // 显示正确答案（含单元）
+  answerEl.textContent = `正确答案：${currentWord.es}（${currentWord.pos}）`;
+  answerEl.style.display = 'block';
+
+  // 核心修复：简化计数判断
+  if (!this.countedIndexes.includes(this.currentIndex)) {
+    this.totalCount++; // 第一次检查时，计数+1
+    this.countedIndexes.push(this.currentIndex); // 标记为已计数，避免重复
+    document.getElementById('translationTotalCount').textContent = this.totalCount; // 更新页面显示
+  }
+
+  // 启用下一句按钮
+  document.getElementById('translationNext').disabled = false;
+});
 
   document.getElementById('translationNext').addEventListener('click', () => {
     this.nextWord();
