@@ -188,6 +188,11 @@ h2{color:#333;font-size:20px;}
     </div>
     <!-- 结果提示（居中显示） -->
     <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;"></div>
+    <!-- 在dictadoBox区域的结果提示部分添加播放按钮容器 -->
+<div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;">
+  <span id="resultText"></span>
+  <button id="playPronunciation" class="btn" style="margin-left:10px; padding:5px 10px; font-size:14px; display:none;">🔊 听读音</button>
+</div>
     <!-- 下一个按钮 + 结束听写按钮（同一行居中，保持样式一致） -->
     <div style="margin-top:5px;display:flex;gap:10px;">
       <button id="dictadoNext" class="btn" disabled>下一个</button>
@@ -568,50 +573,81 @@ const DictadoHandler = {
     return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   },
 
-  verificar() {
-    if (this.isChecked) return;
-    const input = document.getElementById('dictadoInput').value.trim();
-    if (!input) return;
+verificar() {
+  if (this.isChecked) return;
+  const input = document.getElementById('dictadoInput').value.trim();
+  if (!input) return;
 
-    const correctEs = this.currentWord.es.trim();
-    let correctForms;
-    if (correctEs.includes(',')) {
-      correctForms = correctEs.split(',')
-        .map(form => {
-          const trimForm = form.trim();
-          return trimForm === 'na' ? 'a' : trimForm;
-        })
-        .filter(Boolean);
-    } else {
-      correctForms = [correctEs];
-    }
-
-    const isCorrect = correctForms.includes(input);
-    const resultBox = document.getElementById('dictadoResult');
-
-    if (isCorrect) {
-      resultBox.innerHTML = '<span style="color:green;">✅ 正确！</span>';
-      this.correct++;
-    } else {
-      resultBox.innerHTML = `<span style="color:red;">❌ 正确答案：${correctEs}</span>`;
-      // 记录错词（避免重复添加同一道题的错误）
-      const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
-      if (!isDuplicate) {
-        this.wrongWords.push({
-          input: input, // 学生的错误输入
-          correctEs: correctEs, // 正确答案
-          cn: this.currentWord.cn // 中文释义
-        });
-      }
-    }
-
-    this.isChecked = true;
-    document.getElementById('dictadoCheck').disabled = true;
-    document.getElementById('dictadoNext').disabled = false;
-    this.total++;
-    // 新增这行代码，更新显示的计数
-    document.getElementById('dictadoTotalCount').textContent = this.total;
+  const correctEs = this.currentWord.es.trim();
+  let correctForms;
+  if (correctEs.includes(',')) {
+    correctForms = correctEs.split(',')
+      .map(form => {
+        const trimForm = form.trim();
+        return trimForm === 'na' ? 'a' : trimForm;
+      })
+      .filter(Boolean);
+  } else {
+    correctForms = [correctEs];
   }
+
+  const isCorrect = correctForms.includes(input);
+  const resultBox = document.getElementById('dictadoResult');
+  
+  // 显示结果文本和发音按钮
+  if (isCorrect) {
+    resultBox.innerHTML = `
+      <span style="color:green;">✅ 正确！</span>
+      <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
+    `;
+    this.correct++;
+  } else {
+    resultBox.innerHTML = `
+      <span style="color:red;">❌ 正确答案：${correctEs}</span>
+      <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
+    `;
+    // 记录错词（避免重复添加同一道题的错误）
+    const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
+    if (!isDuplicate) {
+      this.wrongWords.push({
+        input: input, // 学生的错误输入
+        correctEs: correctEs, // 正确答案
+        cn: this.currentWord.cn // 中文释义
+      });
+    }
+  }
+
+  // 绑定发音按钮事件
+  resultBox.querySelector('.playPronunciation').addEventListener('click', () => {
+    // 取第一个正确形式发音
+    const wordToPronounce = correctEs.split(',')[0].trim();
+    this.playPronunciation(wordToPronounce);
+  });
+
+  this.isChecked = true;
+  document.getElementById('dictadoCheck').disabled = true;
+  document.getElementById('dictadoNext').disabled = false;
+  this.total++;
+  // 更新显示的计数
+  document.getElementById('dictadoTotalCount').textContent = this.total;
+},
+
+// 新增语音播放方法（需要添加到DictadoHandler对象中）
+playPronunciation(word) {
+  // 检查浏览器是否支持语音合成
+  if ('speechSynthesis' in window) {
+    // 停止任何正在播放的语音
+    window.speechSynthesis.cancel();
+    // 创建语音实例
+    const utterance = new SpeechSynthesisUtterance(word);
+    // 设置为西班牙语发音
+    utterance.lang = 'es-ES';
+    // 播放语音
+    window.speechSynthesis.speak(utterance);
+  } else {
+    alert('很抱歉，您的浏览器不支持语音播放功能');
+  }
+}
 };
 
 // 页面加载完成后初始化
