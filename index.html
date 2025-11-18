@@ -226,7 +226,7 @@ h2{color:#333;font-size:20px;}
     </div>
     <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width:260px;">
       1. 请各位同学使用英语/西语键盘输入<br>
-      2. 有阴阳性的单词请写全（使用逗号隔开）<br>
+      2. 有阴阳性的单词请写全（使用/隔开,例:bueno/na）<br>
       3. 除专有名词需首字母大写，其余单词默认首字母为小写
     </div>
     <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;">
@@ -264,7 +264,7 @@ const ReadingHandler = {
 
   // 解析 CSV 内容（处理 CSV 格式，提取短文）
   parseCSV(csvText) {
-    const lines = text.trim().split('\n'); // 按行分割 CSV
+    const lines = csvtext.trim().split('\n'); // 按行分割 CSV
     this.texts = [];
 
     // 遍历 CSV 行，提取有效短文（跳过表头和空行）
