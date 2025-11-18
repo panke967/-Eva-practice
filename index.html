@@ -144,8 +144,24 @@ h2{color:#333;font-size:20px;}
       <span id="translationPrompt"></span>
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
-      <textarea id="translationInput" placeholder="请输入西班牙语翻译" 
-                style="padding: 10px; width: 350px; min-height: 80px; border: none; border-bottom: 2px solid #cc6633; background: transparent; outline: none; font-size: 16px; resize: vertical; word-wrap: normal; word-break: normal; overflow-wrap: break-word; white-space: pre-wrap;"></textarea>
+      <textarea id="translationInput" placeholder="请输入西班牙语翻译"
+    oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"
+    style="
+        padding: 8px; 
+        width: 260px; 
+        min-height: 80px; 
+        font-family:'Times New Roman',serif;
+        border: none; 
+        border-bottom: 2px solid #cc6633; 
+        background: transparent; 
+        outline: none; 
+        font-size: 16px; 
+        resize: vertical;
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        overflow-y: hidden;
+"></textarea>
       <button id="translationCheck" style="background-color: #f0c888; border: none; padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 2px;">
         检查核对
       </button>
