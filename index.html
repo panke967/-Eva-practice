@@ -143,7 +143,8 @@ h2{color:#333;font-size:20px;}
        <div style="font-size: 20px; color: #d93025; margin-bottom: 10px; text-align: center;">
       <span id="translationPrompt"></span>
     </div>
-    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
+    <!-- 检查核对的按钮 -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;padding-left: 50px;">
       <textarea id="translationInput" placeholder="请输入西班牙语翻译"
     oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"
     style="
@@ -167,7 +168,7 @@ h2{color:#333;font-size:20px;}
       </button>
     </div>
      <!-- 正确答案显示区域 -->
-    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #00CCFF; font-weight: bold;"></div>
+    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
     <!-- 下一句/结束练习按钮（修改后：去掉display:none，添加初始disabled） -->
     <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
     <!-- 去掉display: none，添加disabled（初始禁用） -->
@@ -635,12 +636,20 @@ bindEvents() {
     }
     document.getElementById('translationBox').style.display = 'block';
     this.nextWord();
+    // 重置计数为0（避免重复进入练习时计数叠加）
+    this.totalCount = 0;
+    document.getElementById('translationTotalCount').textContent = '0';
   });
 
   document.getElementById('translationCheck').addEventListener('click', () => {
     const answerEl = document.getElementById('translationAnswer');
     answerEl.textContent = `正确答案：${this.words[this.currentIndex].es}`;
     answerEl.style.display = 'block';
+    // 提交答案后再计数+1（关键修复）
+    if (!this.usedIndexes.includes(this.currentIndex) || this.totalCount === 0) {
+      this.totalCount++;
+      document.getElementById('translationTotalCount').textContent = this.totalCount;
+    }
     // 启用下一句按钮
     document.getElementById('translationNext').disabled = false;
   });
@@ -684,10 +693,12 @@ nextWord() {
   this.currentIndex = randomIdx;
   this.usedIndexes.push(randomIdx);
   document.getElementById('translationPrompt').textContent = this.words[randomIdx].cn;
-  this.totalCount++;
-  document.getElementById('translationTotalCount').textContent = this.totalCount;
+  // 删掉这行：加载题目时不再计数（移到提交答案后）
+  // this.totalCount++;
+  // 删掉这行：计数由check事件更新
+  // document.getElementById('translationTotalCount').textContent = this.totalCount;
   document.getElementById('translationInput').focus();
-  },
+},
 
   reset() {
     this.totalCount = 0;
