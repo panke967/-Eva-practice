@@ -6,6 +6,20 @@
 <style>
 /* 全局样式保持不变 */
 * { margin: 0; padding: 0; box-sizing: border-box; }
+.translation-container {
+      width: 500px;
+      margin: 20px;
+    }
+    .spanish-input {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px;
+      font-size: 16px;
+      word-wrap: normal;
+      word-break: normal;
+      overflow-wrap: break-word;
+      white-space: pre-wrap;
+    }
 
 body{
   background:#fff9e6;
@@ -139,9 +153,6 @@ h2{color:#333;font-size:20px;}
   <div id="translationBox" style="display: none; margin-top: 15px;">
     <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
       已练习：<span id="translationTotalCount">0</span> 题
-    </div>
-    <div style="font-size: 18px; color: #333; margin-bottom: 15px; text-align: center;">
-      请翻译成西班牙语：<span id="translationPrompt" style="font-weight: bold;"></span>
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;">
       <input id="translationInput" type="text" placeholder="请输入西班牙语翻译" 
