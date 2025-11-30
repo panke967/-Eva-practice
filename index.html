@@ -1,1001 +1,885 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>欢迎来到Eva的练习小课堂 / Bienvenidos al mini-aula de práctica de Eva</title>
-<style>
-/* 全局样式保持不变 */
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    <meta charset="UTF-8">
+    <title>欢迎来到Eva的练习小课堂 / Bienvenidos al mini-aula de práctica de Eva</title>
+    <style>
+        /* 全局样式保持不变 */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-body{
-  background:#fff9e6;
-  font-family: "Times New Roman", serif;
-  color:#333;
-  padding:20px;
-  margin:0;
-}
+        body{
+            background:#ffd27f;
+            font-family: "Times New Roman", serif;
+            color:#333;
+            padding:20px;
+            margin:0;
+        }
 
-h1,h2{text-align:center;margin:15px 0;}
-h1{color:#d2691e;font-size:24px;}
-h2{color:#333;font-size:20px;}
+        h1,h2{text-align:center;margin:15px 0;}
+        h1{color:#d93025;font-size:28px;}
+        h2{color:#333;font-size:22px;}
 
-.page-title {
-  text-align: center;
-  color: #d2691e;
-  font-size: 28px;
-  margin-bottom: 8px;
-  font-family: "Times New Roman", serif;
-}
-.page-subtitle {
-  text-align: center;
-  color: #666;
-  font-size: 18px;
-  margin-bottom: 30px;
-  font-weight: normal;
-  font-family: "Times New Roman", serif;
-}
+        .page-title {
+            text-align: center;
+            color: #d93025;
+            font-size: 32px;
+            margin-bottom: 15px;
+            font-family: "Times New Roman", serif;
+            font-weight: bold;
+        }
+        .page-subtitle {
+            text-align: center;
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 40px;
+            font-weight: normal;
+            font-family: "Times New Roman", serif;
+        }
 
-.section {
-  max-width: 1000px;
-  margin: 0 auto 30px;
-  padding: 25px;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  transition: box-shadow 0.3s ease;
-  min-height: 200px;
-}
-.section:hover { box-shadow: 0 4px 15px rgba(0,0,0,0.12); }
-.section-title {
-  color: #333;
-  font-size: 20px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #f0f0f0;
-  font-family: "Times New Roman", serif;
-}
+        .section {
+            max-width: 800px;
+            margin: 0 auto 40px;
+            padding: 30px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+            min-height: 250px;
+        }
+        .section:hover {
+            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+        }
+        .section-title {
+            color: #d93025;
+            font-size: 22px;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ffd27f;
+            font-family: "Times New Roman", serif;
+            text-align: center;
+        }
 
-.btn {
-  display: inline-block;
-  padding: 12px 24px;
-  background: #ffd27f;
-  border: none;
-  border-radius: 8px;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Times New Roman", serif;
-}
-.btn:hover {
-  background: #ffc04d;
-  transform: translateY(-2px);
-}
-.btn:active { transform: translateY(0); }
+        .btn {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #ffd27f;
+            border: none;
+            border-radius: 8px;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+            font-weight: 500;
+        }
+        .btn:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: none;
+        }
 
-.reading-container { position: relative; }
-.reading-content {
-  font-size: 17px;
-  line-height: 2.2;
-  padding-left: 20px;
-  margin-top: 25px;
-  font-family: "Times New Roman", serif;
-}
+        /* 返回按钮样式（和主按钮一致，尺寸稍小） */
+        .back-btn {
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-family: "Times New Roman", serif;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 8px 16px;
+            margin-bottom: 10px;
+        }
+        .back-btn:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
 
-#musicBtn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: #ffd27f;
-  color: #fff;
-  font-size: 22px;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  transition: all 0.3s ease;
-  font-family: "Times New Roman", serif;
-}
-#musicBtn:hover {
-  background: #ffc04d;
-  transform: scale(1.05);
-}
+        /* 单元按钮样式（和主按钮一致） */
+        .unit-btn {
+            padding: 10px 30px;
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+        }
+        .unit-btn:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
 
-/* 分册和单元选择按钮样式 */
-.volume-btn, .unit-btn {
-  padding: 10px 30px;
-  background: #ffd27f;
-  border: none;
-  border-radius: 6px;
-  color: #333;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Times New Roman", serif;
-}
+        .reading-container { position: relative; }
+        .reading-content {
+            font-size: 17px;
+            line-height: 2.2;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            margin-top: 25px;
+            font-family: "Times New Roman", serif;
+            color: #333;
+        }
 
-.volume-btn:hover, .unit-btn:hover {
-  background: #ffc04d;
-  transform: translateY(-2px);
-}
-
-.volume-btn:disabled, .unit-btn:disabled {
-  background: #f0f0f0;
-  color: #999;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.unit-btn {
-  width: 80px;
-}
-/* 👇 新增/修改这部分：返回按钮样式（关键） */
-.back-btn {
-  /* 继承第一册按钮的核心样式（背景、圆角、字体等） */
-  background: #ffd27f;
-  border: none;
-  border-radius: 6px;
-  color: #333;
-  font-family: "Times New Roman", serif;
-  font-size: 15px; /* 比第一册按钮小1px */
-  transition: all 0.3s ease;
-  cursor: pointer;
-  
-  /* 尺寸缩小：内边距比第一册小（上下8px、左右16px，第一册是10px/20px） */
-  padding: 8px 16px;
-  margin-bottom: 10px; /* 保持和标题的间距 */
-}
-
-/*  hover 效果和第一册一致 */
-.back-btn:hover {
-  background: #ffc04d;
-  transform: translateY(-2px);
-}
-</style>
+        #musicBtn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: #d93025;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+        }
+        #musicBtn:hover {
+            background: #c02516;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-<h1>欢迎来到Eva的练习小课堂</h1>
-<h1>Bienvenidos al mini-aula de práctica de Eva</h1>
+    <h1 class="page-title">欢迎来到Eva的练习小课堂</h1>
+    <h2 class="page-subtitle">Bienvenidos al mini-aula de práctica de Eva</h2>
 
-<button id="musicBtn" title="播放/暂停">▶</button>
-<audio id="bgMusic" loop>
-  <source src="river-flows-in-you.mp3" type="audio/mpeg">
-  Tu navegador no soporta el audio.
-</audio>
+    <button id="musicBtn" title="播放/暂停">▶</button>
+    <audio id="bgMusic" loop>
+        <source src="https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3" type="audio/mpeg">
+        Tu navegador no soporta el audio.
+    </audio>
 
-<!-- 阅读练习板块 -->
-<div class="section">
-  <h3 class="section-title">📖 阅读-单词强化复习</h3>
-  <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-    <button id="readingRefreshBtn" class="btn">进入阅读练习</button>
-    <button id="nextTextBtn" class="btn" style="display: none;">下一篇</button>
-  </div>
-  <div class="reading-container">
-    <div class="reading-content" id="lectura"></div>
-  </div>
-</div>
-
-<!-- 翻译-词汇强化练习 -->
-<div class="section">
-  <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
-  <div style="display: flex; gap: 10px; margin-bottom: 20px;">
-    <button id="translationStart" class="btn">进入翻译练习</button>
-  </div>
-  <div id="translationBox" style="display: none; margin-top: 15px;">
-    <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
-      已翻译：<span id="translationTotalCount">0</span> 题
-    </div>
-       <div style="font-size: 20px; color: #d93025; margin-bottom: 10px; text-align: center;">
-      <span id="translationPrompt"></span>
-    </div>
-    <!-- 检查核对的按钮 -->
-    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px;padding-left: 50px;">
-      <textarea id="translationInput" placeholder="请输入西班牙语翻译"
-    oninput="this.style.height='auto'; this.style.height=(this.scrollHeight)+'px';"
-    style="
-        padding: 8px; 
-        width: 260px; 
-        min-height: 80px; 
-        font-family:'Times New Roman',serif;
-        border: none; 
-        border-bottom: 2px solid #d93025; 
-        background: transparent; 
-        outline: none; 
-        font-size: 16px; 
-        resize: vertical;
-        white-space: pre-wrap;
-        overflow-wrap: break-word;
-        word-break: break-word;
-        overflow-y: hidden;
-"></textarea>
-      <button id="translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 2px;font-family:'Times New Roman',serif;">
-        检查核对
-      </button>
-    </div>
-     <!-- 正确答案显示区域 -->
-    <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
-    <!-- 下一句/结束练习按钮 -->
-    <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-      <button id="translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
-        下一句
-      </button>
-      <button id="translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
-        结束练习
-       </button>
-      </div>
-  </div>
-</div>
-
-<!-- 听写-单词熟悉复习 -->
-<div class="section">
-  <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
-  <button id="dictadoStart" class="btn">进入听写练习</button>
-
-  <!-- 分册选择界面（新增返回按钮） -->
-  <div id="volumeSelect" style="display:none; margin-top:15px;">
-    <div style="text-align:center; margin-bottom:20px;">
-      <!-- 新增：返回按钮 -->
-      <button id="backToDictadoStart" class="back-btn" style="margin-bottom:10px;">← 返回</button>
-      <h4>请选择分册</h4>
-      <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:10px;">
-        <button class="volume-btn" data-volume="1">第一册</button>
-        <button class="volume-btn" data-volume="2" disabled>第二册（暂未开放）</button>
-        <button class="volume-btn" data-volume="3" disabled>第三册（暂未开放）</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 单元选择界面（新增返回按钮） -->
-  <div id="unitSelect" style="display:none; margin-top:15px;">
-    <div style="text-align:center; margin-bottom:20px;">
-      <!-- 新增：返回按钮 -->
-      <button id="backToVolumeSelect" class="back-btn" style="margin-bottom:10px;">← 返回</button>
-      <h4>第一册 - 请选择单元</h4>
-      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
-        <button class="unit-btn" data-unit="1">1单元</button>
-        <button class="unit-btn" data-unit="2">2单元</button>
-        <button class="unit-btn" data-unit="3">3单元</button>
-        <button class="unit-btn" data-unit="4">4单元</button>
-        <button class="unit-btn" data-unit="5">5单元</button>
-        <button class="unit-btn" data-unit="6">6单元</button>
-        <button class="unit-btn" data-unit="7">7单元</button>
-        <button class="unit-btn" data-unit="8">8单元</button>
-        <button class="unit-btn" data-unit="9">9单元</button>
-        <button class="unit-btn" data-unit="10">10单元</button>
-        <button class="unit-btn" data-unit="11">11单元</button>
-        <button class="unit-btn" data-unit="12">12单元</button>
-        <button class="unit-btn" data-unit="13">13单元</button>
-        <button class="unit-btn" data-unit="14">14单元</button>
-        <button class="unit-btn" data-unit="15">15单元</button>
-        <button class="unit-btn" data-unit="16">16单元</button>
-      </div>
-    </div>
-  </div>
-
-<div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
-  <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
-    <button id="closePopupBtn" style="position: absolute; top: 10px; left: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
-    <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif;">请输入你的信息</h3>
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-      <div>
-        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">姓名：</label>
-        <input type="text" id="studentName" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
-      </div>
-      <div>
-        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif;">学号：</label>
-        <input type="text" id="studentId" style="width: 100%; padding: 8px; font-family: 'Times New Roman', serif;">
-      </div>
-      <button id="confirmInfoBtn" class="btn" style="width: 100%;">确认</button>
-    </div>
-  </div>
-</div>
-
-<div id="dictadoBox" style="display:none;margin-top:15px;">
-  <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
-    <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
-      已听写：<span id="dictadoTotalCount">0</span> 题
-    </div>
-    <div id="dictadoPrompt" style="font-size:20px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
-      style="
-      padding:8px;
-      width:260px;
-      font-family:'Times New Roman',serif;
-      font-size: 16px;
-      border:none;
-      border-bottom:2px solid #d93025;
-      background:transparent;
-      outline:none;">
-      <button id="dictadoCheck" class="btn">确定</button>
-    </div>
-    <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width:260px;">
-      1. 请各位同学使用英语/西语键盘输入<br>
-      2. 有阴阳性的单词请写全（使用/隔开,例:bueno/na）<br>
-      3. 除专有名词需首字母大写，其余单词默认首字母为小写
-    </div>
-    <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;">
-      <span id="resultText"></span>
-      <button id="playPronunciation" class="btn" style="margin-left:10px; padding:5px 10px; font-size:14px; display:none;">🔊 听读音</button>
-    </div>
-    <div style="margin-top:5px;display:flex;gap:10px;">
-      <button id="dictadoNext" class="btn" disabled>下一个</button>
-      <button id="dictadoEnd" class="btn">结束听写</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// 阅读模块：从 lectura.csv 读取短文
-const ReadingHandler = {
-  texts: [], // 存储从 CSV 读取的短文
-  init() {
-    this.loadCSV('lectura.csv'); // 加载 CSV 文件
-    this.bindEvents();
-  },
-
-  // 读取 CSV 文件
-  async loadCSV(filePath) {
-    try {
-      const response = await fetch(filePath);
-      if (!response.ok) throw new Error(`文件 ${filePath} 加载失败（请检查文件路径是否正确）`);
-      const text = await response.text();
-      this.parseCSV(text); // 解析 CSV 内容
-    } catch (err) {
-      alert('阅读短文加载失败：' + err.message);
-      console.error(err);
-    }
-  },
-
-  // 解析 CSV 内容
-  parseCSV(csvText) {
-    const lines = csvText.trim().split('\n'); // 按行分割 CSV
-    this.texts = [];
-
-    // 遍历 CSV 行，提取有效短文（跳过表头和空行）
-    for (let i = 1; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue; // 跳过空行
-
-      // 移除 CSV 中的引号和多余分隔符，提取短文内容
-      const cleanLine = line.replace(/^"|"$/g, '').replace(/,,+/g, ',').replace(/^,|,$/g, '');
-      if (cleanLine) {
-        this.texts.push(cleanLine); // 将解析后的短文存入数组
-      }
-    }
-
-    console.log(`阅读模块加载完成 ${this.texts.length} 篇短文`);
-    if (this.texts.length === 0) alert('⚠️ 未从 CSV 中读取到任何短文，请检查文件格式');
-  },
-
-  bindEvents() {
-    document.getElementById('readingRefreshBtn').addEventListener('click', () => this.loadRandomText());
-    document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
-    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
-  },
-
-  // 随机加载一篇 CSV 中的短文
-  loadRandomText() {
-    if (this.texts.length === 0) {
-      alert('暂无可用阅读短文，请稍后重试');
-      return;
-    }
-    const randomIdx = Math.floor(Math.random() * this.texts.length);
-    const text = this.texts[randomIdx];
-    const lecturaDiv = document.getElementById('lectura');
-    // 处理短文中的对话分隔符，保持原显示效果
-    lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
-    
-    // 按钮状态控制
-    document.getElementById('readingRefreshBtn').disabled = true;
-    document.getElementById('readingRefreshBtn').style.opacity = "0.6";
-    document.getElementById('nextTextBtn').style.display = "inline-block";
-  },
-
-  // 音乐播放控制
-  toggleMusic() {
-    const musicBtn = document.getElementById('musicBtn');
-    const bgMusic = document.getElementById('bgMusic');
-    const isPlaying = !bgMusic.paused;
-
-    if (isPlaying) {
-      bgMusic.pause();
-      musicBtn.textContent = '▶';
-    } else {
-      bgMusic.play().then(() => {
-        musicBtn.textContent = '❚❚';
-      }).catch(err => {
-        console.log('音乐播放被拦截：', err);
-        alert('请手动允许浏览器播放音频');
-      });
-    }
-  }
-};
-
-// 听写模块（修改后，新增返回按钮逻辑）
-const DictadoHandler = {
-  palabras: [],
-  usedIndexes: [],
-  idx: 0,
-  correct: 0,
-  total: 0,
-  isChecked: false,
-  currentWord: null,
-  wrongWords: [],
-  studentName: '',
-  studentId: '',
-  startTime: null, // 记录听写开始时间（毫秒时间戳）
-  isDictadoStarted: false, // 标记是否已开始听写
-  selectedUnit: null, // 记录选中的单元
-
-  endDictado() {
-    document.getElementById('dictadoBox').style.display = 'none';
-    const accuracy = this.total > 0 ? (this.correct / this.total * 100).toFixed(2) : 0;
-    let wrongListHtml = '';
-    if (this.wrongWords.length > 0) {
-      wrongListHtml = this.wrongWords.map((item, index) => `
-        <li style="margin: 8px 0; line-height: 1.5;">
-          ${index + 1}. 你的输入：<span style="color:red;">${item.input}</span> → 
-          正确答案：<span style="color:green;">${item.correctEs}</span>（${item.cn}）
-        </li>
-      `).join('');
-    } else {
-      wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
-    }
-    // 计算耗时和完成时间
-    const endTime = Date.now();
-    const totalMs = endTime - this.startTime;
-    const minutes = Math.floor(totalMs / 60000);
-    const seconds = Math.floor((totalMs % 60000) / 1000);
-    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-    const finishTime = new Date(endTime).toLocaleString('zh-CN');
-
-    const resultHtml = `
-  <div style="font-size: 16px; line-height: 2; padding: 10px;">
-    <p>📝 学生信息：</p>
-    <p>姓名：${this.studentName}</p>
-    <p>学号：${this.studentId}</p>
-    <p style="margin-top: 15px;">📊 听写结果：</p>
-    <p>总题数：${this.total} 道</p>
-    <p>正确数：${this.correct} 道</p>
-    <p>正确率：${accuracy}%</p>
-    <p>完成时间：${finishTime}</p>
-    <p>总耗时：${formattedTime}</p>
-    <p>练习单元：第${this.selectedUnit}单元</p>
-    <p style="margin-top: 15px; font-weight: bold;">错词复习：</p>
-    <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
-  </div>
-`;
-
-    // 创建弹窗元素
-    const popup = document.createElement('div');
-    popup.style.cssText = `
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-      background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
-      max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
-    `;
-    popup.innerHTML = `
-      ${resultHtml}
-      <button id="popupCloseBottom" style="
-        margin-top: 15px; padding: 8px 20px; 
-        background: #d93025; color: white; 
-        border: none; border-radius: 4px; cursor: pointer;
-        display: block; margin-left: auto; margin-right: auto;">
-        关闭
-      </button>
-    `;
-
-    // 创建遮罩
-    const mask = document.createElement('div');
-    mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
-    // 挂载到页面
-    document.body.appendChild(mask);
-    document.body.appendChild(popup);
-
-    document.getElementById('popupCloseBottom').addEventListener('click', () => {
-      document.body.removeChild(popup);
-      document.body.removeChild(mask);
-      // 结束后返回听写初始页
-      document.getElementById('dictadoStart').style.display = 'block';
-    });
-
-    this.resetDictado();
-  },
-
-  resetDictado() {
-    this.correct = 0;
-    this.total = 0;
-    this.wrongWords = [];
-    this.isChecked = false;
-    this.currentWord = null;
-    this.usedIndexes = [];
-    this.studentName = '';
-    this.studentId = '';
-    this.selectedUnit = null;
-    document.getElementById('dictadoInput').value = '';
-    document.getElementById('dictadoResult').textContent = '';
-    document.getElementById('dictadoCheck').disabled = false;
-    document.getElementById('dictadoNext').disabled = true;
-    document.getElementById('dictadoTotalCount').textContent = '0';
-    this.startTime = null;
-    this.isDictadoStarted = false;
-  },
-
-  init() {
-    this.bindEvents(); // 初始化时不加载CSV，改为选择单元后加载
-  },
-
-async cargarCSV() {
-  try {
-    // 👇 第一步：替换成你的 GitHub 信息（必须修改！）
-    const githubUsername = "panke967"; // 例如："test123"（替换成你自己的用户名）
-    const githubRepo = "-Eva-practice";         // 例如："spanish-practice"（替换成你的仓库名称）
-    const githubBranch = "main";             // 你的分支名（默认是 main，少数是 master，根据实际修改）
-    
-    // 要加载的 CSV 文件列表（和你 GitHub 仓库中的文件名完全一致）
-    const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv', '1u5.csv']; // 可根据实际单元数量增减
-    
-    // 批量加载 GitHub 上的 CSV 文件（核心：用 Raw 链接替换本地路径）
-    const texts = await Promise.all(
-      csvFiles.map(async (file) => {
-        // 拼接 GitHub Raw 链接（确保文件在仓库根目录）
-        const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${file}`;
-        const res = await fetch(rawUrl);
-        
-        // 加载失败时抛出具体错误（含链接，方便排查）
-        if (!res.ok) throw new Error(`文件「${file}」加载失败（检查链接：${rawUrl}）`);
-        return res.text(); // 读取 CSV 文件内容（纯文本）
-      })
-    );
-
-    this.palabras = []; // 清空单词数组，准备存储解析后的单词
-
-    // 解析所有加载成功的 CSV 内容（你原来的解析逻辑完全不变，直接复用）
-    texts.forEach(text => {
-      const lines = text.trim().split('\n'); // 按行分割 CSV
-      const dataLines = lines.slice(1);      // 跳过第一行表头（西班牙语,中文,词性）
-
-      // 遍历每一行单词，解析成对象
-      dataLines.forEach((line, lineIdx) => {
-        const cleanLine = line.trim()
-          .replace(/^"|"$/g, '')       // 移除首尾双引号（如果有）
-          .replace(/,,+/g, ',')        // 移除连续的逗号（避免解析错误）
-          .replace(/^,|,$/g, '');      // 移除行首/行尾的逗号
-
-        if (!cleanLine) return; // 跳过空行
-
-        // 按英文逗号分割列（解析单词、中文、词性）
-        const parts = cleanLine.split(',').map(s => {
-          return s.trim().replace(/^"|"$/g, '')
-            .replace(/，/g, '')         // 替换中文逗号为英文逗号
-            .replace(/\s+/g, ' ');      // 合并多余空格
-        }).filter(Boolean); // 过滤空值
-
-        // 分配列数据（支持 3 列或 2 列格式）
-        let es, cn, pos;
-        if (parts.length === 3) {
-          [es, cn, pos] = parts; // 完整格式：西班牙语,中文,词性
-        } else if (parts.length === 2) {
-          [es, cn] = parts;      // 简化格式：西班牙语,中文（词性默认为“未分类”）
-          pos = '未分类';
-        } else {
-          // 格式错误时提示（不影响整体加载）
-          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
-          return;
-        }
-
-        // 清理西班牙语单词（移除特殊空格）
-        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
-        // 存入单词数组（供听写使用）
-        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
-      });
-    });
-
-    // 加载完成后提示（控制台输出，方便调试）
-    console.log(`共加载 ${this.palabras.length} 个单词`);
-    // 无单词时弹出提示（排查 CSV 格式/内容问题）
-    if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查 CSV 文件格式或内容');
-  } catch (err) {
-    // 加载失败时弹出具体错误（帮助定位问题）
-    alert('❌ 单词加载失败：' + err.message);
-    console.error('加载错误详情：', err);
-  }
-},
-
-  bindEvents() {
-    // 进入听写练习 -> 显示分册选择
-    document.getElementById('dictadoStart').addEventListener('click', () => {
-      document.getElementById('dictadoStart').style.display = 'none'; // 隐藏开始按钮
-      document.getElementById('volumeSelect').style.display = 'block'; // 显示分册选择
-    });
-
-    // 新增：分册选择页 → 返回听写初始页
-    document.getElementById('backToDictadoStart').addEventListener('click', () => {
-      document.getElementById('volumeSelect').style.display = 'none';
-      document.getElementById('dictadoStart').style.display = 'block'; // 显示「进入听写练习」按钮
-    });
-
-    // 新增：单元选择页 → 返回分册选择页
-    document.getElementById('backToVolumeSelect').addEventListener('click', () => {
-      document.getElementById('unitSelect').style.display = 'none';
-      document.getElementById('volumeSelect').style.display = 'block';
-      // 恢复单元选择页的原始内容（避免加载失败后界面空白）
-      document.getElementById('unitSelect').innerHTML = `
-        <div style="text-align:center; margin-bottom:20px;">
-          <button id="backToVolumeSelect" class="back-btn" style="margin-bottom:10px;">← 返回</button>
-          <h4>第一册 - 请选择单元</h4>
-          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            ${Array.from({length:16}, (_,i) => `<button class="unit-btn" data-unit="${i+1}">${i+1}单元</button>`).join('')}
-          </div>
+    <!-- 阅读练习板块 -->
+    <div class="section">
+        <h3 class="section-title">📖 阅读-单词强化复习</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+            <button id="readingRefreshBtn" class="btn">进入阅读练习</button>
+            <button id="nextTextBtn" class="btn" style="display: none;">下一篇</button>
         </div>
-      `;
-      // 重新绑定返回按钮事件（因innerHTML覆盖导致事件丢失）
-      this.bindEvents();
-    });
+        <div class="reading-container">
+            <div class="reading-content" id="lectura"></div>
+        </div>
+    </div>
 
-    // 分册选择事件
-    document.querySelectorAll('.volume-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const volume = e.currentTarget.dataset.volume;
-        if (volume === '1') { // 只处理第一册
-          document.getElementById('volumeSelect').style.display = 'none';
-          document.getElementById('unitSelect').style.display = 'block';
-        }
-      });
-    });
-
-    // 单元选择事件
-    document.querySelectorAll('.unit-btn').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        const unit = e.currentTarget.dataset.unit;
-        this.selectedUnit = unit;
-        
-        // 显示加载中提示
-        document.getElementById('unitSelect').innerHTML = '<div style="text-align:center;padding:20px;">加载中...</div>';
-        
-        // 加载对应单元的CSV
-        const loadSuccess = await this.cargarCSV(unit);
-        if (loadSuccess) {
-          document.getElementById('unitSelect').style.display = 'none';
-          document.getElementById('studentInfoPopup').style.display = 'flex'; // 显示学生信息弹窗
-        } else {
-          // 加载失败回到单元选择
-          document.getElementById('unitSelect').innerHTML = `
-            <div style="text-align:center; margin-bottom:20px;">
-              <button id="backToVolumeSelect" class="back-btn" style="margin-bottom:10px;">← 返回</button>
-              <h4>第一册 - 请选择单元</h4>
-              <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
-                ${Array.from({length:16}, (_,i) => `<button class="unit-btn" data-unit="${i+1}">${i+1}单元</button>`).join('')}
-              </div>
+    <!-- 翻译-词汇强化练习 -->
+    <div class="section">
+        <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
+        <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+            <button id="translationStart" class="btn">进入翻译练习</button>
+        </div>
+        <div id="translationBox" style="display: none; margin-top: 15px;">
+            <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
+                已翻译：<span id="translationTotalCount">0</span> 题
             </div>
-          `;
-          // 重新绑定返回按钮事件
-          this.bindEvents();
-        }
-      });
-    });
-
-    document.getElementById('confirmInfoBtn').addEventListener('click', () => {
-      const name = document.getElementById('studentName').value.trim();
-      const id = document.getElementById('studentId').value.trim();
-      
-      if (!name || !id) {
-        alert('请输入姓名和学号');
-        return;
-      }
-      
-      this.studentName = name;
-      this.studentId = id;
-      
-      document.getElementById('studentInfoPopup').style.display = 'none';
-      document.getElementById('dictadoBox').style.display = 'block';
-      this.nuevaPalabra();
-      
-      document.getElementById('studentName').value = '';
-      document.getElementById('studentId').value = '';
-
-      // 记录开始时间（只在第一次点击时记录）
-      if (!this.isDictadoStarted) {
-        this.startTime = Date.now(); // 记录当前毫秒时间戳
-        this.isDictadoStarted = true; // 标记为已开始，避免重复记录
-      }
-      // 显示当前单元信息
-      document.getElementById('dictadoPrompt').innerHTML += `<br><small>（当前单元：${this.selectedUnit}）</small>`;
-    });
-
-    // 学生信息弹窗关闭 → 返回单元选择页
-    document.getElementById('closePopupBtn').addEventListener('click', () => {
-      document.getElementById('studentInfoPopup').style.display = 'none';
-      document.getElementById('unitSelect').style.display = 'block';
-      // 恢复单元选择页原始内容
-      document.getElementById('unitSelect').innerHTML = `
-        <div style="text-align:center; margin-bottom:20px;">
-          <button id="backToVolumeSelect" class="back-btn" style="margin-bottom:10px;">← 返回</button>
-          <h4>第一册 - 请选择单元</h4>
-          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
-            ${Array.from({length:16}, (_,i) => `<button class="unit-btn" data-unit="${i+1}">${i+1}单元</button>`).join('')}
-          </div>
+            <div style="font-size: 20px; color: #d93025; margin-bottom: 10px; text-align: center;">
+                <span id="translationPrompt"></span>
+            </div>
+            <!-- 检查核对的按钮 -->
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
+                <textarea id="translationInput" placeholder="请输入西班牙语翻译"
+                    style="
+                        padding: 8px; 
+                        width: 260px; 
+                        min-height: 80px; 
+                        font-family:'Times New Roman',serif;
+                        border: 1px solid #ddd; 
+                        border-radius: 6px;
+                        background: #f9f9f9; 
+                        outline: none; 
+                        font-size: 16px; 
+                        resize: vertical;
+                        white-space: pre-wrap;
+                        overflow-wrap: break-word;
+                        word-break: break-word;
+                        overflow-y: auto;">
+                </textarea>
+                <button id="translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 10px; font-family:'Times New Roman',serif;">
+                    检查核对
+                </button>
+            </div>
+            <!-- 正确答案显示区域 -->
+            <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
+            <!-- 下一句/结束练习按钮 -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
+                <button id="translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
+                    下一句
+                </button>
+                <button id="translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
+                    结束练习
+                </button>
+            </div>
         </div>
-      `;
-      // 重新绑定返回按钮事件
-      this.bindEvents();
-    });
+    </div>
 
-    document.getElementById('dictadoCheck').addEventListener('click', () => {
-      this.verificar();
-    });
+    <!-- 听写-单词熟悉复习 -->
+    <div class="section">
+        <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
+        <button id="dictadoStart" class="btn" style="display: block; margin: 0 auto;">进入听写练习</button>
 
-    document.getElementById('dictadoNext').addEventListener('click', () => {
-      this.nuevaPalabra();
-    });
+        <!-- 单元选择界面 -->
+        <div id="unitSelect" style="display:none; margin-top:15px; text-align:center;">
+            <h4 style="margin-bottom: 15px; color: #333;">请选择要听写的单元</h4>
+            <!-- 返回按钮 -->
+            <button id="backToDictadoStart" class="back-btn">← 返回</button>
+            <!-- 单元按钮组 -->
+            <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:10px;">
+                <button class="unit-btn" data-unit="1">1单元</button>
+                <button class="unit-btn" data-unit="2">2单元</button>
+                <button class="unit-btn" data-unit="3">3单元</button>
+                <button class="unit-btn" data-unit="4">4单元</button>
+            </div>
+        </div>
 
-    document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') this.verificar();
-    });
+        <!-- 学生信息弹窗 -->
+        <div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+            <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
+                <button id="closePopupBtn" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
+                <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif; color: #d93025;">请输入你的信息</h3>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif; color: #333;">姓名：</label>
+                        <input type="text" id="studentName" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif; color: #333;">学号：</label>
+                        <input type="text" id="studentId" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    <button id="confirmInfoBtn" class="btn" style="width: 100%;">确认</button>
+                </div>
+            </div>
+        </div>
 
-    document.getElementById('dictadoEnd').addEventListener('click', () => {
-      if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
-        this.endDictado();
-      }
-    });
-  },
+        <!-- 听写界面 -->
+        <div id="dictadoBox" style="display:none;margin-top:15px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
+                <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
+                    已听写：<span id="dictadoTotalCount">0</span> 题
+                </div>
+                <div id="dictadoPrompt" style="font-size:22px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
+                <div style="display:flex;align-items:center;gap:10px; width: 100%; max-width: 400px;">
+                    <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
+                        style="
+                        padding: 10px;
+                        width: 100%;
+                        font-family:'Times New Roman',serif;
+                        font-size: 16px;
+                        border: 1px solid #ddd;
+                        border-radius: 6px;
+                        background: #f9f9f9;
+                        outline: none;">
+                    <button id="dictadoCheck" class="btn">确定</button>
+                </div>
+                <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width: 100%; max-width: 400px; padding: 0 10px;">
+                    1. 请各位同学使用英语/西语键盘输入<br>
+                    2. 有阴阳性的单词请写全（使用/隔开,例:bueno/na）<br>
+                    3. 除专有名词需首字母大写，其余单词默认首字母为小写
+                </div>
+                <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;">
+                    <span id="resultText"></span>
+                    <button id="playPronunciation" class="btn" style="margin-left:10px; padding:5px 10px; font-size:14px; display:none;">🔊 听读音</button>
+                </div>
+                <div style="margin-top:5px;display:flex;gap:15px;">
+                    <button id="dictadoNext" class="btn" disabled>下一个</button>
+                    <button id="dictadoEnd" class="btn">结束听写</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  mostrarPrimera() {
-    document.getElementById('dictadoBox').style.display = 'block';
-    document.getElementById('dictadoNext').textContent = '下一个';
-    document.getElementById('dictadoNext').disabled = true;
-    this.nuevaPalabra();
-  },
+    <script>
+        // 阅读模块：从 lectura.csv 读取短文
+        const ReadingHandler = {
+            texts: [],
+            init() {
+                this.loadCSV('lectura.csv');
+                this.bindEvents();
+            },
 
-  nuevaPalabra() {
-    if (this.palabras.length === 0) return;
+            async loadCSV(filePath) {
+                try {
+                    // 你的 GitHub 信息
+                    const githubUsername = "panke967";
+                    const githubRepo = "-Eva-practice";
+                    const githubBranch = "main";
+                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${filePath}`;
+                    
+                    const response = await fetch(rawUrl);
+                    if (!response.ok) throw new Error(`文件 ${filePath} 加载失败（链接：${rawUrl}）`);
+                    const text = await response.text();
+                    this.parseCSV(text);
+                } catch (err) {
+                    alert('阅读短文加载失败：' + err.message);
+                    console.error(err);
+                }
+            },
 
-    this.isChecked = false;
-    const checkBtn = document.getElementById('dictadoCheck');
-    const nextBtn = document.getElementById('dictadoNext');
-    checkBtn.disabled = false;
-    nextBtn.disabled = true;
+            parseCSV(csvText) {
+                const lines = csvText.trim().split('\n');
+                this.texts = [];
 
-    let availableIndexes = this.palabras
-      .map((_, index) => index)
-      .filter(index => !this.usedIndexes.includes(index));
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
 
-    if (availableIndexes.length === 0) {
-      this.usedIndexes = [];
-      return this.nuevaPalabra();
-    }
+                    const cleanLine = line.replace(/^"|"$/g, '').replace(/,,+/g, ',').replace(/^,|,$/g, '');
+                    if (cleanLine) {
+                        this.texts.push(cleanLine);
+                    }
+                }
 
-    const randomIdx = availableIndexes[
-      Math.floor(Math.random() * availableIndexes.length)
-    ];
-    this.currentWord = this.palabras[randomIdx];
-    this.usedIndexes.push(randomIdx);
+                console.log(`阅读模块加载完成 ${this.texts.length} 篇短文`);
+                if (this.texts.length === 0) alert('⚠️ 未从 CSV 中读取到任何短文，请检查文件格式');
+            },
 
-    document.getElementById('dictadoPrompt').innerHTML = 
-      `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+            bindEvents() {
+                document.getElementById('readingRefreshBtn').addEventListener('click', () => this.loadRandomText());
+                document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
+                document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
+            },
 
-    document.getElementById('dictadoInput').value = '';
-    document.getElementById('dictadoResult').textContent = '';
-    document.getElementById('dictadoInput').focus();
-  },
+            loadRandomText() {
+                if (this.texts.length === 0) {
+                    alert('暂无可用阅读短文，请稍后重试');
+                    return;
+                }
+                const randomIdx = Math.floor(Math.random() * this.texts.length);
+                const text = this.texts[randomIdx];
+                const lecturaDiv = document.getElementById('lectura');
+                lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
+                
+                document.getElementById('readingRefreshBtn').disabled = true;
+                document.getElementById('readingRefreshBtn').style.opacity = "0.6";
+                document.getElementById('nextTextBtn').style.display = "inline-block";
+            },
 
-  removeAccents(str) {
-    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  },
+            toggleMusic() {
+                const musicBtn = document.getElementById('musicBtn');
+                const bgMusic = document.getElementById('bgMusic');
+                const isPlaying = !bgMusic.paused;
 
-  verificar() {
-    if (this.isChecked) return;
-    const input = document.getElementById('dictadoInput').value.trim();
-    if (!input) return;
+                if (isPlaying) {
+                    bgMusic.pause();
+                    musicBtn.textContent = '▶';
+                } else {
+                    bgMusic.play().then(() => {
+                        musicBtn.textContent = '❚❚';
+                    }).catch(err => {
+                        console.log('音乐播放被拦截：', err);
+                        alert('请手动允许浏览器播放音频');
+                    });
+                }
+            }
+        };
 
-    const correctEs = this.currentWord.es.trim();
-    let correctForms;
-    if (correctEs.includes(',')) {
-      correctForms = correctEs.split(',')
-        .map(form => {
-          const trimForm = form.trim();
-          return trimForm === 'na' ? 'a' : trimForm;
-        })
-        .filter(Boolean);
-    } else {
-      correctForms = [correctEs];
-    }
+        // 听写模块
+        const DictadoHandler = {
+            palabras: [],
+            usedIndexes: [],
+            idx: 0,
+            correct: 0,
+            total: 0,
+            isChecked: false,
+            currentWord: null,
+            wrongWords: [],
+            studentName: '',
+            studentId: '',
+            startTime: null,
+            isDictadoStarted: false,
+            selectedUnit: null,
 
-    const isCorrect = correctForms.includes(input);
-    const resultBox = document.getElementById('dictadoResult');
-    
-    if (isCorrect) {
-      resultBox.innerHTML = `
-        <span style="color:green;">✅ 正确！</span>
-        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
-      `;
-      this.correct++;
-    } else {
-      resultBox.innerHTML = `
-        <span style="color:red;">❌ 正确答案：${correctEs}</span>
-        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
-      `;
-      const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
-      if (!isDuplicate) {
-        this.wrongWords.push({
-          input: input,
-          correctEs: correctEs,
-          cn: this.currentWord.cn
+            init() {
+                this.bindEvents();
+            },
+
+            endDictado() {
+                document.getElementById('dictadoBox').style.display = 'none';
+                const accuracy = this.total > 0 ? (this.correct / this.total * 100).toFixed(2) : 0;
+                let wrongListHtml = '';
+                if (this.wrongWords.length > 0) {
+                    wrongListHtml = this.wrongWords.map((item, index) => `
+                        <li style="margin: 8px 0; line-height: 1.5;">
+                            ${index + 1}. 你的输入：<span style="color:red;">${item.input}</span> → 
+                            正确答案：<span style="color:green;">${item.correctEs}</span>（${item.cn}）
+                        </li>
+                    `).join('');
+                } else {
+                    wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
+                }
+
+                const endTime = Date.now();
+                const totalMs = endTime - this.startTime;
+                const minutes = Math.floor(totalMs / 60000);
+                const seconds = Math.floor((totalMs % 60000) / 1000);
+                const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                const finishTime = new Date(endTime).toLocaleString('zh-CN');
+
+                const resultHtml = `
+                <div style="font-size: 16px; line-height: 2; padding: 10px;">
+                    <p>📝 学生信息：</p>
+                    <p>姓名：${this.studentName}</p>
+                    <p>学号：${this.studentId}</p>
+                    <p>练习单元：第 ${this.selectedUnit} 单元</p>
+                    <p style="margin-top: 15px;">📊 听写结果：</p>
+                    <p>总题数：${this.total} 道</p>
+                    <p>正确数：${this.correct} 道</p>
+                    <p>正确率：${accuracy}%</p>
+                    <p>完成时间：${finishTime}</p>
+                    <p>总耗时：${formattedTime}</p>
+                    <p style="margin-top: 15px; font-weight: bold;">错词复习：</p>
+                    <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
+                </div>
+                `;
+
+                const popup = document.createElement('div');
+                popup.style.cssText = `
+                    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+                    background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
+                    max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
+                `;
+                popup.innerHTML = `
+                    ${resultHtml}
+                    <button id="popupCloseBottom" style="
+                        margin-top: 15px; padding: 8px 20px; 
+                        background: #d93025; color: white; 
+                        border: none; border-radius: 4px; cursor: pointer;
+                        display: block; margin-left: auto; margin-right: auto;">
+                        关闭
+                    </button>
+                `;
+
+                const mask = document.createElement('div');
+                mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
+                document.body.appendChild(mask);
+                document.body.appendChild(popup);
+
+                document.getElementById('popupCloseBottom').addEventListener('click', () => {
+                    document.body.removeChild(popup);
+                    document.body.removeChild(mask);
+                    document.getElementById('dictadoStart').style.display = 'block';
+                });
+
+                this.resetDictado();
+            },
+
+            resetDictado() {
+                this.correct = 0;
+                this.total = 0;
+                this.wrongWords = [];
+                this.isChecked = false;
+                this.currentWord = null;
+                this.usedIndexes = [];
+                this.studentName = '';
+                this.studentId = '';
+                document.getElementById('dictadoInput').value = '';
+                document.getElementById('dictadoResult').textContent = '';
+                document.getElementById('dictadoCheck').disabled = false;
+                document.getElementById('dictadoNext').disabled = true;
+                document.getElementById('dictadoTotalCount').textContent = '0';
+                this.startTime = null;
+                this.isDictadoStarted = false;
+                this.selectedUnit = null;
+            },
+
+            async cargarCSV(unit) {
+                try {
+                    // 你的 GitHub 信息（已填入）
+                    const githubUsername = "panke967";
+                    const githubRepo = "-Eva-practice";
+                    const githubBranch = "main";
+                    
+                    const file = `1u${unit}.csv`;
+                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${file}`;
+                    
+                    const res = await fetch(rawUrl);
+                    if (!res.ok) throw new Error(`单元 ${unit} 的文件「${file}」加载失败（链接：${rawUrl}）`);
+                    
+                    const text = await res.text();
+                    this.palabras = [];
+
+                    const lines = text.trim().split('\n');
+                    const dataLines = lines.slice(1);
+
+                    dataLines.forEach((line, lineIdx) => {
+                        const cleanLine = line.trim()
+                            .replace(/^"|"$/g, '')
+                            .replace(/,,+/g, ',')
+                            .replace(/^,|,$/g, '');
+
+                        if (!cleanLine) return;
+
+                        const parts = cleanLine.split(',').map(s => {
+                            return s.trim().replace(/^"|"$/g, '')
+                                .replace(/，/g, '')
+                                .replace(/\s+/g, ' ');
+                        }).filter(Boolean);
+
+                        let es, cn, pos;
+                        if (parts.length === 3) {
+                            [es, cn, pos] = parts;
+                        } else if (parts.length === 2) {
+                            [es, cn] = parts;
+                            pos = '未分类';
+                        } else {
+                            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
+                            return;
+                        }
+
+                        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
+                        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
+                    });
+
+                    console.log(`单元 ${unit} 加载完成 ${this.palabras.length} 个单词`);
+                    if (this.palabras.length === 0) alert(`⚠️ 单元 ${unit} 未加载到任何单词，请检查CSV格式`);
+                    return true;
+                } catch (err) {
+                    alert('❌ 单词加载失败：' + err.message);
+                    console.error(err);
+                    return false;
+                }
+            },
+
+            bindEvents() {
+                // 进入听写练习 → 显示单元选择
+                document.getElementById('dictadoStart').addEventListener('click', () => {
+                    document.getElementById('dictadoStart').style.display = 'none';
+                    document.getElementById('unitSelect').style.display = 'block';
+                });
+
+                // 返回按钮 → 隐藏单元选择，显示进入按钮
+                document.getElementById('backToDictadoStart').addEventListener('click', () => {
+                    document.getElementById('unitSelect').style.display = 'none';
+                    document.getElementById('dictadoStart').style.display = 'block';
+                    this.resetDictado();
+                });
+
+                // 选择单元 → 加载对应单词
+                document.querySelectorAll('.unit-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const unit = e.currentTarget.dataset.unit;
+                        this.selectedUnit = unit;
+
+                        alert(`正在加载单元 ${unit} 的单词，请稍候...`);
+                        const loadSuccess = await this.cargarCSV(unit);
+                        if (loadSuccess) {
+                            document.getElementById('unitSelect').style.display = 'none';
+                            document.getElementById('studentInfoPopup').style.display = 'flex';
+                        }
+                    });
+                });
+
+                // 确认学生信息 → 开始听写
+                document.getElementById('confirmInfoBtn').addEventListener('click', () => {
+                    const name = document.getElementById('studentName').value.trim();
+                    const id = document.getElementById('studentId').value.trim();
+                    
+                    if (!name || !id) {
+                        alert('请输入姓名和学号');
+                        return;
+                    }
+                    
+                    this.studentName = name;
+                    this.studentId = id;
+                    
+                    document.getElementById('studentInfoPopup').style.display = 'none';
+                    document.getElementById('dictadoBox').style.display = 'block';
+                    this.nuevaPalabra();
+                    
+                    document.getElementById('studentName').value = '';
+                    document.getElementById('studentId').value = '';
+
+                    if (!this.isDictadoStarted) {
+                        this.startTime = Date.now();
+                        this.isDictadoStarted = true;
+                    }
+                });
+
+                // 关闭学生信息弹窗
+                document.getElementById('closePopupBtn').addEventListener('click', () => {
+                    document.getElementById('studentInfoPopup').style.display = 'none';
+                    document.getElementById('unitSelect').style.display = 'block';
+                });
+
+                // 听写检查
+                document.getElementById('dictadoCheck').addEventListener('click', () => {
+                    this.verificar();
+                });
+
+                // 下一个单词
+                document.getElementById('dictadoNext').addEventListener('click', () => {
+                    this.nuevaPalabra();
+                });
+
+                // 回车提交
+                document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') this.verificar();
+                });
+
+                // 结束听写
+                document.getElementById('dictadoEnd').addEventListener('click', () => {
+                    if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
+                        this.endDictado();
+                    }
+                });
+            },
+
+            nuevaPalabra() {
+                if (this.palabras.length === 0) return;
+
+                this.isChecked = false;
+                const checkBtn = document.getElementById('dictadoCheck');
+                const nextBtn = document.getElementById('dictadoNext');
+                checkBtn.disabled = false;
+                nextBtn.disabled = true;
+
+                let availableIndexes = this.palabras
+                    .map((_, index) => index)
+                    .filter(index => !this.usedIndexes.includes(index));
+
+                if (availableIndexes.length === 0) {
+                    this.usedIndexes = [];
+                    availableIndexes = this.palabras.map((_, index) => index);
+                }
+
+                const randomIdx = availableIndexes[
+                    Math.floor(Math.random() * availableIndexes.length)
+                ];
+                this.currentWord = this.palabras[randomIdx];
+                this.usedIndexes.push(randomIdx);
+
+                document.getElementById('dictadoPrompt').innerHTML = 
+                    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+
+                document.getElementById('dictadoInput').value = '';
+                document.getElementById('dictadoResult').textContent = '';
+                document.getElementById('dictadoInput').focus();
+            },
+
+            removeAccents(str) {
+                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            },
+
+            verificar() {
+                if (this.isChecked) return;
+                const input = document.getElementById('dictadoInput').value.trim();
+                if (!input) return;
+
+                const correctEs = this.currentWord.es.trim();
+                let correctForms;
+                if (correctEs.includes(',')) {
+                    correctForms = correctEs.split(',')
+                        .map(form => {
+                            const trimForm = form.trim();
+                            return trimForm === 'na' ? 'a' : trimForm;
+                        })
+                        .filter(Boolean);
+                } else {
+                    correctForms = [correctEs];
+                }
+
+                const isCorrect = correctForms.includes(input);
+                const resultBox = document.getElementById('dictadoResult');
+                
+                if (isCorrect) {
+                    resultBox.innerHTML = `
+                        <span style="color:green;">✅ 正确！</span>
+                        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
+                    `;
+                    this.correct++;
+                } else {
+                    resultBox.innerHTML = `
+                        <span style="color:red;">❌ 正确答案：${correctEs}</span>
+                        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
+                    `;
+                    const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
+                    if (!isDuplicate) {
+                        this.wrongWords.push({
+                            input: input,
+                            correctEs: correctEs,
+                            cn: this.currentWord.cn
+                        });
+                    }
+                }
+
+                resultBox.querySelector('.playPronunciation').addEventListener('click', () => {
+                    const wordToPronounce = correctEs.split(',')[0].trim();
+                    this.playPronunciation(wordToPronounce);
+                });
+
+                this.isChecked = true;
+                document.getElementById('dictadoCheck').disabled = true;
+                document.getElementById('dictadoNext').disabled = false;
+                this.total++;
+                document.getElementById('dictadoTotalCount').textContent = this.total;
+            },
+
+            playPronunciation(word) {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(word);
+                    utterance.lang = 'es-ES';
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert('很抱歉，您的浏览器不支持语音播放功能');
+                }
+            }
+        };
+
+        // 翻译模块
+        const TranslationHandler = {
+            words: [],
+            totalCount: 0,
+            usedIndexes: [],
+            countedIndexes: [],
+            currentIndex: 0,
+            init() {
+                this.loadCSV('fanyi.csv');
+                this.bindEvents();
+            },
+
+            async loadCSV(filePath) {
+                try {
+                    // 你的 GitHub 信息
+                    const githubUsername = "panke967";
+                    const githubRepo = "-Eva-practice";
+                    const githubBranch = "main";
+                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${filePath}`;
+                    
+                    const response = await fetch(rawUrl);
+                    if (!response.ok) throw new Error(`HTTP错误，状态码: ${response.status}（链接：${rawUrl}）`);
+                    
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
+                    this.words = [];
+
+                    for (let i = 1; i < lines.length; i++) {
+                        const line = lines[i].trim();
+                        if (!line) continue;
+
+                        let parts = [];
+                        let inQuotes = false;
+                        let currentPart = '';
+                        for (const char of line) {
+                            if (char === '"') {
+                                inQuotes = !inQuotes;
+                            } else if (char === ',' && !inQuotes) {
+                                parts.push(currentPart.trim());
+                                currentPart = '';
+                            } else {
+                                currentPart += char;
+                            }
+                        }
+                        parts.push(currentPart.trim().replace(/^"|"$/g, ''));
+
+                        if (parts.length === 3) {
+                            const [es, cn, pos] = parts;
+                            if (es && cn && pos) {
+                                this.words.push({ es, cn, pos });
+                            }
+                        } else {
+                            console.warn(`翻译CSV第${i+1}行格式错误：${line}（解析出${parts.length}列，需3列）`);
+                        }
+                    }
+
+                    console.log('翻译词汇加载完成，共', this.words.length, '个');
+                } catch (err) {
+                    alert('翻译CSV加载失败：' + err.message);
+                }
+            },
+
+            bindEvents() {
+                document.getElementById('translationStart').addEventListener('click', () => {
+                    if (this.words.length === 0) {
+                        alert('词汇数据加载中，请稍后再试');
+                        return;
+                    }
+                    document.getElementById('translationBox').style.display = 'block';
+                    this.nextWord();
+                    this.totalCount = 0;
+                    document.getElementById('translationTotalCount').textContent = '0';
+                });
+
+                document.getElementById('translationCheck').addEventListener('click', () => {
+                    const currentWord = this.words[this.currentIndex];
+                    const answerEl = document.getElementById('translationAnswer');
+                    answerEl.textContent = `正确答案：${currentWord.es}`;
+                    answerEl.style.display = 'block';
+
+                    if (!this.countedIndexes.includes(this.currentIndex)) {
+                        this.totalCount++;
+                        this.countedIndexes.push(this.currentIndex);
+                        document.getElementById('translationTotalCount').textContent = this.totalCount;
+                    }
+
+                    document.getElementById('translationNext').disabled = false;
+                });
+
+                document.getElementById('translationNext').addEventListener('click', () => {
+                    this.nextWord();
+                });
+
+                document.getElementById('translationEnd').addEventListener('click', () => {
+                    if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
+                        document.getElementById('translationBox').style.display = 'none';
+                        this.reset();
+                    }
+                });
+            },
+
+            nextWord() {
+                document.getElementById('translationInput').value = '';
+                document.getElementById('translationAnswer').style.display = 'none';
+                document.getElementById('translationNext').disabled = true;
+
+                if (this.usedIndexes.length >= this.words.length) {
+                    this.usedIndexes = [];
+                    this.countedIndexes = [];
+                }
+
+                let randomIdx;
+                do {
+                    randomIdx = Math.floor(Math.random() * this.words.length);
+                } while (this.usedIndexes.includes(randomIdx));
+
+                this.currentIndex = randomIdx;
+                this.usedIndexes.push(randomIdx);
+                
+                const currentWord = this.words[randomIdx];
+                document.getElementById('translationPrompt').textContent = 
+                    `${currentWord.cn}（${currentWord.pos}）`;
+                
+                document.getElementById('translationInput').focus();
+            },
+
+            reset() {
+                this.totalCount = 0;
+                this.usedIndexes = [];
+                this.countedIndexes = [];
+                document.getElementById('translationTotalCount').textContent = '0';
+            }
+        };
+
+        // 初始化所有模块
+        window.addEventListener('DOMContentLoaded', () => {
+            ReadingHandler.init();
+            DictadoHandler.init();
+            TranslationHandler.init();
         });
-      }
-    }
-
-    resultBox.querySelector('.playPronunciation').addEventListener('click', () => {
-      const wordToPronounce = correctEs.split(',')[0].trim();
-      this.playPronunciation(wordToPronounce);
-    });
-
-    this.isChecked = true;
-    document.getElementById('dictadoCheck').disabled = true;
-    document.getElementById('dictadoNext').disabled = false;
-    this.total++;
-    document.getElementById('dictadoTotalCount').textContent = this.total;
-  },
-
-  playPronunciation(word) {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = 'es-ES';
-      window.speechSynthesis.speak(utterance);
-    } else {
-      alert('很抱歉，您的浏览器不支持语音播放功能');
-    }
-  }
-};
-
-// 翻译模块
-const TranslationHandler = {
-  words: [], // 存储翻译数据
-  totalCount: 0, // 总翻译数量
-  usedIndexes: [], // 已使用的题目索引
-  countedIndexes: [], // 已计数的题目索引
-  init() {
-    this.loadCSV('fanyi.csv');
-    this.bindEvents();
-  },
-
-async loadCSV(filePath) {
-  try {
-    const response = await fetch(filePath);
-    if (!response.ok) throw new Error(`HTTP错误，状态码: ${response.status}`);
-    
-    const text = await response.text();
-    const lines = text.trim().split('\n');
-    this.words = [];
-
-    for (let i = 1; i < lines.length; i++) { // 跳过表头
-      const line = lines[i].trim();
-      if (!line) continue;
-
-      // 处理双引号包裹的字段（支持字段内含逗号）
-      let parts = [];
-      let inQuotes = false;
-      let currentPart = '';
-      for (const char of line) {
-        if (char === '"') {
-          inQuotes = !inQuotes; // 遇到双引号，切换“是否在引号内”状态
-        } else if (char === ',' && !inQuotes) {
-          // 只有“不在引号内”的逗号，才是列分隔符
-          parts.push(currentPart.trim());
-          currentPart = '';
-        } else {
-          currentPart += char; // 其他字符追加到当前字段
-        }
-      }
-      // 添加最后一列，并移除首尾双引号
-      parts.push(currentPart.trim().replace(/^"|"$/g, ''));
-
-      // 确保解析出3列，才添加到单词数组
-      if (parts.length === 3) {
-        const [es, cn, pos] = parts;
-        if (es && cn && pos) {
-          this.words.push({ es, cn, pos });
-        }
-      } else {
-        console.warn(`翻译CSV第${i+1}行格式错误：${line}（解析出${parts.length}列，需3列）`);
-      }
-    }
-
-    console.log('翻译词汇加载完成，共', this.words.length, '个（含单元信息）');
-  } catch (err) {
-    alert('翻译CSV加载失败：' + err.message);
-  }
-},
-
-
-bindEvents() {
-  document.getElementById('translationStart').addEventListener('click', () => {
-    if (this.words.length === 0) {
-      alert('词汇数据加载中，请稍后再试');
-      return;
-    }
-    document.getElementById('translationBox').style.display = 'block';
-    this.nextWord();
-    // 重置计数为0
-    this.totalCount = 0;
-    document.getElementById('translationTotalCount').textContent = '0';
-  });
-
-document.getElementById('translationCheck').addEventListener('click', () => {
-  const currentWord = this.words[this.currentIndex];
-  const answerEl = document.getElementById('translationAnswer');
-  // 显示正确答案（含单元）
-  answerEl.textContent = `正确答案：${currentWord.es}`;
-  answerEl.style.display = 'block';
-
-  // 计数判断
-  if (!this.countedIndexes.includes(this.currentIndex)) {
-    this.totalCount++; // 第一次检查时，计数+1
-    this.countedIndexes.push(this.currentIndex); // 标记为已计数，避免重复
-    document.getElementById('translationTotalCount').textContent = this.totalCount; // 更新页面显示
-  }
-
-  // 启用下一句按钮
-  document.getElementById('translationNext').disabled = false;
-});
-
-  document.getElementById('translationNext').addEventListener('click', () => {
-    this.nextWord();
-  });
-
-  document.getElementById('translationEnd').addEventListener('click', () => {
-    if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
-      document.getElementById('translationBox').style.display = 'none';
-      this.reset();
-    }
-  });
-},
-
-nextWord() {
-  document.getElementById('translationInput').value = '';
-  document.getElementById('translationAnswer').style.display = 'none';
-  document.getElementById('translationNext').disabled = true;
-
-  if (this.usedIndexes.length >= this.words.length) {
-    this.usedIndexes = [];
-  }
-
-  let randomIdx;
-  do {
-    randomIdx = Math.floor(Math.random() * this.words.length);
-  } while (this.usedIndexes.includes(randomIdx));
-
-  this.currentIndex = randomIdx;
-  this.usedIndexes.push(randomIdx);
-  
-  // 显示“中文 + （单元）”
-  const currentWord = this.words[randomIdx];
-  document.getElementById('translationPrompt').textContent = 
-    `${currentWord.cn}（${currentWord.pos}）`;
-  
-  document.getElementById('translationInput').focus();
-},
-
-  reset() {
-    this.totalCount = 0;
-    this.usedIndexes = [];
-    document.getElementById('translationTotalCount').textContent = '0';
-  }
-};
-
-// 初始化所有模块
-window.addEventListener('DOMContentLoaded', () => {
-  ReadingHandler.init();
-  DictadoHandler.init();
-  TranslationHandler.init();
-});
-</script>
+    </script>
 </body>
 </html>
