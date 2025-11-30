@@ -100,9 +100,9 @@
             transform: translateY(-2px);
         }
 
-        /* 单元按钮样式（和主按钮一致） */
-        .unit-btn {
-            padding: 10px 30px;
+        /* 分册按钮样式 */
+        .book-btn {
+            padding: 12px 35px;
             background: #ffd27f;
             border: none;
             border-radius: 6px;
@@ -111,6 +111,32 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: "Times New Roman", serif;
+            margin: 0 10px 15px;
+        }
+        .book-btn.enabled:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
+        .book-btn.disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 单元按钮样式（16单元适配，一行8个） */
+        .unit-btn {
+            padding: 8px 18px;
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+            margin: 0 8px 12px;
         }
         .unit-btn:hover {
             background: #ffc04d;
@@ -127,6 +153,7 @@
             margin-top: 25px;
             font-family: "Times New Roman", serif;
             color: #333;
+            display: none;
         }
 
         #musicBtn {
@@ -152,6 +179,18 @@
         #musicBtn:hover {
             background: #c02516;
             transform: scale(1.05);
+        }
+
+        /* 听写提示框样式（与输入框宽度一致） */
+        #dictadoPrompt {
+            font-size: 22px;
+            color: #d93025;
+            margin-bottom: 10px;
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            box-sizing: border-box;
         }
     </style>
 </head>
@@ -232,17 +271,42 @@
         <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
         <button id="dictadoStart" class="btn" style="display: block; margin: 0 auto;">进入听写练习</button>
 
-        <!-- 单元选择界面 -->
-        <div id="unitSelect" style="display:none; margin-top:15px; text-align:center;">
-            <h4 style="margin-bottom: 15px; color: #333;">请选择要听写的单元</h4>
+        <!-- 分册选择界面（默认隐藏） -->
+        <div id="bookSelect" style="display:none; margin-top:15px; text-align:center;">
+            <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
             <!-- 返回按钮 -->
-            <button id="backToDictadoStart" class="back-btn">← 返回</button>
-            <!-- 单元按钮组 -->
-            <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:10px;">
+            <button id="backToDictadoStartFromBook" class="back-btn">← 返回</button>
+            <!-- 分册按钮组（仅第一册可用） -->
+            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                <button class="book-btn enabled" data-book="1">第一册</button>
+                <button class="book-btn disabled" data-book="2">第二册（未开放）</button>
+                <button class="book-btn disabled" data-book="3">第三册（未开放）</button>
+            </div>
+        </div>
+
+        <!-- 单元选择界面（默认隐藏） -->
+        <div id="unitSelect" style="display:none; margin-top:15px; text-align:center;">
+            <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要听写的单元</h4>
+            <!-- 返回按钮（返回分册选择） -->
+            <button id="backToBookSelect" class="back-btn">← 返回分册选择</button>
+            <!-- 单元按钮组（1-16单元） -->
+            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
                 <button class="unit-btn" data-unit="1">1单元</button>
                 <button class="unit-btn" data-unit="2">2单元</button>
                 <button class="unit-btn" data-unit="3">3单元</button>
                 <button class="unit-btn" data-unit="4">4单元</button>
+                <button class="unit-btn" data-unit="5">5单元</button>
+                <button class="unit-btn" data-unit="6">6单元</button>
+                <button class="unit-btn" data-unit="7">7单元</button>
+                <button class="unit-btn" data-unit="8">8单元</button>
+                <button class="unit-btn" data-unit="9">9单元</button>
+                <button class="unit-btn" data-unit="10">10单元</button>
+                <button class="unit-btn" data-unit="11">11单元</button>
+                <button class="unit-btn" data-unit="12">12单元</button>
+                <button class="unit-btn" data-unit="13">13单元</button>
+                <button class="unit-btn" data-unit="14">14单元</button>
+                <button class="unit-btn" data-unit="15">15单元</button>
+                <button class="unit-btn" data-unit="16">16单元</button>
             </div>
         </div>
 
@@ -271,7 +335,8 @@
                 <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
                     已听写：<span id="dictadoTotalCount">0</span> 题
                 </div>
-                <div id="dictadoPrompt" style="font-size:22px;color:#d93025;margin-bottom:10px;text-align:center;"></div>
+                <!-- 听写提示框（与输入框宽度一致） -->
+                <div id="dictadoPrompt"></div>
                 <div style="display:flex;align-items:center;gap:10px; width: 100%; max-width: 400px;">
                     <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
                         style="
@@ -283,7 +348,7 @@
                         border-radius: 6px;
                         background: #f9f9f9;
                         outline: none;">
-                    <button id="dictadoCheck" class="btn">确定</button>
+                    <button id="dictadoCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; white-space: nowrap;">确定</button>
                 </div>
                 <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width: 100%; max-width: 400px; padding: 0 10px;">
                     1. 请各位同学使用英语/西语键盘输入<br>
@@ -363,6 +428,8 @@
                 const lecturaDiv = document.getElementById('lectura');
                 lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
                 
+                lecturaDiv.style.display = 'block';
+                
                 document.getElementById('readingRefreshBtn').disabled = true;
                 document.getElementById('readingRefreshBtn').style.opacity = "0.6";
                 document.getElementById('nextTextBtn').style.display = "inline-block";
@@ -401,7 +468,8 @@
             studentId: '',
             startTime: null,
             isDictadoStarted: false,
-            selectedUnit: null,
+            selectedBook: null, // 选中的分册（如 1）
+            selectedUnit: null, // 选中的单元（如 1-16）
 
             init() {
                 this.bindEvents();
@@ -434,6 +502,7 @@
                     <p>📝 学生信息：</p>
                     <p>姓名：${this.studentName}</p>
                     <p>学号：${this.studentId}</p>
+                    <p>练习分册：第 ${this.selectedBook} 册</p>
                     <p>练习单元：第 ${this.selectedUnit} 单元</p>
                     <p style="margin-top: 15px;">📊 听写结果：</p>
                     <p>总题数：${this.total} 道</p>
@@ -471,7 +540,9 @@
                 document.getElementById('popupCloseBottom').addEventListener('click', () => {
                     document.body.removeChild(popup);
                     document.body.removeChild(mask);
-                    document.getElementById('dictadoStart').style.display = 'block';
+                    // 关闭后返回单元选择界面（可继续选其他单元）
+                    document.getElementById('unitSelect').style.display = 'block';
+                    this.resetDictado();
                 });
 
                 this.resetDictado();
@@ -493,21 +564,22 @@
                 document.getElementById('dictadoTotalCount').textContent = '0';
                 this.startTime = null;
                 this.isDictadoStarted = false;
-                this.selectedUnit = null;
+                // 保留分册和单元选择（方便继续听写其他单元）
             },
 
-            async cargarCSV(unit) {
+            async cargarCSV(book, unit) {
                 try {
                     // 你的 GitHub 信息（已填入）
                     const githubUsername = "panke967";
                     const githubRepo = "-Eva-practice";
                     const githubBranch = "main";
                     
-                    const file = `1u${unit}.csv`;
+                    // 第一册单元文件命名：1u1.csv ~ 1u16.csv（可根据实际调整）
+                    const file = `${book}u${unit}.csv`;
                     const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${file}`;
                     
                     const res = await fetch(rawUrl);
-                    if (!res.ok) throw new Error(`单元 ${unit} 的文件「${file}」加载失败（链接：${rawUrl}）`);
+                    if (!res.ok) throw new Error(`第 ${book} 册 第 ${unit} 单元的文件「${file}」加载失败（链接：${rawUrl}）`);
                     
                     const text = await res.text();
                     this.palabras = [];
@@ -544,8 +616,8 @@
                         this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
                     });
 
-                    console.log(`单元 ${unit} 加载完成 ${this.palabras.length} 个单词`);
-                    if (this.palabras.length === 0) alert(`⚠️ 单元 ${unit} 未加载到任何单词，请检查CSV格式`);
+                    console.log(`第 ${book} 册 第 ${unit} 单元 加载完成 ${this.palabras.length} 个单词`);
+                    if (this.palabras.length === 0) alert(`⚠️ 第 ${book} 册 第 ${unit} 单元 未加载到任何单词，请检查CSV格式`);
                     return true;
                 } catch (err) {
                     alert('❌ 单词加载失败：' + err.message);
@@ -555,27 +627,47 @@
             },
 
             bindEvents() {
-                // 进入听写练习 → 显示单元选择
+                // 1. 点击「进入听写练习」→ 显示分册选择界面
                 document.getElementById('dictadoStart').addEventListener('click', () => {
                     document.getElementById('dictadoStart').style.display = 'none';
-                    document.getElementById('unitSelect').style.display = 'block';
+                    document.getElementById('bookSelect').style.display = 'block';
                 });
 
-                // 返回按钮 → 隐藏单元选择，显示进入按钮
-                document.getElementById('backToDictadoStart').addEventListener('click', () => {
-                    document.getElementById('unitSelect').style.display = 'none';
+                // 2. 分册选择页返回 → 隐藏分册选择，显示「进入听写练习」按钮
+                document.getElementById('backToDictadoStartFromBook').addEventListener('click', () => {
+                    document.getElementById('bookSelect').style.display = 'none';
                     document.getElementById('dictadoStart').style.display = 'block';
                     this.resetDictado();
                 });
 
-                // 选择单元 → 加载对应单词
+                // 3. 选择分册（仅第一册可用）→ 显示对应分册的单元选择
+                document.querySelectorAll('.book-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const book = e.currentTarget.dataset.book;
+                        if (e.currentTarget.classList.contains('disabled')) {
+                            alert(`第 ${book} 册暂未开放，敬请期待！`);
+                            return;
+                        }
+                        this.selectedBook = book; // 记录选中的分册
+                        document.getElementById('bookSelect').style.display = 'none';
+                        document.getElementById('unitSelect').style.display = 'block';
+                    });
+                });
+
+                // 4. 单元选择页返回 → 隐藏单元选择，显示分册选择
+                document.getElementById('backToBookSelect').addEventListener('click', () => {
+                    document.getElementById('unitSelect').style.display = 'none';
+                    document.getElementById('bookSelect').style.display = 'block';
+                    this.resetDictado();
+                });
+
+                // 5. 选择单元（1-16）→ 加载该单元单词，显示信息弹窗
                 document.querySelectorAll('.unit-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const unit = e.currentTarget.dataset.unit;
                         this.selectedUnit = unit;
 
-                        alert(`正在加载单元 ${unit} 的单词，请稍候...`);
-                        const loadSuccess = await this.cargarCSV(unit);
+                        const loadSuccess = await this.cargarCSV(this.selectedBook, unit);
                         if (loadSuccess) {
                             document.getElementById('unitSelect').style.display = 'none';
                             document.getElementById('studentInfoPopup').style.display = 'flex';
@@ -583,7 +675,7 @@
                     });
                 });
 
-                // 确认学生信息 → 开始听写
+                // 6. 确认学生信息 → 开始听写
                 document.getElementById('confirmInfoBtn').addEventListener('click', () => {
                     const name = document.getElementById('studentName').value.trim();
                     const id = document.getElementById('studentId').value.trim();
@@ -609,28 +701,28 @@
                     }
                 });
 
-                // 关闭学生信息弹窗
+                // 7. 关闭学生信息弹窗 → 返回单元选择
                 document.getElementById('closePopupBtn').addEventListener('click', () => {
                     document.getElementById('studentInfoPopup').style.display = 'none';
                     document.getElementById('unitSelect').style.display = 'block';
                 });
 
-                // 听写检查
+                // 8. 听写检查
                 document.getElementById('dictadoCheck').addEventListener('click', () => {
                     this.verificar();
                 });
 
-                // 下一个单词
+                // 9. 下一个单词
                 document.getElementById('dictadoNext').addEventListener('click', () => {
                     this.nuevaPalabra();
                 });
 
-                // 回车提交
+                // 10. 回车提交
                 document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') this.verificar();
                 });
 
-                // 结束听写
+                // 11. 结束听写
                 document.getElementById('dictadoEnd').addEventListener('click', () => {
                     if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
                         this.endDictado();
@@ -662,6 +754,7 @@
                 this.currentWord = this.palabras[randomIdx];
                 this.usedIndexes.push(randomIdx);
 
+                // 听写提示框内容（与输入框宽度一致）
                 document.getElementById('dictadoPrompt').innerHTML = 
                     `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
 
