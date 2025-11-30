@@ -106,6 +106,35 @@ h2{color:#333;font-size:20px;}
   background: #ffc04d;
   transform: scale(1.05);
 }
+
+/* 新增：分册和单元选择按钮样式 */
+.volume-btn, .unit-btn {
+  padding: 10px 20px;
+  background: #ffd27f;
+  border: none;
+  border-radius: 6px;
+  color: #333;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Times New Roman", serif;
+}
+
+.volume-btn:hover, .unit-btn:hover {
+  background: #ffc04d;
+  transform: translateY(-2px);
+}
+
+.volume-btn:disabled, .unit-btn:disabled {
+  background: #f0f0f0;
+  color: #999;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.unit-btn {
+  width: 80px;
+}
 </style>
 </head>
 <body>
@@ -187,6 +216,44 @@ h2{color:#333;font-size:20px;}
   <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
   <button id="dictadoStart" class="btn">进入听写练习</button>
 
+  <!-- 新增：分册选择界面 -->
+  <div id="volumeSelect" style="display:none; margin-top:15px;">
+    <div style="text-align:center; margin-bottom:20px;">
+      <h4>请选择分册</h4>
+      <div style="display:flex; justify-content:center; gap:15px; flex-wrap:wrap; margin-top:10px;">
+        <button class="volume-btn" data-volume="1">第一册</button>
+        <button class="volume-btn" data-volume="2" disabled>第二册（暂未开放）</button>
+        <button class="volume-btn" data-volume="3" disabled>第三册（暂未开放）</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 新增：单元选择界面 -->
+  <div id="unitSelect" style="display:none; margin-top:15px;">
+    <div style="text-align:center; margin-bottom:20px;">
+      <h4>第一册 - 请选择单元</h4>
+      <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-top:10px;">
+        <!-- 生成16个单元按钮 -->
+        <button class="unit-btn" data-unit="1">1单元</button>
+        <button class="unit-btn" data-unit="2">2单元</button>
+        <button class="unit-btn" data-unit="3">3单元</button>
+        <button class="unit-btn" data-unit="4">4单元</button>
+        <button class="unit-btn" data-unit="5">5单元</button>
+        <button class="unit-btn" data-unit="6">6单元</button>
+        <button class="unit-btn" data-unit="7">7单元</button>
+        <button class="unit-btn" data-unit="8">8单元</button>
+        <button class="unit-btn" data-unit="9">9单元</button>
+        <button class="unit-btn" data-unit="10">10单元</button>
+        <button class="unit-btn" data-unit="11">11单元</button>
+        <button class="unit-btn" data-unit="12">12单元</button>
+        <button class="unit-btn" data-unit="13">13单元</button>
+        <button class="unit-btn" data-unit="14">14单元</button>
+        <button class="unit-btn" data-unit="15">15单元</button>
+        <button class="unit-btn" data-unit="16">16单元</button>
+      </div>
+    </div>
+  </div>
+
 <div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
   <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
     <button id="closePopupBtn" style="position: absolute; top: 10px; left: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
@@ -241,15 +308,15 @@ h2{color:#333;font-size:20px;}
 </div>
 
 <script>
-// 阅读模块：从 lectura.csv 读取短文（替换原固定数组逻辑）
+// 阅读模块：从 lectura.csv 读取短文
 const ReadingHandler = {
   texts: [], // 存储从 CSV 读取的短文
   init() {
-    this.loadCSV('lectura.csv'); // 加载 CSV 文件（需和 GitHub 仓库中文件路径一致）
+    this.loadCSV('lectura.csv'); // 加载 CSV 文件
     this.bindEvents();
   },
 
-  // 读取 CSV 文件（参考听写/翻译模块的 CSV 读取逻辑）
+  // 读取 CSV 文件
   async loadCSV(filePath) {
     try {
       const response = await fetch(filePath);
@@ -262,7 +329,7 @@ const ReadingHandler = {
     }
   },
 
-  // 解析 CSV 内容（处理 CSV 格式，提取短文）
+  // 解析 CSV 内容
   parseCSV(csvText) {
     const lines = csvText.trim().split('\n'); // 按行分割 CSV
     this.texts = [];
@@ -289,7 +356,7 @@ const ReadingHandler = {
     document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
   },
 
-  // 随机加载一篇 CSV 中的短文（逻辑和原一致，仅数据源改为 CSV 数组）
+  // 随机加载一篇 CSV 中的短文
   loadRandomText() {
     if (this.texts.length === 0) {
       alert('暂无可用阅读短文，请稍后重试');
@@ -298,16 +365,17 @@ const ReadingHandler = {
     const randomIdx = Math.floor(Math.random() * this.texts.length);
     const text = this.texts[randomIdx];
     const lecturaDiv = document.getElementById('lectura');
+    const lecturaDiv = document.getElementById('lectura');
     // 处理短文中的对话分隔符，保持原显示效果
     lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
     
-    // 按钮状态控制（和原逻辑一致）
+    // 按钮状态控制
     document.getElementById('readingRefreshBtn').disabled = true;
     document.getElementById('readingRefreshBtn').style.opacity = "0.6";
     document.getElementById('nextTextBtn').style.display = "inline-block";
   },
 
-  // 音乐播放控制（原逻辑不变）
+  // 音乐播放控制
   toggleMusic() {
     const musicBtn = document.getElementById('musicBtn');
     const bgMusic = document.getElementById('bgMusic');
@@ -327,7 +395,7 @@ const ReadingHandler = {
   }
 };
 
-// 听写模块
+// 听写模块（修改后）
 const DictadoHandler = {
   palabras: [],
   usedIndexes: [],
@@ -340,7 +408,8 @@ const DictadoHandler = {
   studentName: '',
   studentId: '',
   startTime: null, // 记录听写开始时间（毫秒时间戳）
-  isDictadoStarted: false, // 标记是否已开始听写（避免重复计时）
+  isDictadoStarted: false, // 标记是否已开始听写
+  selectedUnit: null, // 记录选中的单元
 
   endDictado() {
     document.getElementById('dictadoBox').style.display = 'none';
@@ -356,15 +425,15 @@ const DictadoHandler = {
     } else {
       wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
     }
-    // 新增：计算耗时和完成时间
-     const endTime = Date.now();
-     const totalMs = endTime - this.startTime;
-     const minutes = Math.floor(totalMs / 60000);
-     const seconds = Math.floor((totalMs % 60000) / 1000);
-     const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-     const finishTime = new Date(endTime).toLocaleString('zh-CN'); // 本地时间格式（如 2024/5/20 16:30:45）
+    // 计算耗时和完成时间
+    const endTime = Date.now();
+    const totalMs = endTime - this.startTime;
+    const minutes = Math.floor(totalMs / 60000);
+    const seconds = Math.floor((totalMs % 60000) / 1000);
+    const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    const finishTime = new Date(endTime).toLocaleString('zh-CN');
 
-   const resultHtml = `
+    const resultHtml = `
   <div style="font-size: 16px; line-height: 2; padding: 10px;">
     <p>📝 学生信息：</p>
     <p>姓名：${this.studentName}</p>
@@ -375,45 +444,43 @@ const DictadoHandler = {
     <p>正确率：${accuracy}%</p>
     <p>完成时间：${finishTime}</p>
     <p>总耗时：${formattedTime}</p>
+    <p>练习单元：第${this.selectedUnit}单元</p>
     <p style="margin-top: 15px; font-weight: bold;">错词复习：</p>
     <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
   </div>
 `;
 
-// 1. 创建弹窗元素 → 2. 设样式 → 3. 填内容（顺序不能乱）
-const popup = document.createElement('div');
-// 弹窗样式（缩小尺寸+滚动+留顶部空间）
-popup.style.cssText = `
-  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-  background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
-  max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
-`;
-// 弹窗内容（含左上角+底部关闭按钮）
+    // 创建弹窗元素
+    const popup = document.createElement('div');
+    popup.style.cssText = `
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      background: white; padding: 20px; border: 2px solid #d93025; border-radius: 8px;
+      max-width: 400px; width: 85%; max-height: 70vh; overflow-y: auto; z-index: 9999; padding-top: 40px;
+    `;
+    popup.innerHTML = `
+      ${resultHtml}
+      <button id="popupCloseBottom" style="
+        margin-top: 15px; padding: 8px 20px; 
+        background: #d93025; color: white; 
+        border: none; border-radius: 4px; cursor: pointer;
+        display: block; margin-left: auto; margin-right: auto;">
+        关闭
+      </button>
+    `;
 
-popup.innerHTML = `
-  ${resultHtml}
-  <button id="popupCloseBottom" style="
-    margin-top: 15px; padding: 8px 20px; 
-    background: #d93025; color: white; 
-    border: none; border-radius: 4px; cursor: pointer;
-    display: block; margin-left: auto; margin-right: auto;">
-    关闭
-  </button>
-`;
+    // 创建遮罩
+    const mask = document.createElement('div');
+    mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
+    // 挂载到页面
+    document.body.appendChild(mask);
+    document.body.appendChild(popup);
 
-// 创建遮罩
-const mask = document.createElement('div');
-mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
-// 挂载到页面
-document.body.appendChild(mask);
-document.body.appendChild(popup);
+    document.getElementById('popupCloseBottom').addEventListener('click', () => {
+      document.body.removeChild(popup);
+      document.body.removeChild(mask);
+    });
 
-document.getElementById('popupCloseBottom').addEventListener('click', () => {
-  document.body.removeChild(popup);
-  document.body.removeChild(mask);
-});
-
-this.resetDictado();
+    this.resetDictado();
   },
 
   resetDictado() {
@@ -425,78 +492,112 @@ this.resetDictado();
     this.usedIndexes = [];
     this.studentName = '';
     this.studentId = '';
+    this.selectedUnit = null;
     document.getElementById('dictadoInput').value = '';
     document.getElementById('dictadoResult').textContent = '';
     document.getElementById('dictadoCheck').disabled = false;
     document.getElementById('dictadoNext').disabled = true;
     document.getElementById('dictadoTotalCount').textContent = '0';
-    this.startTime = null; // 清空开始时间，下次开始时重新记录
-    this.isDictadoStarted = false; // 重置“已开始”标记，允许重新计时
+    this.startTime = null;
+    this.isDictadoStarted = false;
   },
 
   init() {
-    this.cargarCSV();
-    this.bindEvents();
+    this.bindEvents(); // 初始化时不加载CSV，改为选择单元后加载
   },
 
-  async cargarCSV() {
+  // 修改CSV加载方法，接受单元参数
+  async cargarCSV(unit) {
     try {
-      const csvFiles = ['1u1.csv', '1u2.csv', '1u3.csv', '1u4.csv'];
-      const texts = await Promise.all(
-        csvFiles.map(async (file) => {
-          const res = await fetch(file);
-          if (!res.ok) throw new Error(`文件 ${file} 加载失败（可能路径错误）`);
-          return res.text();
-        })
-      );
+      this.palabras = []; // 清空现有单词
+      const fileName = `1u${unit}.csv`; // 构建文件名：1u1.csv, 1u2.csv...
+      
+      const res = await fetch(fileName);
+      if (!res.ok) throw new Error(`单元 ${unit} 的文件 ${fileName} 加载失败`);
+      
+      const text = await res.text();
+      const lines = text.trim().split('\n');
+      const dataLines = lines.slice(1); // 跳过表头
 
-      this.palabras = [];
+      dataLines.forEach((line, lineIdx) => {
+        const cleanLine = line.trim()
+          .replace(/^"|"$/g, '')
+          .replace(/,,+/g, ',')
+          .replace(/^,|,$/g, '');
 
-      texts.forEach(text => {
-        const lines = text.trim().split('\n');
-        const dataLines = lines.slice(1);
+        if (!cleanLine) return;
 
-        dataLines.forEach((line, lineIdx) => {
-          const cleanLine = line.trim()
-            .replace(/^"|"$/g, '')
-            .replace(/,,+/g, ',')
-            .replace(/^,|,$/g, '');
+        const parts = cleanLine.split(',').map(s => {
+          return s.trim().replace(/^"|"$/g, '')
+            .replace(/，/g, '')
+            .replace(/\s+/g, ' ');
+        }).filter(Boolean);
 
-          if (!cleanLine) return;
+        let es, cn, pos;
+        if (parts.length === 3) {
+          [es, cn, pos] = parts;
+        } else if (parts.length === 2) {
+          [es, cn] = parts;
+          pos = '未分类';
+        } else {
+          console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
+          return;
+        }
 
-          const parts = cleanLine.split(',').map(s => {
-            return s.trim().replace(/^"|"$/g, '')
-              .replace(/，/g, '')
-              .replace(/\s+/g, ' ');
-          }).filter(Boolean);
-
-          let es, cn, pos;
-          if (parts.length === 3) {
-            [es, cn, pos] = parts;
-          } else if (parts.length === 2) {
-            [es, cn] = parts;
-            pos = '未分类';
-          } else {
-            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
-            return;
-          }
-
-          const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
-          this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
-        });
+        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
+        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
       });
 
-      console.log(`共加载 ${this.palabras.length} 个单词`);
-      if (this.palabras.length === 0) alert('⚠️ 未加载到任何单词，请检查CSV格式');
+      console.log(`单元 ${unit} 加载完成 ${this.palabras.length} 个单词`);
+      if (this.palabras.length === 0) {
+        alert(`⚠️ 单元 ${unit} 未加载到任何单词，请检查文件`);
+        return false;
+      }
+      return true;
     } catch (err) {
       alert('❌ 单词加载失败：' + err.message);
       console.error(err);
+      return false;
     }
   },
 
   bindEvents() {
+    // 进入听写练习 -> 显示分册选择
     document.getElementById('dictadoStart').addEventListener('click', () => {
-      document.getElementById('studentInfoPopup').style.display = 'flex';
+      document.getElementById('dictadoStart').style.display = 'none'; // 隐藏开始按钮
+      document.getElementById('volumeSelect').style.display = 'block'; // 显示分册选择
+    });
+
+    // 分册选择事件
+    document.querySelectorAll('.volume-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const volume = e.currentTarget.dataset.volume;
+        if (volume === '1') { // 只处理第一册
+          document.getElementById('volumeSelect').style.display = 'none';
+          document.getElementById('unitSelect').style.display = 'block';
+        }
+      });
+    });
+
+    // 单元选择事件
+    document.querySelectorAll('.unit-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const unit = e.currentTarget.dataset.unit;
+        this.selectedUnit = unit;
+        
+        // 显示加载中提示
+        document.getElementById('unitSelect').innerHTML = '<div style="text-align:center;padding:20px;">加载中...</div>';
+        
+        // 加载对应单元的CSV
+        const loadSuccess = await this.cargarCSV(unit);
+        if (loadSuccess) {
+          document.getElementById('unitSelect').style.display = 'none';
+          document.getElementById('studentInfoPopup').style.display = 'flex'; // 显示学生信息弹窗
+        } else {
+          // 加载失败回到单元选择
+          document.getElementById('unitSelect').style.display = 'block';
+        }
+      });
     });
 
     document.getElementById('confirmInfoBtn').addEventListener('click', () => {
@@ -518,11 +619,13 @@ this.resetDictado();
       document.getElementById('studentName').value = '';
       document.getElementById('studentId').value = '';
 
-      // 新增：记录开始时间（只在第一次点击时记录）
-  if (!this.isDictadoStarted) {
-    this.startTime = Date.now(); // 记录当前毫秒时间戳
-    this.isDictadoStarted = true; // 标记为已开始，避免重复记录
-  }
+      // 记录开始时间（只在第一次点击时记录）
+      if (!this.isDictadoStarted) {
+        this.startTime = Date.now(); // 记录当前毫秒时间戳
+        this.isDictadoStarted = true; // 标记为已开始，避免重复记录
+      }
+      // 显示当前单元信息
+      document.getElementById('dictadoPrompt').innerHTML += `<br><small>（当前单元：${this.selectedUnit}）</small>`;
     });
 
     document.getElementById('closePopupBtn').addEventListener('click', () => {
@@ -657,12 +760,12 @@ this.resetDictado();
   }
 };
 
-// 翻译模块（使用async/await统一风格）
+// 翻译模块
 const TranslationHandler = {
   words: [], // 存储翻译数据
   totalCount: 0, // 总翻译数量
   usedIndexes: [], // 已使用的题目索引
-  countedIndexes: [], // 新增：已计数的题目索引（标记哪些题已经加过数）
+  countedIndexes: [], // 已计数的题目索引
   init() {
     this.loadCSV('fanyi.csv');
     this.bindEvents();
@@ -681,7 +784,7 @@ async loadCSV(filePath) {
       const line = lines[i].trim();
       if (!line) continue;
 
-      // 核心：处理双引号包裹的字段（支持字段内含逗号）
+      // 处理双引号包裹的字段（支持字段内含逗号）
       let parts = [];
       let inQuotes = false;
       let currentPart = '';
@@ -718,7 +821,6 @@ async loadCSV(filePath) {
 
 
 bindEvents() {
-  // 修复：绑定到正确的translationStart按钮
   document.getElementById('translationStart').addEventListener('click', () => {
     if (this.words.length === 0) {
       alert('词汇数据加载中，请稍后再试');
@@ -726,7 +828,7 @@ bindEvents() {
     }
     document.getElementById('translationBox').style.display = 'block';
     this.nextWord();
-    // 重置计数为0（避免重复进入练习时计数叠加）
+    // 重置计数为0
     this.totalCount = 0;
     document.getElementById('translationTotalCount').textContent = '0';
   });
@@ -738,7 +840,7 @@ document.getElementById('translationCheck').addEventListener('click', () => {
   answerEl.textContent = `正确答案：${currentWord.es}`;
   answerEl.style.display = 'block';
 
-  // 核心修复：简化计数判断
+  // 计数判断
   if (!this.countedIndexes.includes(this.currentIndex)) {
     this.totalCount++; // 第一次检查时，计数+1
     this.countedIndexes.push(this.currentIndex); // 标记为已计数，避免重复
@@ -778,10 +880,10 @@ nextWord() {
   this.currentIndex = randomIdx;
   this.usedIndexes.push(randomIdx);
   
-  // 关键修改：显示“中文 + （单元）”（如“好（1单元）”）
+  // 显示“中文 + （单元）”
   const currentWord = this.words[randomIdx];
   document.getElementById('translationPrompt').textContent = 
-    `${currentWord.cn}（${currentWord.pos}）`; // 拼接中文和单元信息
+    `${currentWord.cn}（${currentWord.pos}）`;
   
   document.getElementById('translationInput').focus();
 },
