@@ -82,7 +82,7 @@
             box-shadow: none;
         }
 
-        /* 返回按钮样式（和主按钮一致，尺寸稍小） */
+        /* 听写模块 - 原有样式（不修改） */
         .back-btn {
             background: #ffd27f;
             border: none;
@@ -100,7 +100,6 @@
             transform: translateY(-2px);
         }
 
-        /* 分册按钮样式 */
         .book-btn {
             padding: 12px 35px;
             background: #ffd27f;
@@ -125,7 +124,6 @@
             box-shadow: none;
         }
 
-        /* 单元按钮样式（16单元适配，一行8个） */
         .unit-btn {
             padding: 8px 18px;
             background: #ffd27f;
@@ -181,7 +179,7 @@
             transform: scale(1.05);
         }
 
-        /* 听写/翻译提示框样式（与输入框宽度一致） */
+        /* 听写模块提示框样式 */
         .prompt-box {
             font-size: 22px;
             color: #d93025;
@@ -190,6 +188,75 @@
             width: 100%;
             max-width: 400px;
             padding: 10px;
+            box-sizing: border-box;
+        }
+
+        /* 翻译模块专属样式（独立命名空间，不影响其他模块） */
+        .trans-back-btn {
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-family: "Times New Roman", serif;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            padding: 8px 16px;
+            margin-bottom: 10px;
+        }
+        .trans-back-btn:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
+
+        .trans-book-btn {
+            padding: 12px 35px;
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+            margin: 0 10px 15px;
+        }
+        .trans-book-btn.enabled:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
+        .trans-book-btn.disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .trans-unit-btn {
+            padding: 8px 18px;
+            background: #ffd27f;
+            border: none;
+            border-radius: 6px;
+            color: #333;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+            margin: 0 8px 12px;
+        }
+        .trans-unit-btn:hover {
+            background: #ffc04d;
+            transform: translateY(-2px);
+        }
+
+        .trans-prompt-box {
+            font-size: 22px;
+            color: #d93025;
+            text-align: center;
+            width: auto; /* 自适应文本宽度，更紧凑 */
+            max-width: 400px;
+            padding: 10px 20px;
             box-sizing: border-box;
         }
     </style>
@@ -216,91 +283,81 @@
         </div>
     </div>
 
-    <!-- 翻译-词汇强化练习（完全模仿听写模式：无弹窗，页面内选择） -->
+    <!-- 翻译-词汇强化练习（完全独立，无冲突） -->
     <div class="section">
         <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
         
         <!-- 初始状态：显示「进入翻译练习」按钮 -->
-        <div id="translationInit" style="text-align: center;">
-            <button id="translationStart" class="btn" style="display: block; margin: 0 auto;">进入翻译练习</button>
+        <div id="trans-translationInit" style="text-align: center;">
+            <button id="trans-translationStart" class="btn" style="display: block; margin: 0 auto;">进入翻译练习</button>
         </div>
 
         <!-- 分册选择界面（默认隐藏） -->
-        <div id="translationBookSelect" style="display:none; text-align:center; margin-top:15px;">
+        <div id="trans-translationBookSelect" style="display:none; text-align:center; margin-top:15px;">
             <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
             <!-- 返回按钮 -->
-            <button id="translationBackToInit" class="back-btn">← 返回</button>
+            <button id="trans-translationBackToInit" class="trans-back-btn">← 返回</button>
             <!-- 分册按钮组（仅第一册可用） -->
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
-                <button class="book-btn enabled" data-book="1">第一册</button>
-                <button class="book-btn disabled" data-book="2">第二册（未开放）</button>
-                <button class="book-btn disabled" data-book="3">第三册（未开放）</button>
+                <button class="trans-book-btn enabled" data-book="1">第一册</button>
+                <button class="trans-book-btn disabled" data-book="2">第二册（未开放）</button>
+                <button class="trans-book-btn disabled" data-book="3">第三册（未开放）</button>
             </div>
         </div>
 
         <!-- 单元选择界面（默认隐藏） -->
-        <div id="translationUnitSelect" style="display:none; text-align:center; margin-top:15px;">
+        <div id="trans-translationUnitSelect" style="display:none; text-align:center; margin-top:15px;">
             <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要翻译的单元</h4>
             <!-- 返回按钮（返回分册选择） -->
-            <button id="translationBackToBookSelect" class="back-btn">← 返回分册选择</button>
+            <button id="trans-translationBackToBookSelect" class="trans-back-btn">← 返回分册选择</button>
             <!-- 单元按钮组（1-16单元） -->
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
-                <button class="unit-btn" data-unit="1">1单元</button>
-                <button class="unit-btn" data-unit="2">2单元</button>
-                <button class="unit-btn" data-unit="3">3单元</button>
-                <button class="unit-btn" data-unit="4">4单元</button>
-                <button class="unit-btn" data-unit="5">5单元</button>
-                <button class="unit-btn" data-unit="6">6单元</button>
-                <button class="unit-btn" data-unit="7">7单元</button>
-                <button class="unit-btn" data-unit="8">8单元</button>
-                <button class="unit-btn" data-unit="9">9单元</button>
-                <button class="unit-btn" data-unit="10">10单元</button>
-                <button class="unit-btn" data-unit="11">11单元</button>
-                <button class="unit-btn" data-unit="12">12单元</button>
-                <button class="unit-btn" data-unit="13">13单元</button>
-                <button class="unit-btn" data-unit="14">14单元</button>
-                <button class="unit-btn" data-unit="15">15单元</button>
-                <button class="unit-btn" data-unit="16">16单元</button>
+                <button class="trans-unit-btn" data-unit="1">1单元</button>
+                <button class="trans-unit-btn" data-unit="2">2单元</button>
+                <button class="trans-unit-btn" data-unit="3">3单元</button>
+                <button class="trans-unit-btn" data-unit="4">4单元</button>
+                <button class="trans-unit-btn" data-unit="5">5单元</button>
+                <button class="trans-unit-btn" data-unit="6">6单元</button>
+                <button class="trans-unit-btn" data-unit="7">7单元</button>
+                <button class="trans-unit-btn" data-unit="8">8单元</button>
+                <button class="trans-unit-btn" data-unit="9">9单元</button>
+                <button class="trans-unit-btn" data-unit="10">10单元</button>
+                <button class="trans-unit-btn" data-unit="11">11单元</button>
+                <button class="trans-unit-btn" data-unit="12">12单元</button>
+                <button class="trans-unit-btn" data-unit="13">13单元</button>
+                <button class="trans-unit-btn" data-unit="14">14单元</button>
+                <button class="trans-unit-btn" data-unit="15">15单元</button>
+                <button class="trans-unit-btn" data-unit="16">16单元</button>
             </div>
         </div>
 
         <!-- 翻译练习界面（默认隐藏） -->
-        <div id="translationBox" style="display: none; margin-top: 15px;">
+        <div id="trans-translationBox" style="display: none; margin-top: 15px;">
             <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
-                已翻译：<span id="translationTotalCount">0</span> 题
+                已翻译：<span id="trans-translationTotalCount">0</span> 题
             </div>
-            <div class="prompt-box" id="translationPrompt"></div>
-            <!-- 检查核对的按钮 -->
-            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
-                <textarea id="translationInput" placeholder="请输入西班牙语翻译"
-                    style="
-                        padding: 8px; 
-                        width: 260px; 
-                        min-height: 80px; 
-                        font-family:'Times New Roman',serif;
-                        border: 1px solid #ddd; 
-                        border-radius: 6px;
-                        background: #f9f9f9; 
-                        outline: none; 
-                        font-size: 16px; 
-                        resize: vertical;
-                        white-space: pre-wrap;
-                        overflow-wrap: break-word;
-                        word-break: break-word;
-                        overflow-y: auto;">
-                </textarea>
-                <button id="translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-top: 10px; font-family:'Times New Roman',serif;">
-                    检查核对
-                </button>
+            <!-- 新增居中容器：确保提示框水平居中 -->
+            <div style="display: flex; justify-content: center; margin-bottom: 10px;">
+                 <div class="trans-prompt-box" id="trans-translationPrompt"></div>
             </div>
+
+            <div class="trans-prompt-box" id="trans-translationPrompt"></div>
+            <!-- 翻译输入框+检查按钮（按钮在输入框右侧，和听写模块一致） -->
+<div style="display: flex; align-items: flex-start; justify-content: center; gap: 10px; margin: 10px auto 20px; max-width: 550px;">
+    <!-- 输入框：宽度自适应，保留原有高度 -->
+    <textarea id="trans-translationInput" placeholder="请输入西班牙语翻译"
+        style="padding: 8px; flex: 1; min-width: 300px; min-height: 60px; font-family:'Times New Roman',serif; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; outline: none; font-size: 16px; resize: vertical; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; overflow-y: auto; margin: 0;"></textarea>
+    <!-- 检查按钮：和输入框顶部对齐，样式不变 -->
+    <button id="trans-translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; margin: 0;">检查核对</button>
+</div>
             <!-- 正确答案显示区域 -->
-            <div id="translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
+            <div id="trans-translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
             <!-- 下一句/结束练习按钮 -->
             <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-                <button id="translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
+                <button id="trans-translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
                     下一句
                 </button>
-                <button id="translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
+                <button id="trans-translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
                     结束练习
                 </button>
             </div>
@@ -581,7 +638,6 @@
                 document.getElementById('popupCloseBottom').addEventListener('click', () => {
                     document.body.removeChild(popup);
                     document.body.removeChild(mask);
-                    // 关闭后返回单元选择界面（可继续选其他单元）
                     document.getElementById('unitSelect').style.display = 'block';
                     this.resetDictado();
                 });
@@ -605,7 +661,6 @@
                 document.getElementById('dictadoTotalCount').textContent = '0';
                 this.startTime = null;
                 this.isDictadoStarted = false;
-                // 保留分册和单元选择（方便继续听写其他单元）
             },
 
             async cargarCSV(book, unit) {
@@ -689,7 +744,7 @@
                             alert(`第 ${book} 册暂未开放，敬请期待！`);
                             return;
                         }
-                        this.selectedBook = book; // 记录选中的分册
+                        this.selectedBook = book;
                         document.getElementById('bookSelect').style.display = 'none';
                         document.getElementById('unitSelect').style.display = 'block';
                     });
@@ -795,7 +850,6 @@
                 this.currentWord = this.palabras[randomIdx];
                 this.usedIndexes.push(randomIdx);
 
-                // 听写提示框内容（与输入框宽度一致）
                 document.getElementById('dictadoPrompt').innerHTML = 
                     `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
 
@@ -874,7 +928,7 @@
             }
         };
 
-        // 翻译模块（完全模仿听写模式：页面内选择，无弹窗）
+        // 翻译模块（完全独立，无冲突）
         const TranslationHandler = {
             words: [], // 存储当前单元的翻译数据
             totalCount: 0, // 总翻译数量
@@ -882,84 +936,83 @@
             countedIndexes: [], // 已计数的题目索引
             selectedBook: '', // 选中的分册（1/2/3）
             selectedUnit: '', // 选中的单元（1-16）
+            currentIndex: null, // 当前选中的题目索引
             init() {
                 this.bindEvents();
             },
 
             // 加载指定册数+单元的CSV文件（文件名格式：f1u1.csv → 第一册1单元）
-async loadCSV(book, unit) {
-    this.words = []; // 切换单元时清空旧数据
-    const fileName = `f${book}u${unit}.csv`;
-    // GitHub 仓库信息（和听写、阅读一致）
-    const githubUsername = "panke967";
-    const githubRepo = "-Eva-practice";
-    const githubBranch = "main";
-    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
-    
-    try { // try块开始
-        const response = await fetch(rawUrl);
-        if (!response.ok) throw new Error(`单元文件 ${fileName} 加载失败（链接：${rawUrl}）`);
-        
-        const text = await response.text();
-        const lines = text.trim().split('\n');
+            async loadCSV(book, unit) {
+                this.words = []; // 切换单元时清空旧数据
+                const fileName = `f${book}u${unit}.csv`;
+                // GitHub 仓库信息（和听写、阅读一致）
+                const githubUsername = "panke967";
+                const githubRepo = "-Eva-practice";
+                const githubBranch = "main";
+                const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
+                
+                try {
+                    const response = await fetch(rawUrl);
+                    if (!response.ok) throw new Error(`单元文件 ${fileName} 加载失败（链接：${rawUrl}）`);
+                    
+                    const text = await response.text();
+                    const lines = text.trim().split('\n');
 
-        // 循环解析CSV行（这里要确保循环体的{}完全闭合）
-        for (let i = 1; i < lines.length; i++) { // 跳过表头
-            const line = lines[i].trim();
-            if (!line) continue;
+                    for (let i = 1; i < lines.length; i++) { // 跳过表头
+                        const line = lines[i].trim();
+                        if (!line) continue;
 
-            // 解析双引号包裹的字段（支持字段内含逗号）
-            let parts = [];
-            let inQuotes = false;
-            let currentPart = '';
-            for (const char of line) {
-                if (char === '"') inQuotes = !inQuotes;
-                else if (char === ',' && !inQuotes) {
-                    parts.push(currentPart.trim());
-                    currentPart = '';
-                } else currentPart += char;
-            }
-            parts.push(currentPart.trim().replace(/^"|"$/g, ''));
+                        // 解析双引号包裹的字段（支持字段内含逗号）
+                        let parts = [];
+                        let inQuotes = false;
+                        let currentPart = '';
+                        for (const char of line) {
+                            if (char === '"') inQuotes = !inQuotes;
+                            else if (char === ',' && !inQuotes) {
+                                parts.push(currentPart.trim());
+                                currentPart = '';
+                            } else currentPart += char;
+                        }
+                        parts.push(currentPart.trim().replace(/^"|"$/g, ''));
 
-            // 双列数据解析（关键：确保这个if块的{}完整闭合）
-            if (parts.length === 2) {
-                const [es, cn] = parts;
-                // 仅校验 es 和 cn 不为空，不处理词性
-                if (es.trim() && cn.trim()) {
-                    this.words.push({ 
-                        es: es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, ''), // 清理特殊空格
-                        cn: cn.trim() 
-                    });
+                        // 双列数据解析（核心部分）
+                        if (parts.length === 2) {
+                            const [es, cn] = parts;
+                            if (es.trim() && cn.trim()) {
+                                this.words.push({ 
+                                    es: es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, ''),
+                                    cn: cn.trim() 
+                                });
+                            }
+                        }
+                    }
+
+                    console.log(`已加载第${book}册第${unit}单元，共${this.words.length}个翻译题`);
+                    if (this.words.length === 0) alert(`⚠️ ${fileName} 中无有效翻译数据`);
+                    return true;
+                } catch (err) {
+                    alert('翻译文件加载失败：' + err.message);
+                    console.error(err);
+                    return false;
                 }
-            }
-        } // 循环体结束（这里之前可能漏了}）
-
-        console.log(`已加载第${book}册第${unit}单元，共${this.words.length}个翻译题`);
-        if (this.words.length === 0) alert(`⚠️ ${fileName} 中无有效翻译数据`);
-        return true; // 加载成功返回true
-    } catch (err) { // catch块开始（现在能正确匹配try块）
-        alert('翻译文件加载失败：' + err.message);
-        console.error(err);
-        return false;
-    } // catch块结束
-},
+            },
 
             bindEvents() {
                 // 1. 点击「进入翻译练习」→ 显示分册选择界面
-                document.getElementById('translationStart').addEventListener('click', () => {
-                    document.getElementById('translationInit').style.display = 'none';
-                    document.getElementById('translationBookSelect').style.display = 'block';
+                document.getElementById('trans-translationStart').addEventListener('click', () => {
+                    document.getElementById('trans-translationInit').style.display = 'none';
+                    document.getElementById('trans-translationBookSelect').style.display = 'block';
                 });
 
                 // 2. 分册选择页返回 → 隐藏分册选择，显示初始按钮
-                document.getElementById('translationBackToInit').addEventListener('click', () => {
-                    document.getElementById('translationBookSelect').style.display = 'none';
-                    document.getElementById('translationInit').style.display = 'block';
+                document.getElementById('trans-translationBackToInit').addEventListener('click', () => {
+                    document.getElementById('trans-translationBookSelect').style.display = 'none';
+                    document.getElementById('trans-translationInit').style.display = 'block';
                     this.reset();
                 });
 
                 // 3. 选择分册（仅第一册可用）→ 显示单元选择界面
-                document.querySelectorAll('#translationBookSelect .book-btn').forEach(btn => {
+                document.querySelectorAll('#trans-translationBookSelect .trans-book-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const book = e.currentTarget.dataset.book;
                         if (e.currentTarget.classList.contains('disabled')) {
@@ -967,70 +1020,70 @@ async loadCSV(book, unit) {
                             return;
                         }
                         this.selectedBook = book;
-                        document.getElementById('translationBookSelect').style.display = 'none';
-                        document.getElementById('translationUnitSelect').style.display = 'block';
+                        document.getElementById('trans-translationBookSelect').style.display = 'none';
+                        document.getElementById('trans-translationUnitSelect').style.display = 'block';
                     });
                 });
 
                 // 4. 单元选择页返回 → 隐藏单元选择，显示分册选择
-                document.getElementById('translationBackToBookSelect').addEventListener('click', () => {
-                    document.getElementById('translationUnitSelect').style.display = 'none';
-                    document.getElementById('translationBookSelect').style.display = 'block';
+                document.getElementById('trans-translationBackToBookSelect').addEventListener('click', () => {
+                    document.getElementById('trans-translationUnitSelect').style.display = 'none';
+                    document.getElementById('trans-translationBookSelect').style.display = 'block';
                     this.reset();
                 });
 
                 // 5. 选择单元 → 加载对应文件并显示练习界面
-                document.querySelectorAll('#translationUnitSelect .unit-btn').forEach(btn => {
+                document.querySelectorAll('#trans-translationUnitSelect .trans-unit-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const unit = e.currentTarget.dataset.unit;
                         this.selectedUnit = unit;
 
                         const loadSuccess = await this.loadCSV(this.selectedBook, this.selectedUnit);
                         if (loadSuccess) {
-                            document.getElementById('translationUnitSelect').style.display = 'none';
-                            document.getElementById('translationBox').style.display = 'block';
-                            this.reset(); // 重置计数
-                            this.nextWord(); // 加载第一个翻译题
+                            document.getElementById('trans-translationUnitSelect').style.display = 'none';
+                            document.getElementById('trans-translationBox').style.display = 'block';
+                            this.reset();
+                            this.nextWord();
                         }
                     });
                 });
 
                 // 6. 检查核对按钮事件
-                document.getElementById('translationCheck').addEventListener('click', () => {
+                document.getElementById('trans-translationCheck').addEventListener('click', () => {
                     if (this.words.length === 0) return;
                     const currentWord = this.words[this.currentIndex];
-                    const answerEl = document.getElementById('translationAnswer');
+                    const answerEl = document.getElementById('trans-translationAnswer');
                     answerEl.textContent = `正确答案：${currentWord.es}`;
                     answerEl.style.display = 'block';
 
                     if (!this.countedIndexes.includes(this.currentIndex)) {
                         this.totalCount++;
                         this.countedIndexes.push(this.currentIndex);
-                        document.getElementById('translationTotalCount').textContent = this.totalCount;
+                        document.getElementById('trans-translationTotalCount').textContent = this.totalCount;
                     }
-                    document.getElementById('translationNext').disabled = false;
+                    document.getElementById('trans-translationNext').disabled = false;
                 });
 
                 // 7. 下一句按钮事件
-                document.getElementById('translationNext').addEventListener('click', () => {
+                document.getElementById('trans-translationNext').addEventListener('click', () => {
                     this.nextWord();
                 });
 
                 // 8. 结束练习按钮事件 → 返回单元选择界面
-                document.getElementById('translationEnd').addEventListener('click', () => {
+                document.getElementById('trans-translationEnd').addEventListener('click', () => {
                     if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
-                        document.getElementById('translationBox').style.display = 'none';
+                        document.getElementById('trans-translationBox').style.display = 'none';
                         this.reset();
-                        document.getElementById('translationUnitSelect').style.display = 'block'; // 返回单元选择
+                        document.getElementById('trans-translationUnitSelect').style.display = 'block';
                     }
                 });
             },
 
             // 切换下一个翻译题
             nextWord() {
-                document.getElementById('translationInput').value = '';
-                document.getElementById('translationAnswer').style.display = 'none';
-                document.getElementById('translationNext').disabled = true;
+                document.getElementById('trans-translationInput').value = '';
+                document.getElementById('trans-translationAnswer').style.display = 'none';
+                document.getElementById('trans-translationNext').disabled = true;
 
                 if (this.usedIndexes.length >= this.words.length) this.usedIndexes = [];
 
@@ -1041,9 +1094,9 @@ async loadCSV(book, unit) {
 
                 this.currentIndex = randomIdx;
                 this.usedIndexes.push(randomIdx);
-                const currentWord = this.words[randomIdx];
-                document.getElementById('translationPrompt').textContent = currentWord.cn;
-                document.getElementById('translationInput').focus();
+                const currentWord = this.words[this.currentIndex];
+                document.getElementById('trans-translationPrompt').textContent = currentWord.cn;
+                document.getElementById('trans-translationInput').focus();
             },
 
             // 重置练习状态（切换单元/结束练习时调用）
@@ -1051,7 +1104,7 @@ async loadCSV(book, unit) {
                 this.totalCount = 0;
                 this.usedIndexes = [];
                 this.countedIndexes = [];
-                document.getElementById('translationTotalCount').textContent = '0';
+                document.getElementById('trans-translationTotalCount').textContent = '0';
             }
         };
 
