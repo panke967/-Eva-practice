@@ -155,48 +155,42 @@
         }
 
         #musicBtn {
-    position: relative; /* 去掉原来的 fixed，因为外层容器已固定定位 */
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    background: #d93025;
-    color: #fff;
-    font-size: 22px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    font-family: "Times New Roman", serif;
-}
-#musicBtn:hover {
-    background: #c02516;
-    transform: scale(1.05);
-}
+            position: relative; /* 去掉原来的 fixed，因为外层容器已固定定位 */
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: #d93025;
+            color: #fff;
+            font-size: 22px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+        }
+        #musicBtn:hover {
+            background: #c02516;
+            transform: scale(1.05);
+        }
 
-/* 新增：下一首按钮样式（和播放按钮一致） */
-#nextSongBtn {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: none;
-    background: #d93025;
-    color: #fff;
-    font-size: 22px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    font-family: "Times New Roman", serif;
-}
-#nextSongBtn:hover {
-    background: #c02516;
-    transform: scale(1.05);
-}
+        /* 新增：下一首文字链接样式 */
+        #nextSongLink {
+            color: #d93025;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "Times New Roman", serif;
+            text-decoration: underline;
+            margin-left: 10px;
+            padding: 5px;
+        }
+        #nextSongLink:hover {
+            color: #c02516;
+            text-decoration: none;
+        }
 
         /* 听写模块提示框样式 */
         .prompt-box {
@@ -284,25 +278,50 @@
     <h1 class="page-title">欢迎来到Eva的练习小课堂</h1>
     <h2 class="page-subtitle">Bienvenidos al mini-aula de práctica de Eva</h2>
 
-    <!-- 原有播放/暂停按钮 + 新增下一首按钮 -->
-<div style="position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 999;">
-    <button id="musicBtn" title="播放/暂停">▶</button>
-    <button id="nextSongBtn" title="下一首">➡️</button> <!-- 新增下一首按钮 -->
-</div>
+    <!-- 播放/暂停按钮 + 下一首文字链接 -->
+    <div style="position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 5px; z-index: 999;">
+        <button id="musicBtn" title="播放/暂停">▶</button>
+        <span id="nextSongLink" title="下一首">下一首</span> <!-- 文字形式的下一首 -->
+    </div>
     <audio id="bgMusic">
         <source src="https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3" type="audio/mpeg">
         Tu navegador no soporta el audio.
-    </audio>
+     </audio>
 
-    <!-- 阅读练习板块 -->
+    <!-- 阅读-单词强化复习（修复CSV文件加载，使用专属lectura.csv） -->
     <div class="section">
         <h3 class="section-title">📖 阅读-单词强化复习</h3>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-            <button id="readingRefreshBtn" class="btn">进入阅读练习</button>
-            <button id="nextTextBtn" class="btn" style="display: none;">下一篇</button>
+        
+        <!-- 初始状态：显示「进入阅读练习」按钮（和翻译/听力一致） -->
+        <div id="readingInit" style="text-align: center;">
+            <button id="readingStart" class="btn" style="display: block; margin: 0 auto;">进入阅读练习</button>
         </div>
-        <div class="reading-container">
-            <div class="reading-content" id="lectura"></div>
+
+        <!-- 等级选择界面（默认隐藏，模仿分册选择） -->
+        <div id="readingLevelSelect" style="display:none; text-align:center; margin-top:15px;">
+            <h4 style="margin-bottom: 20px; color: #333;">请选择阅读等级</h4>
+            <!-- 返回按钮（和翻译/听力的返回键样式一致） -->
+            <button id="readingBackToInit" class="back-btn">← 返回</button>
+            <!-- 等级按钮组（A1/A2/B1/B2，仅A1可用） -->
+            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                <button class="book-btn enabled" data-level="A1">A1 等级</button>
+                <button class="book-btn disabled" data-level="A2">A2 等级（未开放）</button>
+                <button class="book-btn disabled" data-level="B1">B1 等级（未开放）</button>
+                <button class="book-btn disabled" data-level="B2">B2 等级（未开放）</button>
+            </div>
+        </div>
+
+        <!-- 阅读练习界面（默认隐藏，原阅读内容容器） -->
+        <div id="readingPracticeBox" style="display: none; margin-top: 15px;">
+            <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
+                <!-- 只保留「下一篇」按钮 -->
+                <button id="nextTextBtn" class="btn">下一篇</button>
+                <!-- 返回按钮（改为btn类，和下一篇格式一致） -->
+                <button id="readingBackToLevelSelect" class="btn">← 返回等级选择</button>
+            </div>
+            <div class="reading-container">
+                <div class="reading-content" id="lectura"></div>
+            </div>
         </div>
     </div>
 
@@ -364,15 +383,14 @@
                  <div class="trans-prompt-box" id="trans-translationPrompt"></div>
             </div>
 
-            <div class="trans-prompt-box" id="trans-translationPrompt"></div>
             <!-- 翻译输入框+检查按钮（按钮在输入框右侧，和听写模块一致） -->
-<div style="display: flex; align-items: flex-start; justify-content: center; gap: 10px; margin: 10px auto 20px; max-width: 550px;">
-    <!-- 输入框：宽度自适应，保留原有高度 -->
-    <textarea id="trans-translationInput" placeholder="请输入西班牙语翻译"
-        style="padding: 8px; flex: 1; min-width: 300px; min-height: 60px; font-family:'Times New Roman',serif; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; outline: none; font-size: 16px; resize: vertical; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; overflow-y: auto; margin: 0;"></textarea>
-    <!-- 检查按钮：和输入框顶部对齐，样式不变 -->
-    <button id="trans-translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; margin: 0;">检查核对</button>
-</div>
+            <div style="display: flex; align-items: flex-start; justify-content: center; gap: 10px; margin: 10px auto 20px; max-width: 550px;">
+                <!-- 输入框：宽度自适应，保留原有高度 -->
+                <textarea id="trans-translationInput" placeholder="请输入西班牙语翻译"
+                    style="padding: 8px; flex: 1; min-width: 300px; min-height: 60px; font-family:'Times New Roman',serif; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; outline: none; font-size: 16px; resize: vertical; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; overflow-y: auto; margin: 0;"></textarea>
+                <!-- 检查按钮：和输入框顶部对齐，样式不变 -->
+                <button id="trans-translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; margin: 0;">检查核对</button>
+            </div>
             <!-- 正确答案显示区域 -->
             <div id="trans-translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
             <!-- 下一句/结束练习按钮 -->
@@ -390,13 +408,17 @@
     <!-- 听写-单词熟悉复习 -->
     <div class="section">
         <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
-        <button id="dictadoStart" class="btn" style="display: block; margin: 0 auto;">进入听写练习</button>
+        
+        <!-- 1. 初始状态：仅显示「进入听写练习」按钮 -->
+        <div id="dictadoInit" style="text-align: center;">
+            <button id="dictadoStart" class="btn" style="display: block; margin: 0 auto;">进入听写练习</button>
+        </div>
 
-        <!-- 分册选择界面（默认隐藏） -->
-        <div id="bookSelect" style="display:none; margin-top:15px; text-align:center;">
+        <!-- 2. 分册选择界面（默认隐藏，仅在点击进入听写后显示） -->
+        <div id="dictadoBookSelect" style="display:none; text-align:center; margin-top:15px;">
             <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
-            <!-- 返回按钮 -->
-            <button id="backToDictadoStartFromBook" class="back-btn">← 返回</button>
+            <!-- 返回按钮：返回初始状态 -->
+            <button id="dictadoBackToInit" class="back-btn">← 返回</button>
             <!-- 分册按钮组（仅第一册可用） -->
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
                 <button class="book-btn enabled" data-book="1">第一册</button>
@@ -405,11 +427,11 @@
             </div>
         </div>
 
-        <!-- 单元选择界面（默认隐藏） -->
-        <div id="unitSelect" style="display:none; margin-top:15px; text-align:center;">
+        <!-- 3. 单元选择界面（默认隐藏，仅在选择分册后显示） -->
+        <div id="dictadoUnitSelect" style="display:none; text-align:center; margin-top:15px;">
             <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要听写的单元</h4>
-            <!-- 返回按钮（返回分册选择） -->
-            <button id="backToBookSelect" class="back-btn">← 返回分册选择</button>
+            <!-- 返回按钮：返回分册选择 -->
+            <button id="dictadoBackToBookSelect" class="back-btn">← 返回分册选择</button>
             <!-- 单元按钮组（1-16单元） -->
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
                 <button class="unit-btn" data-unit="1">1单元</button>
@@ -431,7 +453,7 @@
             </div>
         </div>
 
-        <!-- 学生信息弹窗 -->
+        <!-- 4. 学生信息弹窗（默认隐藏，仅在选择单元后显示） -->
         <div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
             <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
                 <button id="closePopupBtn" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
@@ -450,8 +472,8 @@
             </div>
         </div>
 
-        <!-- 听写界面 -->
-        <div id="dictadoBox" style="display:none;margin-top:15px;">
+        <!-- 5. 听写输入框界面（默认隐藏，仅在输入信息后显示，无分册/单元选择项） -->
+        <div id="dictadoBox" style="display:none; margin-top:15px; text-align: center;">
             <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
                 <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
                     已听写：<span id="dictadoTotalCount">0</span> 题
@@ -490,84 +512,152 @@
 
     <script>
         // 歌曲列表：新增的歌曲直接添加到数组末尾即可
-const musicList = [
-    "https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3", // 原有歌曲
-    "https://raw.githubusercontent.com/panke967/-Eva-practice/main/querido-tommy.mp3" // 新增歌曲
-];
-let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首开始）
+        const musicList = [
+            "https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3", // 原有歌曲
+            "https://raw.githubusercontent.com/panke967/-Eva-practice/main/querido-tommy.mp3" // 新增歌曲
+        ];
+        let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首开始）
 
-        // 阅读模块：从 lectura.csv 读取短文
+        // 阅读模块：修复CSV文件加载，使用专属的lectura.csv（而非翻译的f1u1.csv）
         const ReadingHandler = {
             texts: [],
+            selectedLevel: '', // 选中的阅读等级（A1/A2/B1/B2）
             init() {
-                this.loadCSV('lectura.csv');
                 this.bindEvents();
             },
 
-            async loadCSV(filePath) {
+            // 修复：加载阅读专属的CSV文件（lectura.csv），不同等级可扩展为lectura-A1.csv等
+            async loadCSV(level) {
+                this.texts = []; // 切换等级时清空旧数据
+                let fileName = '';
+                
+                // 等级对应文件配置（阅读专属文件，避免和翻译冲突）
+                switch(level) {
+                    case 'A1':
+                        fileName = 'lecturaA1.csv'; // 阅读A1等级加载专属的lectura.csv
+                        break;
+                    case 'A2':
+                        fileName = 'lecturaA2.csv'; // 后续扩展A2等级时使用
+                        break;
+                    case 'B1':
+                        fileName = 'lecturaB1.csv'; // 后续扩展B1等级时使用
+                        break;
+                    case 'B2':
+                        fileName = 'lecturaB2.csv'; // 后续扩展B2等级时使用
+                        break;
+                    default:
+                        alert('无效的阅读等级');
+                        return false;
+                }
+
                 try {
-                    // GitHub 仓库信息
+                    // GitHub 仓库信息（保持和其他模块一致）
                     const githubUsername = "panke967";
                     const githubRepo = "-Eva-practice";
                     const githubBranch = "main";
-                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${filePath}`;
+                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
                     
                     const response = await fetch(rawUrl);
-                    if (!response.ok) throw new Error(`文件 ${filePath} 加载失败（链接：${rawUrl}）`);
+                    if (!response.ok) throw new Error(`等级 ${level} 的阅读文件 ${fileName} 加载失败（链接：${rawUrl}）`);
+                    
                     const text = await response.text();
-                    this.parseCSV(text);
+                    this.parseCSV(text); // 解析CSV内容
+                    return true;
                 } catch (err) {
                     alert('阅读短文加载失败：' + err.message);
                     console.error(err);
+                    return false;
                 }
             },
 
+            // 优化CSV解析逻辑：支持每行一个完整短文（阅读专用格式）
             parseCSV(csvText) {
                 const lines = csvText.trim().split('\n');
                 this.texts = [];
 
-                for (let i = 1; i < lines.length; i++) {
+                for (let i = 0; i < lines.length; i++) { // 阅读CSV无需跳过表头（每行都是短文）
                     const line = lines[i].trim();
                     if (!line) continue;
 
-                    const cleanLine = line.replace(/^"|"$/g, '').replace(/,,+/g, ',').replace(/^,|,$/g, '');
+                    // 清理多余引号和空字符，保留短文完整格式
+                    const cleanLine = line.replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim();
                     if (cleanLine) {
                         this.texts.push(cleanLine);
                     }
                 }
 
-                console.log(`阅读模块加载完成 ${this.texts.length} 篇短文`);
-                if (this.texts.length === 0) alert('⚠️ 未从 CSV 中读取到任何短文，请检查文件格式');
+                console.log(`阅读模块（${this.selectedLevel}）加载完成 ${this.texts.length} 篇短文`);
+                if (this.texts.length === 0) alert(`⚠️ 未从 ${fileName} 中读取到任何短文，请检查文件格式`);
             },
 
+            // 绑定所有事件
             bindEvents() {
-    // 原有：阅读练习按钮事件（不变）
-    document.getElementById('readingRefreshBtn').addEventListener('click', () => this.loadRandomText());
-    document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
-    
-    // 原有：播放/暂停按钮事件（不变）
-    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
-    
-    // 新增：下一首按钮事件
-    document.getElementById('nextSongBtn').addEventListener('click', () => {
-        const bgMusic = document.getElementById('bgMusic');
-        const musicBtn = document.getElementById('musicBtn');
-        
-        // 1. 索引+1，循环到列表开头（最后一首→第一首）
-        currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
-        
-        // 2. 切换到下一首歌曲并播放
-        bgMusic.src = musicList[currentMusicIndex];
-        bgMusic.play().then(() => {
-            // 3. 同步更新播放按钮状态（显示暂停图标）
-            musicBtn.textContent = '❚❚';
-        }).catch(err => {
-            console.log('下一首播放失败：', err);
-            alert('请手动允许浏览器播放音频');
-        });
-    });
-}
+                // 1. 点击「进入阅读练习」→ 显示等级选择界面
+                document.getElementById('readingStart').addEventListener('click', () => {
+                    document.getElementById('readingInit').style.display = 'none';
+                    document.getElementById('readingLevelSelect').style.display = 'block';
+                });
 
+                // 2. 等级选择页返回 → 隐藏等级选择，显示初始按钮
+                document.getElementById('readingBackToInit').addEventListener('click', () => {
+                    document.getElementById('readingLevelSelect').style.display = 'none';
+                    document.getElementById('readingInit').style.display = 'block';
+                    this.reset(); // 重置阅读状态
+                });
+
+                // 3. 选择阅读等级（仅A1可用，其余提示未开放）
+                document.querySelectorAll('#readingLevelSelect .book-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const level = e.currentTarget.dataset.level;
+                        if (e.currentTarget.classList.contains('disabled')) {
+                            alert(`「${level} 等级」暂未开放，敬请期待！`);
+                            return;
+                        }
+                        this.selectedLevel = level;
+                        
+                        // 加载对应等级的阅读专属CSV文件
+                        const loadSuccess = await this.loadCSV(level);
+                        if (loadSuccess) {
+                            document.getElementById('readingLevelSelect').style.display = 'none';
+                            document.getElementById('readingPracticeBox').style.display = 'block';
+                            this.loadRandomText(); // 加载第一篇短文
+                        }
+                    });
+                });
+
+                // 4. 练习界面返回 → 隐藏练习界面，显示等级选择
+                document.getElementById('readingBackToLevelSelect').addEventListener('click', () => {
+                    document.getElementById('readingPracticeBox').style.display = 'none';
+                    document.getElementById('readingLevelSelect').style.display = 'block';
+                    this.reset(); // 重置阅读状态
+                });
+
+                // 5. 下一篇短文事件
+                document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
+                
+                // 6. 音乐播放/暂停（保持原有逻辑）
+                document.getElementById('musicBtn').addEventListener('click', this.toggleMusic.bind(this)); // 绑定this指向
+                // 7. 下一首文字链接事件
+                document.getElementById('nextSongLink').addEventListener('click', () => {
+                    const bgMusic = document.getElementById('bgMusic');
+                    const musicBtn = document.getElementById('musicBtn');
+                    
+                    // 1. 索引+1，循环到列表开头（最后一首→第一首）
+                    currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+                    
+                    // 2. 切换到下一首歌曲并播放
+                    bgMusic.src = musicList[currentMusicIndex];
+                    bgMusic.play().then(() => {
+                        // 3. 同步更新播放按钮状态（显示暂停图标）
+                        musicBtn.textContent = '❚❚';
+                    }).catch(err => {
+                        console.log('下一首播放失败：', err);
+                        alert('请手动允许浏览器播放音频');
+                    });
+                });
+            },
+
+            // 加载随机短文（保持原有功能）
             loadRandomText() {
                 if (this.texts.length === 0) {
                     alert('暂无可用阅读短文，请稍后重试');
@@ -576,15 +666,21 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 const randomIdx = Math.floor(Math.random() * this.texts.length);
                 const text = this.texts[randomIdx];
                 const lecturaDiv = document.getElementById('lectura');
-                lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>');
+                // 优化显示：保留短文换行和标点，提升阅读体验
+                lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>')
+                                          .replace(/\n/g, '<br>');
                 
                 lecturaDiv.style.display = 'block';
-                
-                document.getElementById('readingRefreshBtn').disabled = true;
-                document.getElementById('readingRefreshBtn').style.opacity = "0.6";
-                document.getElementById('nextTextBtn').style.display = "inline-block";
             },
 
+            // 重置阅读状态（切换等级/返回时调用）
+            reset() {
+                this.texts = [];
+                this.selectedLevel = '';
+                document.getElementById('lectura').style.display = 'none';
+            },
+
+            // 音乐播放/暂停（修复this指向问题）
             toggleMusic() {
                 const musicBtn = document.getElementById('musicBtn');
                 const bgMusic = document.getElementById('bgMusic');
@@ -594,6 +690,7 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                     bgMusic.pause();
                     musicBtn.textContent = '▶';
                 } else {
+                    bgMusic.src = musicList[currentMusicIndex]; // 使用歌曲列表
                     bgMusic.play().then(() => {
                         musicBtn.textContent = '❚❚';
                     }).catch(err => {
@@ -601,18 +698,17 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                         alert('请手动允许浏览器播放音频');
                     });
                 }
-                 // 监听歌曲播放结束事件 → 自动播放下一首
-    bgMusic.onended = function() {
-        // 索引+1，循环到列表开头（最后一首放完回到第一首）
-        currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
-        // 播放下一首
-        bgMusic.src = musicList[currentMusicIndex];
-        bgMusic.play();
-    };
+
+                // 监听歌曲结束，自动下一首
+                bgMusic.onended = function() {
+                    currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+                    bgMusic.src = musicList[currentMusicIndex];
+                    bgMusic.play();
+                };
             }
         };
 
-        // 听写模块
+        // 听写模块（层级流程：进入听写→选分册→选单元→输信息→显示输入框）
         const DictadoHandler = {
             palabras: [],
             usedIndexes: [],
@@ -633,6 +729,7 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 this.bindEvents();
             },
 
+            // 结束听写，显示结果
             endDictado() {
                 document.getElementById('dictadoBox').style.display = 'none';
                 const accuracy = this.total > 0 ? (this.correct / this.total * 100).toFixed(2) : 0;
@@ -698,13 +795,15 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 document.getElementById('popupCloseBottom').addEventListener('click', () => {
                     document.body.removeChild(popup);
                     document.body.removeChild(mask);
-                    document.getElementById('unitSelect').style.display = 'block';
+                    // 关闭结果后返回初始状态
                     this.resetDictado();
+                    document.getElementById('dictadoInit').style.display = 'block';
                 });
 
                 this.resetDictado();
             },
 
+            // 重置听写状态
             resetDictado() {
                 this.correct = 0;
                 this.total = 0;
@@ -714,6 +813,8 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 this.usedIndexes = [];
                 this.studentName = '';
                 this.studentId = '';
+                this.selectedBook = null;
+                this.selectedUnit = null;
                 document.getElementById('dictadoInput').value = '';
                 document.getElementById('dictadoResult').textContent = '';
                 document.getElementById('dictadoCheck').disabled = false;
@@ -723,6 +824,7 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 this.isDictadoStarted = false;
             },
 
+            // 加载指定单元的单词
             async cargarCSV(book, unit) {
                 try {
                     // GitHub 仓库信息
@@ -782,22 +884,22 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 }
             },
 
+            // 绑定所有事件（层级流程控制）
             bindEvents() {
-                // 1. 点击「进入听写练习」→ 显示分册选择界面
+                // 1. 初始状态：点击「进入听写练习」→ 显示分册选择
                 document.getElementById('dictadoStart').addEventListener('click', () => {
-                    document.getElementById('dictadoStart').style.display = 'none';
-                    document.getElementById('bookSelect').style.display = 'block';
+                    document.getElementById('dictadoInit').style.display = 'none';
+                    document.getElementById('dictadoBookSelect').style.display = 'block';
                 });
 
-                // 2. 分册选择页返回 → 隐藏分册选择，显示「进入听写练习」按钮
-                document.getElementById('backToDictadoStartFromBook').addEventListener('click', () => {
-                    document.getElementById('bookSelect').style.display = 'none';
-                    document.getElementById('dictadoStart').style.display = 'block';
-                    this.resetDictado();
+                // 2. 分册选择页：点击「返回」→ 回到初始状态
+                document.getElementById('dictadoBackToInit').addEventListener('click', () => {
+                    document.getElementById('dictadoBookSelect').style.display = 'none';
+                    document.getElementById('dictadoInit').style.display = 'block';
                 });
 
-                // 3. 选择分册（仅第一册可用）→ 显示对应分册的单元选择
-                document.querySelectorAll('.book-btn').forEach(btn => {
+                // 3. 分册选择页：点击分册 → 显示单元选择
+                document.querySelectorAll('#dictadoBookSelect .book-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const book = e.currentTarget.dataset.book;
                         if (e.currentTarget.classList.contains('disabled')) {
@@ -805,33 +907,39 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                             return;
                         }
                         this.selectedBook = book;
-                        document.getElementById('bookSelect').style.display = 'none';
-                        document.getElementById('unitSelect').style.display = 'block';
+                        document.getElementById('dictadoBookSelect').style.display = 'none';
+                        document.getElementById('dictadoUnitSelect').style.display = 'block';
                     });
                 });
 
-                // 4. 单元选择页返回 → 隐藏单元选择，显示分册选择
-                document.getElementById('backToBookSelect').addEventListener('click', () => {
-                    document.getElementById('unitSelect').style.display = 'none';
-                    document.getElementById('bookSelect').style.display = 'block';
-                    this.resetDictado();
+                // 4. 单元选择页：点击「返回」→ 回到分册选择
+                document.getElementById('dictadoBackToBookSelect').addEventListener('click', () => {
+                    document.getElementById('dictadoUnitSelect').style.display = 'none';
+                    document.getElementById('dictadoBookSelect').style.display = 'block';
                 });
 
-                // 5. 选择单元（1-16）→ 加载该单元单词，显示信息弹窗
-                document.querySelectorAll('.unit-btn').forEach(btn => {
+                // 5. 单元选择页：点击单元 → 显示学生信息弹窗
+                document.querySelectorAll('#dictadoUnitSelect .unit-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const unit = e.currentTarget.dataset.unit;
                         this.selectedUnit = unit;
 
+                        // 加载该单元单词
                         const loadSuccess = await this.cargarCSV(this.selectedBook, unit);
                         if (loadSuccess) {
-                            document.getElementById('unitSelect').style.display = 'none';
+                            document.getElementById('dictadoUnitSelect').style.display = 'none';
                             document.getElementById('studentInfoPopup').style.display = 'flex';
                         }
                     });
                 });
 
-                // 6. 确认学生信息 → 开始听写
+                // 6. 学生信息弹窗：点击「关闭」→ 回到单元选择
+                document.getElementById('closePopupBtn').addEventListener('click', () => {
+                    document.getElementById('studentInfoPopup').style.display = 'none';
+                    document.getElementById('dictadoUnitSelect').style.display = 'block';
+                });
+
+                // 7. 学生信息弹窗：点击「确认」→ 显示听写输入框（仅输入框，无选择项）
                 document.getElementById('confirmInfoBtn').addEventListener('click', () => {
                     const name = document.getElementById('studentName').value.trim();
                     const id = document.getElementById('studentId').value.trim();
@@ -846,8 +954,9 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                     
                     document.getElementById('studentInfoPopup').style.display = 'none';
                     document.getElementById('dictadoBox').style.display = 'block';
-                    this.nuevaPalabra();
+                    this.nuevaPalabra(); // 加载第一个单词
                     
+                    // 清空输入框
                     document.getElementById('studentName').value = '';
                     document.getElementById('studentId').value = '';
 
@@ -857,28 +966,22 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                     }
                 });
 
-                // 7. 关闭学生信息弹窗 → 返回单元选择
-                document.getElementById('closePopupBtn').addEventListener('click', () => {
-                    document.getElementById('studentInfoPopup').style.display = 'none';
-                    document.getElementById('unitSelect').style.display = 'block';
-                });
-
-                // 8. 听写检查
+                // 8. 听写输入框：点击「确定」→ 检查答案
                 document.getElementById('dictadoCheck').addEventListener('click', () => {
                     this.verificar();
                 });
 
-                // 9. 下一个单词
+                // 9. 听写输入框：点击「下一个」→ 加载下一个单词
                 document.getElementById('dictadoNext').addEventListener('click', () => {
                     this.nuevaPalabra();
                 });
 
-                // 10. 回车提交
+                // 10. 听写输入框：回车提交答案
                 document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
                     if (e.key === 'Enter') this.verificar();
                 });
 
-                // 11. 结束听写
+                // 11. 听写输入框：点击「结束听写」→ 显示结果
                 document.getElementById('dictadoEnd').addEventListener('click', () => {
                     if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
                         this.endDictado();
@@ -886,6 +989,7 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 });
             },
 
+            // 加载下一个单词
             nuevaPalabra() {
                 if (this.palabras.length === 0) return;
 
@@ -918,10 +1022,12 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 document.getElementById('dictadoInput').focus();
             },
 
+            // 移除重音符号
             removeAccents(str) {
                 return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
             },
 
+            // 检查答案
             verificar() {
                 if (this.isChecked) return;
                 const input = document.getElementById('dictadoInput').value.trim();
@@ -976,6 +1082,7 @@ let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首�
                 document.getElementById('dictadoTotalCount').textContent = this.total;
             },
 
+            // 播放单词读音
             playPronunciation(word) {
                 if ('speechSynthesis' in window) {
                     window.speechSynthesis.cancel();
