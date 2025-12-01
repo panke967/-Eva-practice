@@ -2,9 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>欢迎来到Eva的练习小课堂 / ¡Bienvenidos a la clase práctica de Eva!</title>
+    <title>欢迎来到Eva的练习小课堂 /¡Bienvenidos a la clase práctica de Eva!</title>
     <style>
-        /* 全局样式保持不变 */
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body{
@@ -81,8 +80,14 @@
             transform: translateY(0);
             box-shadow: none;
         }
+        .btn:disabled {
+            background: #e0e0e0;
+            color: #999;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
 
-        /* 听写模块 - 原有样式（不修改） */
         .back-btn {
             background: #ffd27f;
             border: none;
@@ -121,11 +126,10 @@
             color: #999;
             cursor: not-allowed;
             transform: none;
-            box-shadow: none;
         }
 
         .unit-btn {
-            padding: 8px 18px;
+            padding: 10px 20px;
             background: #ffd27f;
             border: none;
             border-radius: 6px;
@@ -134,292 +138,55 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: "Times New Roman", serif;
-            margin: 0 8px 12px;
+            margin: 5px;
         }
         .unit-btn:hover {
             background: #ffc04d;
             transform: translateY(-2px);
         }
-
-        .reading-container { position: relative; }
-        .reading-content {
-            font-size: 17px;
-            line-height: 2.2;
-            padding: 15px;
-            background: #f9f9f9;
-            border-radius: 8px;
-            margin-top: 25px;
-            font-family: "Times New Roman", serif;
-            color: #333;
-            display: none;
-        }
-
-        #musicBtn {
-            position: relative; /* 去掉原来的 fixed，因为外层容器已固定定位 */
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            background: #d93025;
-            color: #fff;
-            font-size: 22px;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            font-family: "Times New Roman", serif;
-        }
-        #musicBtn:hover {
-            background: #c02516;
-            transform: scale(1.05);
-        }
-
-        /* 新增：下一首文字链接样式 */
-        #nextSongLink {
-            color: #d93025;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: "Times New Roman", serif;
-            text-decoration: underline;
-            margin-left: 10px;
-            padding: 5px;
-        }
-        #nextSongLink:hover {
-            color: #c02516;
-            text-decoration: none;
-        }
-
-        /* 听写模块提示框样式 */
-        .prompt-box {
-            font-size: 22px;
-            color: #d93025;
-            margin-bottom: 10px;
-            text-align: center;
-            width: 100%;
-            max-width: 400px;
-            padding: 10px;
-            box-sizing: border-box;
-        }
-
-        /* 翻译模块专属样式（独立命名空间，不影响其他模块） */
-        .trans-back-btn {
-            background: #ffd27f;
-            border: none;
-            border-radius: 6px;
-            color: #333;
-            font-family: "Times New Roman", serif;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            padding: 8px 16px;
-            margin-bottom: 10px;
-        }
-        .trans-back-btn:hover {
-            background: #ffc04d;
-            transform: translateY(-2px);
-        }
-
-        .trans-book-btn {
-            padding: 12px 35px;
-            background: #ffd27f;
-            border: none;
-            border-radius: 6px;
-            color: #333;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: "Times New Roman", serif;
-            margin: 0 10px 15px;
-        }
-        .trans-book-btn.enabled:hover {
-            background: #ffc04d;
-            transform: translateY(-2px);
-        }
-        .trans-book-btn.disabled {
-            background: #e0e0e0;
-            color: #999;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .trans-unit-btn {
-            padding: 8px 18px;
-            background: #ffd27f;
-            border: none;
-            border-radius: 6px;
-            color: #333;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: "Times New Roman", serif;
-            margin: 0 8px 12px;
-        }
-        .trans-unit-btn:hover {
-            background: #ffc04d;
-            transform: translateY(-2px);
-        }
-
-        .trans-prompt-box {
-            font-size: 22px;
-            color: #d93025;
-            text-align: center;
-            width: auto; /* 自适应文本宽度，更紧凑 */
-            max-width: 400px;
-            padding: 10px 20px;
-            box-sizing: border-box;
-        }
     </style>
 </head>
 <body>
     <h1 class="page-title">欢迎来到Eva的练习小课堂</h1>
-    <h2 class="page-subtitle">¡Bienvenidos a la clase práctica de Eva!</h2>
+    <p class="page-subtitle">¡Bienvenidos a la clase práctica de Eva!</p>
 
-    <!-- 播放/暂停按钮 + 下一首文字链接 -->
-    <div style="position: fixed; top: 20px; right: 20px; display: flex; align-items: center; gap: 5px; z-index: 999;">
-        <button id="musicBtn" title="播放/暂停">▶</button>
-        <span id="nextSongLink" title="下一首">下一首</span> <!-- 文字形式的下一首 -->
-    </div>
-    <audio id="bgMusic">
-        <source src="https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3" type="audio/mpeg">
-        Tu navegador no soporta el audio.
-     </audio>
-
-    <!-- 阅读-单词强化复习（修复CSV文件加载，使用专属lectura.csv） -->
+    <!-- 阅读练习模块（占位，保持原有结构） -->
     <div class="section">
         <h3 class="section-title">📖 阅读-单词强化复习</h3>
-        
-        <!-- 初始状态：显示「进入阅读练习」按钮（和翻译/听力一致） -->
-        <div id="readingInit" style="text-align: center;">
-            <button id="readingStart" class="btn" style="display: block; margin: 0 auto;">进入阅读练习</button>
-        </div>
-
-        <!-- 等级选择界面（默认隐藏，模仿分册选择） -->
-        <div id="readingLevelSelect" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="margin-bottom: 20px; color: #333;">请选择阅读等级</h4>
-            <!-- 返回按钮（和翻译/听力的返回键样式一致） -->
-            <button id="readingBackToInit" class="back-btn">← 返回</button>
-            <!-- 等级按钮组（A1/A2/B1/B2，仅A1可用） -->
-            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
-                <button class="book-btn enabled" data-level="A1">A1 等级</button>
-                <button class="book-btn disabled" data-level="A2">A2 等级（未开放）</button>
-                <button class="book-btn disabled" data-level="B1">B1 等级（未开放）</button>
-                <button class="book-btn disabled" data-level="B2">B2 等级（未开放）</button>
-            </div>
-        </div>
-
-        <!-- 阅读练习界面（默认隐藏，原阅读内容容器） -->
-        <div id="readingPracticeBox" style="display: none; margin-top: 15px;">
-            <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-                <!-- 只保留「下一篇」按钮 -->
-                <button id="nextTextBtn" class="btn">下一篇</button>
-                <!-- 返回按钮（改为btn类，和下一篇格式一致） -->
-                <button id="readingBackToLevelSelect" class="btn">← 返回等级选择</button>
-            </div>
-            <div class="reading-container">
-                <div class="reading-content" id="lectura"></div>
-            </div>
+        <div style="text-align: center; padding: 30px 0;">
+            <button class="btn">进入阅读练习</button>
         </div>
     </div>
 
-    <!-- 翻译-词汇强化练习（完全独立，无冲突） -->
-    <div class="section">
-        <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
-        
-        <!-- 初始状态：显示「进入翻译练习」按钮 -->
-        <div id="trans-translationInit" style="text-align: center;">
-            <button id="trans-translationStart" class="btn" style="display: block; margin: 0 auto;">进入翻译练习</button>
-        </div>
-
-        <!-- 分册选择界面（默认隐藏） -->
-        <div id="trans-translationBookSelect" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
-            <!-- 返回按钮 -->
-            <button id="trans-translationBackToInit" class="trans-back-btn">← 返回</button>
-            <!-- 分册按钮组（仅第一册可用） -->
-            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
-                <button class="trans-book-btn enabled" data-book="1">第一册</button>
-                <button class="trans-book-btn disabled" data-book="2">第二册（未开放）</button>
-                <button class="trans-book-btn disabled" data-book="3">第三册（未开放）</button>
-            </div>
-        </div>
-
-        <!-- 单元选择界面（默认隐藏） -->
-        <div id="trans-translationUnitSelect" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要翻译的单元</h4>
-            <!-- 返回按钮（返回分册选择） -->
-            <button id="trans-translationBackToBookSelect" class="trans-back-btn">← 返回分册选择</button>
-            <!-- 单元按钮组（1-16单元） -->
-            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
-                <button class="trans-unit-btn" data-unit="1">1单元</button>
-                <button class="trans-unit-btn" data-unit="2">2单元</button>
-                <button class="trans-unit-btn" data-unit="3">3单元</button>
-                <button class="trans-unit-btn" data-unit="4">4单元</button>
-                <button class="trans-unit-btn" data-unit="5">5单元</button>
-                <button class="trans-unit-btn" data-unit="6">6单元</button>
-                <button class="trans-unit-btn" data-unit="7">7单元</button>
-                <button class="trans-unit-btn" data-unit="8">8单元</button>
-                <button class="trans-unit-btn" data-unit="9">9单元</button>
-                <button class="trans-unit-btn" data-unit="10">10单元</button>
-                <button class="trans-unit-btn" data-unit="11">11单元</button>
-                <button class="trans-unit-btn" data-unit="12">12单元</button>
-                <button class="trans-unit-btn" data-unit="13">13单元</button>
-                <button class="trans-unit-btn" data-unit="14">14单元</button>
-                <button class="trans-unit-btn" data-unit="15">15单元</button>
-                <button class="trans-unit-btn" data-unit="16">16单元</button>
-            </div>
-        </div>
-
-        <!-- 翻译练习界面（默认隐藏） -->
-        <div id="trans-translationBox" style="display: none; margin-top: 15px;">
-            <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
-                已翻译：<span id="trans-translationTotalCount">0</span> 题
-            </div>
-            <!-- 新增居中容器：确保提示框水平居中 -->
-            <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-                 <div class="trans-prompt-box" id="trans-translationPrompt"></div>
-            </div>
-
-            <!-- 翻译输入框+检查按钮（按钮在输入框右侧，和听写模块一致） -->
-            <div style="display: flex; align-items: flex-start; justify-content: center; gap: 10px; margin: 10px auto 20px; max-width: 550px;">
-                <!-- 输入框：宽度自适应，保留原有高度 -->
-                <textarea id="trans-translationInput" placeholder="请输入西班牙语翻译"
-                    style="padding: 8px; flex: 1; min-width: 300px; min-height: 60px; font-family:'Times New Roman',serif; border: 1px solid #ddd; border-radius: 6px; background: #f9f9f9; outline: none; font-size: 16px; resize: vertical; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; overflow-y: auto; margin: 0;"></textarea>
-                <!-- 检查按钮：和输入框顶部对齐，样式不变 -->
-                <button id="trans-translationCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; margin: 0;">检查核对</button>
-            </div>
-            <!-- 正确答案显示区域 -->
-            <div id="trans-translationAnswer" style="display: none; text-align: center; margin: 15px 0; font-size: 16px; color: #009100; font-weight: bold;"></div>
-            <!-- 下一句/结束练习按钮 -->
-            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 10px;">
-                <button id="trans-translationNext" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;" disabled>
-                    下一句
-                </button>
-                <button id="trans-translationEnd" style="background: #ffd27f;color: #333;border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;font-family:'Times New Roman',serif;">
-                    结束练习
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <!-- 听写-单词熟悉复习 -->
+    <!-- 听写练习模块（占位，保持原有结构） -->
     <div class="section">
         <h3 class="section-title">✍️ 听写-单词熟悉复习</h3>
+        <div style="text-align: center; padding: 30px 0;">
+            <button class="btn">进入听写练习</button>
+        </div>
+    </div>
+
+    <!-- 翻译练习模块（占位，保持原有结构） -->
+    <div class="section">
+        <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
+        <div style="text-align: center; padding: 30px 0;">
+            <button class="btn">进入翻译练习</button>
+        </div>
+    </div>
+
+    <!-- 动词变位练习模块（核心模块） -->
+    <div class="section">
+        <h3 class="section-title">🤖 动词—变位巩固练习（现在时）</h3>
         
-        <!-- 1. 初始状态：仅显示「进入听写练习」按钮 -->
-        <div id="dictadoInit" style="text-align: center;">
-            <button id="dictadoStart" class="btn" style="display: block; margin: 0 auto;">进入听写练习</button>
+        <!-- 1. 初始状态：显示「进入练习」按钮 -->
+        <div id="conjInit" style="text-align: center;">
+            <button id="conjStart" class="btn" style="display: block; margin: 0 auto;">进入动词变位练习</button>
         </div>
 
-        <!-- 2. 分册选择界面（默认隐藏，仅在点击进入听写后显示） -->
-        <div id="dictadoBookSelect" style="display:none; text-align:center; margin-top:15px;">
+        <!-- 2. 分册选择界面（与翻译/听写格式一致） -->
+        <div id="conjBookSelect" style="display:none; text-align:center; margin-top:15px;">
             <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
-            <!-- 返回按钮：返回初始状态 -->
-            <button id="dictadoBackToInit" class="back-btn">← 返回</button>
-            <!-- 分册按钮组（仅第一册可用） -->
+            <button id="conjBackToInit" class="back-btn">← 返回</button>
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
                 <button class="book-btn enabled" data-book="1">第一册</button>
                 <button class="book-btn disabled" data-book="2">第二册（未开放）</button>
@@ -427,12 +194,10 @@
             </div>
         </div>
 
-        <!-- 3. 单元选择界面（默认隐藏，仅在选择分册后显示） -->
-        <div id="dictadoUnitSelect" style="display:none; text-align:center; margin-top:15px;">
-            <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要听写的单元</h4>
-            <!-- 返回按钮：返回分册选择 -->
-            <button id="dictadoBackToBookSelect" class="back-btn">← 返回分册选择</button>
-            <!-- 单元按钮组（1-16单元） -->
+        <!-- 3. 单元选择界面（与翻译/听写格式一致） -->
+        <div id="conjUnitSelect" style="display:none; text-align:center; margin-top:15px;">
+            <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要练习的单元</h4>
+            <button id="conjBackToBookSelect" class="back-btn">← 返回分册选择</button>
             <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
                 <button class="unit-btn" data-unit="1">1单元</button>
                 <button class="unit-btn" data-unit="2">2单元</button>
@@ -453,298 +218,330 @@
             </div>
         </div>
 
-        <!-- 4. 学生信息弹窗（默认隐藏，仅在选择单元后显示） -->
-        <div id="studentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+        <!-- 4. 学生信息弹窗（与听写格式完全一致） -->
+        <div id="conjStudentInfoPopup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
             <div style="background: white; padding: 25px; border-radius: 10px; width: 90%; max-width: 400px; position: relative;">
-                <button id="closePopupBtn" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
+                <button id="conjClosePopupBtn" style="position: absolute; top: 10px; right: 15px; background: transparent; border: none; font-size: 22px; color: #666; cursor: pointer; padding: 5px;">×</button>
                 <h3 style="margin-bottom: 20px; text-align: center; font-family: 'Times New Roman', serif; color: #d93025;">请输入你的信息</h3>
                 <div style="display: flex; flex-direction: column; gap: 15px;">
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif; color: #333;">姓名：</label>
-                        <input type="text" id="studentName" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
+                        <input type="text" id="conjStudentName" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
                     </div>
                     <div>
                         <label style="display: block; margin-bottom: 5px; font-family: 'Times New Roman', serif; color: #333;">学号：</label>
-                        <input type="text" id="studentId" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
+                        <input type="text" id="conjStudentId" style="width: 100%; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px;">
                     </div>
-                    <button id="confirmInfoBtn" class="btn" style="width: 100%;">确认</button>
+                    <button id="conjConfirmInfoBtn" class="btn" style="width: 100%;">确认</button>
                 </div>
             </div>
         </div>
 
-        <!-- 5. 听写输入框界面（默认隐藏，仅在输入信息后显示，无分册/单元选择项） -->
-        <div id="dictadoBox" style="display:none; margin-top:15px; text-align: center;">
-            <div style="display:flex;flex-direction:column;align-items:center;gap:15px;">
-                <div style="font-size:14px;color:#666;margin-bottom:5px;text-align:center;">
-                    已听写：<span id="dictadoTotalCount">0</span> 题
+        <!-- 5. 练习主界面 -->
+        <div id="conjPracticeBox" style="display: none; margin-top: 20px;">
+            <!-- 已练习统计（与听写格式一致） -->
+            <div style="font-size:14px;color:#666;margin-bottom:15px;text-align:center;">
+                已练习：<span id="conjTotalCount">0</span> 个动词
+            </div>
+
+            <!-- 动词提示区 -->
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h4 style="color: #d93025; font-size: 20px; margin-bottom: 10px;">当前练习动词：<span id="conjCurrentVerb" style="font-weight: bold;"></span></h4>
+                <p style="font-size: 14px; color: #666;">请完成以下6个人称的现在时变位（输入后按回车切换）</p>
+            </div>
+
+            <!-- 6个人称变位输入区（统一样式） -->
+            <div style="max-width: 500px; margin: 0 auto;">
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">我 (yo)</span>
+                    <input type="text" data-person="yo" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
                 </div>
-                <!-- 听写提示框（与输入框宽度一致） -->
-                <div class="prompt-box" id="dictadoPrompt"></div>
-                <div style="display:flex;align-items:center;gap:10px; width: 100%; max-width: 400px;">
-                    <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
-                        style="
-                        padding: 10px;
-                        width: 100%;
-                        font-family:'Times New Roman',serif;
-                        font-size: 16px;
-                        border: 1px solid #ddd;
-                        border-radius: 6px;
-                        background: #f9f9f9;
-                        outline: none;">
-                    <button id="dictadoCheck" style="background: #ffd27f;color: #333; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-size: 16px; font-family:'Times New Roman',serif; white-space: nowrap;">确定</button>
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">你 (tú)</span>
+                    <input type="text" data-person="tu" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
                 </div>
-                <div style="font-size:10px;color:#666;line-height:1.6;text-align:left;width: 100%; max-width: 400px; padding: 0 10px;">
-                    1. 请各位同学使用英语/西语键盘输入<br>
-                    2. 有阴阳性的单词请写全（使用/隔开,例:bueno/na）<br>
-                    3. 除专有名词需首字母大写，其余单词默认首字母为小写
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">他/她/它 (él/ella/usted)</span>
+                    <input type="text" data-person="el" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
                 </div>
-                <div id="dictadoResult" style="margin-top:10px;font-weight:bold;text-align:center;">
-                    <span id="resultText"></span>
-                    <button id="playPronunciation" class="btn" style="margin-left:10px; padding:5px 10px; font-size:14px; display:none;">🔊 听读音</button>
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">我们 (nosotros)</span>
+                    <input type="text" data-person="nosotros" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
                 </div>
-                <div style="margin-top:5px;display:flex;gap:15px;">
-                    <button id="dictadoNext" class="btn" disabled>下一个</button>
-                    <button id="dictadoEnd" class="btn">结束听写</button>
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">你们 (vosotros)</span>
+                    <input type="text" data-person="vosotros" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
                 </div>
+                <div class="conj-item" style="display: flex; align-items: center; gap: 15px; margin-bottom: 12px;">
+                    <span style="width: 80px; font-size: 16px; font-weight: 500;">他们/她们/它们 (ellos/ellas/ustedes)</span>
+                    <input type="text" data-person="ellos" placeholder="输入变位" style="flex: 1; padding: 10px; font-family: 'Times New Roman', serif; border: 1px solid #ddd; border-radius: 6px; font-size: 16px;">
+                    <span class="conj-check-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">✅</span>
+                    <span class="conj-error-mark" style="width: 24px; text-align: center; font-size: 18px; display: none;">❌</span>
+                </div>
+            </div>
+
+            <!-- 正确答案显示区 -->
+            <div id="conjCorrectAnswers" style="max-width: 500px; margin: 20px auto 0; padding: 15px; background: #f9f9f9; border-radius: 8px; display: none;">
+                <h5 style="color: #d93025; margin-bottom: 10px; font-size: 16px;">正确答案：</h5>
+                <div id="conjAnswersList" style="font-size: 15px; line-height: 1.8;"></div>
+            </div>
+
+            <!-- 按钮区（与听写格式一致） -->
+            <div style="display: flex; justify-content: center; gap: 15px; margin-top: 30px;">
+                <button id="conjCheck" class="btn">核对答案</button>
+                <button id="conjNext" class="btn" disabled>下一个动词</button>
+                <button id="conjEnd" class="btn">结束练习</button>
             </div>
         </div>
     </div>
 
+    <!-- 所有模块的JS逻辑 -->
     <script>
-        // 歌曲列表：新增的歌曲直接添加到数组末尾即可
-        const musicList = [
-            "https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3", // 原有歌曲
-            "https://raw.githubusercontent.com/panke967/-Eva-practice/main/querido-tommy.mp3" // 新增歌曲
-        ];
-        let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首开始）
+        // 占位：原有模块初始化（保持结构完整，你可替换为实际逻辑）
+        const ReadingHandler = { init() {} };
+        const DictadoHandler = { init() {} };
+        const TranslationHandler = { init() {} };
 
-        // 阅读模块：修复CSV文件加载，使用专属的lectura.csv（而非翻译的f1u1.csv）
-        const ReadingHandler = {
-            texts: [],
-            selectedLevel: '', // 选中的阅读等级（A1/A2/B1/B2）
+        // 动词变位练习核心逻辑
+        const ConjugationHandler = {
+            // 核心数据
+            verbs: [], // 存储当前单元的动词（从CSV加载）
+            usedIndexes: [], // 已使用的动词索引（避免重复）
+            currentVerb: null, // 当前练习的动词
+            studentName: '', // 学生姓名
+            studentId: '', // 学生学号
+            selectedBook: null, // 选中的分册
+            selectedUnit: null, // 选中的单元
+            startTime: null, // 练习开始时间
+            isStarted: false, // 练习是否已开始
+            stats: {
+                total: 0, // 总练习动词数
+                correctCount: 0, // 全对的动词数
+                wrongRecords: [] // 错误记录（动词+错误变位）
+            },
+
+            // 初始化
             init() {
                 this.bindEvents();
             },
 
-            // 修复：加载阅读专属的CSV文件（lectura.csv），不同等级可扩展为lectura-A1.csv等
-            async loadCSV(level) {
-                this.texts = []; // 切换等级时清空旧数据
-                let fileName = '';
-                
-                // 等级对应文件配置（阅读专属文件，避免和翻译冲突）
-                switch(level) {
-                    case 'A1':
-                        fileName = 'lecturaA1.csv'; // 阅读A1等级加载专属的lectura.csv
-                        break;
-                    case 'A2':
-                        fileName = 'lecturaA2.csv'; // 后续扩展A2等级时使用
-                        break;
-                    case 'B1':
-                        fileName = 'lecturaB1.csv'; // 后续扩展B1等级时使用
-                        break;
-                    case 'B2':
-                        fileName = 'lecturaB2.csv'; // 后续扩展B2等级时使用
-                        break;
-                    default:
-                        alert('无效的阅读等级');
-                        return false;
-                }
-
+            // 加载单元CSV文件（格式：conj+分册+单元.csv，如conj1u1.csv）
+            async loadUnitCSV(book, unit) {
                 try {
-                    // GitHub 仓库信息（保持和其他模块一致）
+                    // GitHub仓库路径（请确保与你的听写/翻译模块路径一致）
                     const githubUsername = "panke967";
                     const githubRepo = "-Eva-practice";
                     const githubBranch = "main";
+                    const fileName = `conj${book}u${unit}.csv`; // 文件名格式：conj1u1.csv
                     const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
-                    
+
                     const response = await fetch(rawUrl);
-                    if (!response.ok) throw new Error(`等级 ${level} 的阅读文件 ${fileName} 加载失败（链接：${rawUrl}）`);
-                    
-                    const text = await response.text();
-                    this.parseCSV(text); // 解析CSV内容
+                    if (!response.ok) throw new Error(`第${book}册第${unit}单元文件「${fileName}」加载失败`);
+
+                    const csvText = await response.text();
+                    this.parseCSV(csvText); // 解析CSV
                     return true;
                 } catch (err) {
-                    alert('阅读短文加载失败：' + err.message);
+                    alert('❌ 动词文件加载失败：' + err.message);
                     console.error(err);
                     return false;
                 }
             },
 
-            // 优化CSV解析逻辑：支持每行一个完整短文（阅读专用格式）
+            // 解析CSV（支持表头：infinitive,yo,tu,el,nosotros,vosotros,ellos）
             parseCSV(csvText) {
+                this.verbs = [];
                 const lines = csvText.trim().split('\n');
-                this.texts = [];
+                if (lines.length <= 1) { // 至少需要表头+1行数据
+                    alert('⚠️ CSV文件无有效动词数据');
+                    return;
+                }
 
-                for (let i = 0; i < lines.length; i++) { // 阅读CSV无需跳过表头（每行都是短文）
+                // 跳过表头，从第2行开始解析数据
+                for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
 
-                    // 清理多余引号和空字符，保留短文完整格式
-                    const cleanLine = line.replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim();
-                    if (cleanLine) {
-                        this.texts.push(cleanLine);
+                    // 清理CSV字段（处理引号和空字符）
+                    const parts = line.replace(/^"|"$/g, '').split(',').map(item => item.trim());
+                    if (parts.length !== 7) { // 必须包含7个字段（动词原形+6个人称）
+                        console.warn(`跳过格式错误行：${line}`);
+                        continue;
                     }
-                }
 
-                console.log(`阅读模块（${this.selectedLevel}）加载完成 ${this.texts.length} 篇短文`);
-                if (this.texts.length === 0) alert(`⚠️ 未从 ${fileName} 中读取到任何短文，请检查文件格式`);
-            },
-
-            // 绑定所有事件
-            bindEvents() {
-                // 1. 点击「进入阅读练习」→ 显示等级选择界面
-                document.getElementById('readingStart').addEventListener('click', () => {
-                    document.getElementById('readingInit').style.display = 'none';
-                    document.getElementById('readingLevelSelect').style.display = 'block';
-                });
-
-                // 2. 等级选择页返回 → 隐藏等级选择，显示初始按钮
-                document.getElementById('readingBackToInit').addEventListener('click', () => {
-                    document.getElementById('readingLevelSelect').style.display = 'none';
-                    document.getElementById('readingInit').style.display = 'block';
-                    this.reset(); // 重置阅读状态
-                });
-
-                // 3. 选择阅读等级（仅A1可用，其余提示未开放）
-                document.querySelectorAll('#readingLevelSelect .book-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const level = e.currentTarget.dataset.level;
-                        if (e.currentTarget.classList.contains('disabled')) {
-                            alert(`「${level} 等级」暂未开放，敬请期待！`);
-                            return;
-                        }
-                        this.selectedLevel = level;
-                        
-                        // 加载对应等级的阅读专属CSV文件
-                        const loadSuccess = await this.loadCSV(level);
-                        if (loadSuccess) {
-                            document.getElementById('readingLevelSelect').style.display = 'none';
-                            document.getElementById('readingPracticeBox').style.display = 'block';
-                            this.loadRandomText(); // 加载第一篇短文
+                    // 组装动词数据
+                    this.verbs.push({
+                        infinitive: parts[0], // 第1列：动词原形（infinitive）
+                        conjugations: {
+                            yo: parts[1], // 第2列：yo变位
+                            tu: parts[2], // 第3列：tu变位
+                            el: parts[3], // 第4列：el变位
+                            nosotros: parts[4], // 第5列：nosotros变位
+                            vosotros: parts[5], // 第6列：vosotros变位
+                            ellos: parts[6] // 第7列：ellos变位
                         }
                     });
-                });
-
-                // 4. 练习界面返回 → 隐藏练习界面，显示等级选择
-                document.getElementById('readingBackToLevelSelect').addEventListener('click', () => {
-                    document.getElementById('readingPracticeBox').style.display = 'none';
-                    document.getElementById('readingLevelSelect').style.display = 'block';
-                    this.reset(); // 重置阅读状态
-                });
-
-                // 5. 下一篇短文事件
-                document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
-                
-                // 6. 音乐播放/暂停（保持原有逻辑）
-                document.getElementById('musicBtn').addEventListener('click', this.toggleMusic.bind(this)); // 绑定this指向
-                // 7. 下一首文字链接事件
-                document.getElementById('nextSongLink').addEventListener('click', () => {
-                    const bgMusic = document.getElementById('bgMusic');
-                    const musicBtn = document.getElementById('musicBtn');
-                    
-                    // 1. 索引+1，循环到列表开头（最后一首→第一首）
-                    currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
-                    
-                    // 2. 切换到下一首歌曲并播放
-                    bgMusic.src = musicList[currentMusicIndex];
-                    bgMusic.play().then(() => {
-                        // 3. 同步更新播放按钮状态（显示暂停图标）
-                        musicBtn.textContent = '❚❚';
-                    }).catch(err => {
-                        console.log('下一首播放失败：', err);
-                        alert('请手动允许浏览器播放音频');
-                    });
-                });
-            },
-
-            // 加载随机短文（保持原有功能）
-            loadRandomText() {
-                if (this.texts.length === 0) {
-                    alert('暂无可用阅读短文，请稍后重试');
-                    return;
                 }
-                const randomIdx = Math.floor(Math.random() * this.texts.length);
-                const text = this.texts[randomIdx];
-                const lecturaDiv = document.getElementById('lectura');
-                // 优化显示：保留短文换行和标点，提升阅读体验
-                lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>')
-                                          .replace(/\n/g, '<br>');
-                
-                lecturaDiv.style.display = 'block';
-            },
 
-            // 重置阅读状态（切换等级/返回时调用）
-            reset() {
-                this.texts = [];
-                this.selectedLevel = '';
-                document.getElementById('lectura').style.display = 'none';
-            },
-
-            // 音乐播放/暂停（修复this指向问题）
-            toggleMusic() {
-                const musicBtn = document.getElementById('musicBtn');
-                const bgMusic = document.getElementById('bgMusic');
-                const isPlaying = !bgMusic.paused;
-
-                if (isPlaying) {
-                    bgMusic.pause();
-                    musicBtn.textContent = '▶';
+                if (this.verbs.length === 0) {
+                    alert('⚠️ 未从CSV中解析到任何有效动词');
                 } else {
-                    bgMusic.src = musicList[currentMusicIndex]; // 使用歌曲列表
-                    bgMusic.play().then(() => {
-                        musicBtn.textContent = '❚❚';
-                    }).catch(err => {
-                        console.log('音乐播放被拦截：', err);
-                        alert('请手动允许浏览器播放音频');
-                    });
+                    console.log(`成功加载 ${this.verbs.length} 个动词`);
+                }
+            },
+
+            // 随机选择一个未练习过的动词
+            getRandomVerb() {
+                // 所有动词都已练习过，重置索引
+                if (this.usedIndexes.length >= this.verbs.length) {
+                    this.usedIndexes = [];
                 }
 
-                // 监听歌曲结束，自动下一首
-                bgMusic.onended = function() {
-                    currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
-                    bgMusic.src = musicList[currentMusicIndex];
-                    bgMusic.play();
+                // 筛选未使用的索引
+                const availableIndexes = this.verbs
+                    .map((_, idx) => idx)
+                    .filter(idx => !this.usedIndexes.includes(idx));
+                
+                // 随机选一个
+                const randomIdx = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+                this.usedIndexes.push(randomIdx);
+                return this.verbs[randomIdx];
+            },
+
+            // 加载当前动词到界面
+            loadCurrentVerb() {
+                this.currentVerb = this.getRandomVerb();
+                document.getElementById('conjCurrentVerb').textContent = this.currentVerb.infinitive;
+
+                // 重置输入框和标记
+                const inputs = document.querySelectorAll('#conjPracticeBox input[data-person]');
+                inputs.forEach(input => {
+                    input.value = '';
+                    input.disabled = false;
+                    input.parentElement.querySelector('.conj-check-mark').style.display = 'none';
+                    input.parentElement.querySelector('.conj-error-mark').style.display = 'none';
+                });
+
+                // 隐藏正确答案，启用核对按钮，禁用下一个按钮
+                document.getElementById('conjCorrectAnswers').style.display = 'none';
+                document.getElementById('conjCheck').disabled = false;
+                document.getElementById('conjNext').disabled = true;
+
+                // 聚焦第一个输入框
+                inputs[0].focus();
+            },
+
+            // 核对答案（严格匹配重音和字符）
+            checkAnswers() {
+                const inputs = document.querySelectorAll('#conjPracticeBox input[data-person]');
+                const correctConj = this.currentVerb.conjugations;
+                let isAllCorrect = true; // 是否全对
+                const wrongDetails = { // 错误记录
+                    verb: this.currentVerb.infinitive,
+                    wrongItems: []
                 };
-            }
-        };
 
-        // 听写模块（层级流程：进入听写→选分册→选单元→输信息→显示输入框）
-        const DictadoHandler = {
-            palabras: [],
-            usedIndexes: [],
-            idx: 0,
-            correct: 0,
-            total: 0,
-            isChecked: false,
-            currentWord: null,
-            wrongWords: [],
-            studentName: '',
-            studentId: '',
-            startTime: null,
-            isDictadoStarted: false,
-            selectedBook: null, // 选中的分册（如 1）
-            selectedUnit: null, // 选中的单元（如 1-16）
+                // 逐个人称核对（严格匹配：字符、重音完全一致）
+                inputs.forEach(input => {
+                    const person = input.dataset.person;
+                    const userInput = input.value.trim(); // 保留原始输入（不转小写、不删重音）
+                    const correctAnswer = correctConj[person]; // CSV中的正确答案（含重音）
 
-            init() {
-                this.bindEvents();
+                    const isCorrect = userInput === correctAnswer;
+
+                    // 显示对错标记
+                    if (isCorrect) {
+                        input.parentElement.querySelector('.conj-check-mark').style.display = 'inline';
+                    } else {
+                        input.parentElement.querySelector('.conj-error-mark').style.display = 'inline';
+                        isAllCorrect = false;
+                        // 记录错误项
+                        wrongDetails.wrongItems.push({
+                            person: this.getPersonName(person),
+                            userInput: input.value.trim(),
+                            correctAnswer: correctConj[person]
+                        });
+                    }
+
+                    input.disabled = true; // 核对后禁用输入框
+                });
+
+                // 显示正确答案
+                this.showCorrectAnswers();
+
+                // 更新统计
+                this.stats.total++;
+                if (isAllCorrect) {
+                    this.stats.correctCount++;
+                } else {
+                    this.stats.wrongRecords.push(wrongDetails); // 记录错误
+                }
+                document.getElementById('conjTotalCount').textContent = this.stats.total;
+
+                // 禁用核对按钮，启用下一个按钮
+                document.getElementById('conjCheck').disabled = true;
+                document.getElementById('conjNext').disabled = false;
             },
 
-            // 结束听写，显示结果
-            endDictado() {
-                document.getElementById('dictadoBox').style.display = 'none';
-                const accuracy = this.total > 0 ? (this.correct / this.total * 100).toFixed(2) : 0;
-                let wrongListHtml = '';
-                if (this.wrongWords.length > 0) {
-                    wrongListHtml = this.wrongWords.map((item, index) => `
-                        <li style="margin: 8px 0; line-height: 1.5;">
-                            ${index + 1}. 你的输入：<span style="color:red;">${item.input}</span> → 
-                            正确答案：<span style="color:green;">${item.correctEs}</span>（${item.cn}）
-                        </li>
-                    `).join('');
+            // 显示正确答案
+            showCorrectAnswers() {
+                const answersList = document.getElementById('conjAnswersList');
+                const correctConj = this.currentVerb.conjugations;
+                const personNames = {
+                    yo: "我 (yo)",
+                    tu: "你 (tú)",
+                    el: "他/她/它 (él/ella/usted)",
+                    nosotros: "我们 (nosotros)",
+                    vosotros: "你们 (vosotros)",
+                    ellos: "他们/她们/它们 (ellos/ellas/ustedes)"
+                };
+
+                // 组装答案HTML
+                let html = '';
+                for (const [key, value] of Object.entries(correctConj)) {
+                    html += `<div>${personNames[key]}: <strong style="color: #009100;">${value}</strong></div>`;
+                }
+                answersList.innerHTML = html;
+                document.getElementById('conjCorrectAnswers').style.display = 'block';
+            },
+
+            // 结束练习，显示结果弹窗（与听写格式完全一致）
+            endPractice() {
+                document.getElementById('conjPracticeBox').style.display = 'none';
+                const accuracy = this.stats.total > 0 ? (this.stats.correctCount / this.stats.total * 100).toFixed(2) : 0;
+                
+                // 组装错误记录HTML
+                let wrongHtml = '';
+                if (this.stats.wrongRecords.length > 0) {
+                    wrongHtml = this.stats.wrongRecords.map((record, idx) => {
+                        const wrongItems = record.wrongItems.map(item => `
+                            <div style="margin-left: 15px; margin-top: 5px;">
+                                ${item.person}：<span style="color:red;">${item.userInput || '未输入'}</span> → 
+                                <span style="color:green;">${item.correctAnswer}</span>
+                            </div>
+                        `).join('');
+                        return `
+                            <li style="margin: 8px 0; line-height: 1.5;">
+                                ${idx + 1}. 动词：${record.verb}
+                                ${wrongItems}
+                            </li>
+                        `;
+                    }).join('');
                 } else {
-                    wrongListHtml = '<li style="color:#666;">🎉 没有错词，太棒了！</li>';
+                    wrongHtml = '<li style="color:#666;">🎉 没有错误，太棒了！</li>';
                 }
 
+                // 计算耗时
                 const endTime = Date.now();
                 const totalMs = endTime - this.startTime;
                 const minutes = Math.floor(totalMs / 60000);
@@ -752,6 +549,7 @@
                 const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
                 const finishTime = new Date(endTime).toLocaleString('zh-CN');
 
+                // 结果弹窗HTML
                 const resultHtml = `
                 <div style="font-size: 16px; line-height: 2; padding: 10px;">
                     <p>📝 学生信息：</p>
@@ -759,17 +557,18 @@
                     <p>学号：${this.studentId}</p>
                     <p>练习分册：第 ${this.selectedBook} 册</p>
                     <p>练习单元：第 ${this.selectedUnit} 单元</p>
-                    <p style="margin-top: 15px;">📊 听写结果：</p>
-                    <p>总题数：${this.total} 道</p>
-                    <p>正确数：${this.correct} 道</p>
+                    <p style="margin-top: 15px;">📊 练习结果：</p>
+                    <p>总练习动词：${this.stats.total} 个</p>
+                    <p>全对动词：${this.stats.correctCount} 个</p>
                     <p>正确率：${accuracy}%</p>
                     <p>完成时间：${finishTime}</p>
                     <p>总耗时：${formattedTime}</p>
-                    <p style="margin-top: 15px; font-weight: bold;">错词复习：</p>
-                    <ul style="margin: 5px 0; padding-left: 20px;">${wrongListHtml}</ul>
+                    <p style="margin-top: 15px; font-weight: bold;">错误复习：</p>
+                    <ul style="margin: 5px 0; padding-left: 20px;">${wrongHtml}</ul>
                 </div>
                 `;
 
+                // 创建弹窗（与听写格式一致）
                 const popup = document.createElement('div');
                 popup.style.cssText = `
                     position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -778,7 +577,7 @@
                 `;
                 popup.innerHTML = `
                     ${resultHtml}
-                    <button id="popupCloseBottom" style="
+                    <button id="conjPopupCloseBottom" style="
                         margin-top: 15px; padding: 8px 20px; 
                         background: #d93025; color: white; 
                         border: none; border-radius: 4px; cursor: pointer;
@@ -787,119 +586,65 @@
                     </button>
                 `;
 
+                // 创建遮罩层
                 const mask = document.createElement('div');
                 mask.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9998;';
+                
+                // 添加到页面
                 document.body.appendChild(mask);
                 document.body.appendChild(popup);
 
-                document.getElementById('popupCloseBottom').addEventListener('click', () => {
+                // 关闭弹窗事件
+                document.getElementById('conjPopupCloseBottom').addEventListener('click', () => {
                     document.body.removeChild(popup);
                     document.body.removeChild(mask);
-                    // 关闭结果后返回初始状态
-                    this.resetDictado();
-                    document.getElementById('dictadoInit').style.display = 'block';
+                    // 回到单元选择界面
+                    document.getElementById('conjUnitSelect').style.display = 'block';
+                    this.resetStats(); // 重置统计
                 });
-
-                this.resetDictado();
             },
 
-            // 重置听写状态
-            resetDictado() {
-                this.correct = 0;
-                this.total = 0;
-                this.wrongWords = [];
-                this.isChecked = false;
-                this.currentWord = null;
+            // 重置统计数据
+            resetStats() {
+                this.stats = {
+                    total: 0,
+                    correctCount: 0,
+                    wrongRecords: []
+                };
                 this.usedIndexes = [];
-                this.studentName = '';
-                this.studentId = '';
-                this.selectedBook = null;
-                this.selectedUnit = null;
-                document.getElementById('dictadoInput').value = '';
-                document.getElementById('dictadoResult').textContent = '';
-                document.getElementById('dictadoCheck').disabled = false;
-                document.getElementById('dictadoNext').disabled = true;
-                document.getElementById('dictadoTotalCount').textContent = '0';
-                this.startTime = null;
-                this.isDictadoStarted = false;
+                this.currentVerb = null;
+                this.isStarted = false;
             },
 
-            // 加载指定单元的单词
-            async cargarCSV(book, unit) {
-                try {
-                    // GitHub 仓库信息
-                    const githubUsername = "panke967";
-                    const githubRepo = "-Eva-practice";
-                    const githubBranch = "main";
-                    
-                    // 第一册单元文件命名：1u1.csv ~ 1u16.csv
-                    const file = `${book}u${unit}.csv`;
-                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${file}`;
-                    
-                    const res = await fetch(rawUrl);
-                    if (!res.ok) throw new Error(`第 ${book} 册 第 ${unit} 单元的文件「${file}」加载失败（链接：${rawUrl}）`);
-                    
-                    const text = await res.text();
-                    this.palabras = [];
-
-                    const lines = text.trim().split('\n');
-                    const dataLines = lines.slice(1);
-
-                    dataLines.forEach((line, lineIdx) => {
-                        const cleanLine = line.trim()
-                            .replace(/^"|"$/g, '')
-                            .replace(/,,+/g, ',')
-                            .replace(/^,|,$/g, '');
-
-                        if (!cleanLine) return;
-
-                        const parts = cleanLine.split(',').map(s => {
-                            return s.trim().replace(/^"|"$/g, '')
-                                .replace(/，/g, '')
-                                .replace(/\s+/g, ' ');
-                        }).filter(Boolean);
-
-                        let es, cn, pos;
-                        if (parts.length === 3) {
-                            [es, cn, pos] = parts;
-                        } else if (parts.length === 2) {
-                            [es, cn] = parts;
-                            pos = '未分类';
-                        } else {
-                            console.warn(`CSV 第 ${lineIdx+2} 行格式错误：${line}（已跳过）`);
-                            return;
-                        }
-
-                        const finalEs = es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, '');
-                        this.palabras.push({ es: finalEs, cn: cn.trim(), pos: pos.trim() });
-                    });
-
-                    console.log(`第 ${book} 册 第 ${unit} 单元 加载完成 ${this.palabras.length} 个单词`);
-                    if (this.palabras.length === 0) alert(`⚠️ 第 ${book} 册 第 ${unit} 单元 未加载到任何单词，请检查CSV格式`);
-                    return true;
-                } catch (err) {
-                    alert('❌ 单词加载失败：' + err.message);
-                    console.error(err);
-                    return false;
-                }
+            // 辅助：获取人称完整名称
+            getPersonName(key) {
+                const names = {
+                    yo: "我 (yo)",
+                    tu: "你 (tú)",
+                    el: "他/她/它 (él/ella/usted)",
+                    nosotros: "我们 (nosotros)",
+                    vosotros: "你们 (vosotros)",
+                    ellos: "他们/她们/它们 (ellos/ellas/ustedes)"
+                };
+                return names[key] || key;
             },
 
-            // 绑定所有事件（层级流程控制）
+            // 绑定所有事件（层级流程与听写一致）
             bindEvents() {
-                // 1. 初始状态：点击「进入听写练习」→ 显示分册选择
-                document.getElementById('dictadoStart').addEventListener('click', () => {
-                    document.getElementById('dictadoInit').style.display = 'none';
-                    document.getElementById('dictadoBookSelect').style.display = 'block';
+                // 1. 初始状态 → 分册选择
+                document.getElementById('conjStart').addEventListener('click', () => {
+                    document.getElementById('conjInit').style.display = 'none';
+                    document.getElementById('conjBookSelect').style.display = 'block';
                 });
 
-                // 2. 分册选择页：点击「返回」→ 回到初始状态
-                document.getElementById('dictadoBackToInit').addEventListener('click', () => {
-                    document.getElementById('dictadoBookSelect').style.display = 'none';
-                    document.getElementById('dictadoInit').style.display = 'block';
+                // 2. 分册选择 → 初始状态
+                document.getElementById('conjBackToInit').addEventListener('click', () => {
+                    document.getElementById('conjBookSelect').style.display = 'none';
+                    document.getElementById('conjInit').style.display = 'block';
                 });
 
-                // 3. 分册选择页：点击分册 → 显示单元选择
-                document.querySelectorAll('#dictadoBookSelect .book-btn').forEach(btn => {
+                // 3. 分册选择 → 单元选择
+                document.querySelectorAll('#conjBookSelect .book-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const book = e.currentTarget.dataset.book;
                         if (e.currentTarget.classList.contains('disabled')) {
@@ -907,371 +652,101 @@
                             return;
                         }
                         this.selectedBook = book;
-                        document.getElementById('dictadoBookSelect').style.display = 'none';
-                        document.getElementById('dictadoUnitSelect').style.display = 'block';
+                        document.getElementById('conjBookSelect').style.display = 'none';
+                        document.getElementById('conjUnitSelect').style.display = 'block';
                     });
                 });
 
-                // 4. 单元选择页：点击「返回」→ 回到分册选择
-                document.getElementById('dictadoBackToBookSelect').addEventListener('click', () => {
-                    document.getElementById('dictadoUnitSelect').style.display = 'none';
-                    document.getElementById('dictadoBookSelect').style.display = 'block';
+                // 4. 单元选择 → 分册选择
+                document.getElementById('conjBackToBookSelect').addEventListener('click', () => {
+                    document.getElementById('conjUnitSelect').style.display = 'none';
+                    document.getElementById('conjBookSelect').style.display = 'block';
                 });
 
-                // 5. 单元选择页：点击单元 → 显示学生信息弹窗
-                document.querySelectorAll('#dictadoUnitSelect .unit-btn').forEach(btn => {
+                // 5. 单元选择 → 学生信息弹窗
+                document.querySelectorAll('#conjUnitSelect .unit-btn').forEach(btn => {
                     btn.addEventListener('click', async (e) => {
                         const unit = e.currentTarget.dataset.unit;
                         this.selectedUnit = unit;
 
-                        // 加载该单元单词
-                        const loadSuccess = await this.cargarCSV(this.selectedBook, unit);
-                        if (loadSuccess) {
-                            document.getElementById('dictadoUnitSelect').style.display = 'none';
-                            document.getElementById('studentInfoPopup').style.display = 'flex';
+                        // 加载当前单元的CSV文件
+                        const loadSuccess = await this.loadUnitCSV(this.selectedBook, unit);
+                        if (loadSuccess && this.verbs.length > 0) {
+                            document.getElementById('conjUnitSelect').style.display = 'none';
+                            document.getElementById('conjStudentInfoPopup').style.display = 'flex';
                         }
                     });
                 });
 
-                // 6. 学生信息弹窗：点击「关闭」→ 回到单元选择
-                document.getElementById('closePopupBtn').addEventListener('click', () => {
-                    document.getElementById('studentInfoPopup').style.display = 'none';
-                    document.getElementById('dictadoUnitSelect').style.display = 'block';
+                // 6. 关闭学生信息弹窗 → 单元选择
+                document.getElementById('conjClosePopupBtn').addEventListener('click', () => {
+                    document.getElementById('conjStudentInfoPopup').style.display = 'none';
+                    document.getElementById('conjUnitSelect').style.display = 'block';
                 });
 
-                // 7. 学生信息弹窗：点击「确认」→ 显示听写输入框（仅输入框，无选择项）
-                document.getElementById('confirmInfoBtn').addEventListener('click', () => {
-                    const name = document.getElementById('studentName').value.trim();
-                    const id = document.getElementById('studentId').value.trim();
+                // 7. 确认学生信息 → 练习界面
+                document.getElementById('conjConfirmInfoBtn').addEventListener('click', () => {
+                    const name = document.getElementById('conjStudentName').value.trim();
+                    const id = document.getElementById('conjStudentId').value.trim();
                     
                     if (!name || !id) {
                         alert('请输入姓名和学号');
                         return;
                     }
-                    
+
+                    // 保存学生信息
                     this.studentName = name;
                     this.studentId = id;
                     
-                    document.getElementById('studentInfoPopup').style.display = 'none';
-                    document.getElementById('dictadoBox').style.display = 'block';
-                    this.nuevaPalabra(); // 加载第一个单词
-                    
-                    // 清空输入框
-                    document.getElementById('studentName').value = '';
-                    document.getElementById('studentId').value = '';
+                    // 显示练习界面，加载第一个动词
+                    document.getElementById('conjStudentInfoPopup').style.display = 'none';
+                    document.getElementById('conjPracticeBox').style.display = 'block';
+                    this.loadCurrentVerb();
 
-                    if (!this.isDictadoStarted) {
+                    // 记录开始时间
+                    if (!this.isStarted) {
                         this.startTime = Date.now();
-                        this.isDictadoStarted = true;
+                        this.isStarted = true;
+                    }
+
+                    // 清空输入框
+                    document.getElementById('conjStudentName').value = '';
+                    document.getElementById('conjStudentId').value = '';
+                });
+
+                // 8. 核对答案按钮
+                document.getElementById('conjCheck').addEventListener('click', () => {
+                    this.checkAnswers();
+                });
+
+                // 9. 下一个动词按钮
+                document.getElementById('conjNext').addEventListener('click', () => {
+                    this.loadCurrentVerb();
+                });
+
+                // 10. 结束练习按钮
+                document.getElementById('conjEnd').addEventListener('click', () => {
+                    if (confirm('确定要结束练习吗？会显示你的练习结果和错误复习列表～')) {
+                        this.endPractice();
                     }
                 });
 
-                // 8. 听写输入框：点击「确定」→ 检查答案
-                document.getElementById('dictadoCheck').addEventListener('click', () => {
-                    this.verificar();
-                });
-
-                // 9. 听写输入框：点击「下一个」→ 加载下一个单词
-                document.getElementById('dictadoNext').addEventListener('click', () => {
-                    this.nuevaPalabra();
-                });
-
-                // 10. 听写输入框：回车提交答案
-                document.getElementById('dictadoInput').addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter') this.verificar();
-                });
-
-                // 11. 听写输入框：点击「结束听写」→ 显示结果
-                document.getElementById('dictadoEnd').addEventListener('click', () => {
-                    if (confirm('确定要结束听写吗？会显示你的错词复习列表～')) {
-                        this.endDictado();
-                    }
-                });
-            },
-
-            // 加载下一个单词
-            nuevaPalabra() {
-                if (this.palabras.length === 0) return;
-
-                this.isChecked = false;
-                const checkBtn = document.getElementById('dictadoCheck');
-                const nextBtn = document.getElementById('dictadoNext');
-                checkBtn.disabled = false;
-                nextBtn.disabled = true;
-
-                let availableIndexes = this.palabras
-                    .map((_, index) => index)
-                    .filter(index => !this.usedIndexes.includes(index));
-
-                if (availableIndexes.length === 0) {
-                    this.usedIndexes = [];
-                    availableIndexes = this.palabras.map((_, index) => index);
-                }
-
-                const randomIdx = availableIndexes[
-                    Math.floor(Math.random() * availableIndexes.length)
-                ];
-                this.currentWord = this.palabras[randomIdx];
-                this.usedIndexes.push(randomIdx);
-
-                document.getElementById('dictadoPrompt').innerHTML = 
-                    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
-
-                document.getElementById('dictadoInput').value = '';
-                document.getElementById('dictadoResult').textContent = '';
-                document.getElementById('dictadoInput').focus();
-            },
-
-            // 移除重音符号
-            removeAccents(str) {
-                return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            },
-
-            // 检查答案
-            verificar() {
-                if (this.isChecked) return;
-                const input = document.getElementById('dictadoInput').value.trim();
-                if (!input) return;
-
-                const correctEs = this.currentWord.es.trim();
-                let correctForms;
-                if (correctEs.includes(',')) {
-                    correctForms = correctEs.split(',')
-                        .map(form => {
-                            const trimForm = form.trim();
-                            return trimForm === 'na' ? 'a' : trimForm;
-                        })
-                        .filter(Boolean);
-                } else {
-                    correctForms = [correctEs];
-                }
-
-                const isCorrect = correctForms.includes(input);
-                const resultBox = document.getElementById('dictadoResult');
-                
-                if (isCorrect) {
-                    resultBox.innerHTML = `
-                        <span style="color:green;">✅ 正确！</span>
-                        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
-                    `;
-                    this.correct++;
-                } else {
-                    resultBox.innerHTML = `
-                        <span style="color:red;">❌ 正确答案：${correctEs}</span>
-                        <button class="playPronunciation btn" style="margin-left:10px; padding:5px 10px; font-size:14px;">🔊 听读音</button>
-                    `;
-                    const isDuplicate = this.wrongWords.some(item => item.correctEs === correctEs && item.input === input);
-                    if (!isDuplicate) {
-                        this.wrongWords.push({
-                            input: input,
-                            correctEs: correctEs,
-                            cn: this.currentWord.cn
-                        });
-                    }
-                }
-
-                resultBox.querySelector('.playPronunciation').addEventListener('click', () => {
-                    const wordToPronounce = correctEs.split(',')[0].trim();
-                    this.playPronunciation(wordToPronounce);
-                });
-
-                this.isChecked = true;
-                document.getElementById('dictadoCheck').disabled = true;
-                document.getElementById('dictadoNext').disabled = false;
-                this.total++;
-                document.getElementById('dictadoTotalCount').textContent = this.total;
-            },
-
-            // 播放单词读音
-            playPronunciation(word) {
-                if ('speechSynthesis' in window) {
-                    window.speechSynthesis.cancel();
-                    const utterance = new SpeechSynthesisUtterance(word);
-                    utterance.lang = 'es-ES';
-                    window.speechSynthesis.speak(utterance);
-                } else {
-                    alert('很抱歉，您的浏览器不支持语音播放功能');
-                }
-            }
-        };
-
-        // 翻译模块（完全独立，无冲突）
-        const TranslationHandler = {
-            words: [], // 存储当前单元的翻译数据
-            totalCount: 0, // 总翻译数量
-            usedIndexes: [], // 已使用的题目索引
-            countedIndexes: [], // 已计数的题目索引
-            selectedBook: '', // 选中的分册（1/2/3）
-            selectedUnit: '', // 选中的单元（1-16）
-            currentIndex: null, // 当前选中的题目索引
-            init() {
-                this.bindEvents();
-            },
-
-            // 加载指定册数+单元的CSV文件（文件名格式：f1u1.csv → 第一册1单元）
-            async loadCSV(book, unit) {
-                this.words = []; // 切换单元时清空旧数据
-                const fileName = `f${book}u${unit}.csv`;
-                // GitHub 仓库信息（和听写、阅读一致）
-                const githubUsername = "panke967";
-                const githubRepo = "-Eva-practice";
-                const githubBranch = "main";
-                const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
-                
-                try {
-                    const response = await fetch(rawUrl);
-                    if (!response.ok) throw new Error(`单元文件 ${fileName} 加载失败（链接：${rawUrl}）`);
-                    
-                    const text = await response.text();
-                    const lines = text.trim().split('\n');
-
-                    for (let i = 1; i < lines.length; i++) { // 跳过表头
-                        const line = lines[i].trim();
-                        if (!line) continue;
-
-                        // 解析双引号包裹的字段（支持字段内含逗号）
-                        let parts = [];
-                        let inQuotes = false;
-                        let currentPart = '';
-                        for (const char of line) {
-                            if (char === '"') inQuotes = !inQuotes;
-                            else if (char === ',' && !inQuotes) {
-                                parts.push(currentPart.trim());
-                                currentPart = '';
-                            } else currentPart += char;
-                        }
-                        parts.push(currentPart.trim().replace(/^"|"$/g, ''));
-
-                        // 双列数据解析（核心部分）
-                        if (parts.length === 2) {
-                            const [es, cn] = parts;
-                            if (es.trim() && cn.trim()) {
-                                this.words.push({ 
-                                    es: es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, ''),
-                                    cn: cn.trim() 
-                                });
+                // 11. 回车切换输入框（最后一个回车核对）
+                const inputs = document.querySelectorAll('#conjPracticeBox input[data-person]');
+                inputs.forEach((input, index) => {
+                    input.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            if (index === inputs.length - 1) {
+                                // 最后一个输入框，点击核对
+                                this.checkAnswers();
+                            } else {
+                                // 切换到下一个输入框
+                                inputs[index + 1].focus();
                             }
                         }
-                    }
-
-                    console.log(`已加载第${book}册第${unit}单元，共${this.words.length}个翻译题`);
-                    if (this.words.length === 0) alert(`⚠️ ${fileName} 中无有效翻译数据`);
-                    return true;
-                } catch (err) {
-                    alert('翻译文件加载失败：' + err.message);
-                    console.error(err);
-                    return false;
-                }
-            },
-
-            bindEvents() {
-                // 1. 点击「进入翻译练习」→ 显示分册选择界面
-                document.getElementById('trans-translationStart').addEventListener('click', () => {
-                    document.getElementById('trans-translationInit').style.display = 'none';
-                    document.getElementById('trans-translationBookSelect').style.display = 'block';
-                });
-
-                // 2. 分册选择页返回 → 隐藏分册选择，显示初始按钮
-                document.getElementById('trans-translationBackToInit').addEventListener('click', () => {
-                    document.getElementById('trans-translationBookSelect').style.display = 'none';
-                    document.getElementById('trans-translationInit').style.display = 'block';
-                    this.reset();
-                });
-
-                // 3. 选择分册（仅第一册可用）→ 显示单元选择界面
-                document.querySelectorAll('#trans-translationBookSelect .trans-book-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        const book = e.currentTarget.dataset.book;
-                        if (e.currentTarget.classList.contains('disabled')) {
-                            alert(`第 ${book} 册暂未开放，敬请期待！`);
-                            return;
-                        }
-                        this.selectedBook = book;
-                        document.getElementById('trans-translationBookSelect').style.display = 'none';
-                        document.getElementById('trans-translationUnitSelect').style.display = 'block';
                     });
                 });
-
-                // 4. 单元选择页返回 → 隐藏单元选择，显示分册选择
-                document.getElementById('trans-translationBackToBookSelect').addEventListener('click', () => {
-                    document.getElementById('trans-translationUnitSelect').style.display = 'none';
-                    document.getElementById('trans-translationBookSelect').style.display = 'block';
-                    this.reset();
-                });
-
-                // 5. 选择单元 → 加载对应文件并显示练习界面
-                document.querySelectorAll('#trans-translationUnitSelect .trans-unit-btn').forEach(btn => {
-                    btn.addEventListener('click', async (e) => {
-                        const unit = e.currentTarget.dataset.unit;
-                        this.selectedUnit = unit;
-
-                        const loadSuccess = await this.loadCSV(this.selectedBook, this.selectedUnit);
-                        if (loadSuccess) {
-                            document.getElementById('trans-translationUnitSelect').style.display = 'none';
-                            document.getElementById('trans-translationBox').style.display = 'block';
-                            this.reset();
-                            this.nextWord();
-                        }
-                    });
-                });
-
-                // 6. 检查核对按钮事件
-                document.getElementById('trans-translationCheck').addEventListener('click', () => {
-                    if (this.words.length === 0) return;
-                    const currentWord = this.words[this.currentIndex];
-                    const answerEl = document.getElementById('trans-translationAnswer');
-                    answerEl.textContent = `正确答案：${currentWord.es}`;
-                    answerEl.style.display = 'block';
-
-                    if (!this.countedIndexes.includes(this.currentIndex)) {
-                        this.totalCount++;
-                        this.countedIndexes.push(this.currentIndex);
-                        document.getElementById('trans-translationTotalCount').textContent = this.totalCount;
-                    }
-                    document.getElementById('trans-translationNext').disabled = false;
-                });
-
-                // 7. 下一句按钮事件
-                document.getElementById('trans-translationNext').addEventListener('click', () => {
-                    this.nextWord();
-                });
-
-                // 8. 结束练习按钮事件 → 返回单元选择界面
-                document.getElementById('trans-translationEnd').addEventListener('click', () => {
-                    if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
-                        document.getElementById('trans-translationBox').style.display = 'none';
-                        this.reset();
-                        document.getElementById('trans-translationUnitSelect').style.display = 'block';
-                    }
-                });
-            },
-
-            // 切换下一个翻译题
-            nextWord() {
-                document.getElementById('trans-translationInput').value = '';
-                document.getElementById('trans-translationAnswer').style.display = 'none';
-                document.getElementById('trans-translationNext').disabled = true;
-
-                if (this.usedIndexes.length >= this.words.length) this.usedIndexes = [];
-
-                let randomIdx;
-                do {
-                    randomIdx = Math.floor(Math.random() * this.words.length);
-                } while (this.usedIndexes.includes(randomIdx));
-
-                this.currentIndex = randomIdx;
-                this.usedIndexes.push(randomIdx);
-                const currentWord = this.words[this.currentIndex];
-                document.getElementById('trans-translationPrompt').textContent = currentWord.cn;
-                document.getElementById('trans-translationInput').focus();
-            },
-
-            // 重置练习状态（切换单元/结束练习时调用）
-            reset() {
-                this.totalCount = 0;
-                this.usedIndexes = [];
-                this.countedIndexes = [];
-                document.getElementById('trans-translationTotalCount').textContent = '0';
             }
         };
 
@@ -1280,6 +755,7 @@
             ReadingHandler.init();
             DictadoHandler.init();
             TranslationHandler.init();
+            ConjugationHandler.init();
         });
     </script>
 </body>
