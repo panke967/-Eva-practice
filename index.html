@@ -711,29 +711,46 @@
                 }
             },
 
-            // 优化CSV解析逻辑：支持每行一个完整短文（阅读专用格式）
             parseCSV(csvText) {
-                const lines = csvText.trim().split('\n');
-                this.texts = [];
+    const lines = csvText.trim().split('\n');
+    this.texts = [];
+    let currentText = '';
+    let inArticle = false; // 标记是否正在解析一篇文章
 
-                for (let i = 0; i < lines.length; i++) { // 阅读CSV无需跳过表头（每行都是短文）
-                    const line = lines[i].trim();
-                    if (!line) continue;
+    for (const line of lines) {
+        const trimmedLine = line.trim();
+        if (trimmedLine === '') continue;
 
-                    // 清理多余引号和空字符，保留短文完整格式
-                    const cleanLine = line
-                    .replace(/^"|"$/g, '') // 去掉CSV中包裹文章的双引号
-                    .replace(/\\n/g, '\n') // 把 \n 转成HTML能识别的换行符
-                    .trimEnd(); // 只清理末尾多余空格
+        // 1. 识别文章开始：Excel生成的CSV，文章开头是 "（可能多个，比如 """"）
+        if (!inArticle && trimmedLine.startsWith('"')) {
+            inArticle = true;
+            // 去掉开头所有多余的 "（不管Excel加了几层）
+            currentText = trimmedLine.replace(/^"+/, '');
+        }
+        // 2. 识别文章结束：Excel生成的CSV，文章结尾是 "（可能多个）
+        else if (inArticle && trimmedLine.endsWith('"')) {
+            inArticle = false;
+            // 去掉结尾所有多余的 "，并把Excel里的换行（\n）转成实际换行
+            currentText += '\n' + trimmedLine.replace(/"+$/, '');
+            // 清理末尾多余空格，加入文章列表
+            const cleanText = currentText.trimEnd();
+            this.texts.push(cleanText);
+            currentText = '';
+        }
+        // 3. 解析文章中间段落（Excel里单元格内的换行）
+        else if (inArticle) {
+            currentText += '\n' + trimmedLine;
+        }
+    }
 
-                    if (cleanLine) {
-                        this.texts.push(cleanLine);
-                    }
-                }
+    // 处理最后一篇没正常结束的文章（防止遗漏）
+    if (currentText.trim() !== '' && !inArticle) {
+        this.texts.push(currentText.trimEnd());
+    }
 
-                console.log(`阅读模块（${this.selectedLevel}）加载完成 ${this.texts.length} 篇短文`);
-                if (this.texts.length === 0) alert(`⚠️ 未从 ${fileName} 中读取到任何短文，请检查文件格式`);
-            },
+    console.log(`阅读模块加载完成 ${this.texts.length} 篇短文`);
+    if (this.texts.length === 0) alert(`⚠️ 未从CSV中读取到任何短文，请检查Excel单元格格式`);
+},
 
             // 绑定所有事件
             bindEvents() {
@@ -802,20 +819,26 @@
                 });
             },
 
-            // 加载随机短文（保持原有功能）
             loadRandomText() {
-                if (this.texts.length === 0) {
-                    alert('暂无可用阅读短文，请稍后重试');
-                    return;
-                }
-                const randomIdx = Math.floor(Math.random() * this.texts.length);
-                const text = this.texts[randomIdx];
-                const lecturaDiv = document.getElementById('lectura');
-                // 关键：只把换行符 \n 转成HTML的 <br> 标签，保留开头空格
-               lecturaDiv.innerHTML = text.replace(/\n/g, '<br>');
+    if (this.texts.length === 0) {
+        alert('暂无可用阅读短文，请稍后重试');
+        return;
+    }
+    const randomIdx = Math.floor(Math.random() * this.texts.length);
+    let text = this.texts[randomIdx]; // 拿到解析后的文章内容
     
-               lecturaDiv.style.display = 'block';
-            },
+    // 关键操作：1. 按换行分割成段落 2. 给每个段落开头加 4 个空格 3. 重新合并
+    const paragraphs = text.split('\n'); // 把文章按换行拆成段落数组
+    const textWithIndent = paragraphs.map(para => {
+        // 给每个段落开头加 4 个空格（想加更多就多写几个空格，比如 "     " 是 5 个）
+        return '    ' + para.trimStart(); // trimStart() 确保只保留我们加的空格，避免重复
+    }).join('\n'); // 重新合并成完整文章
+    
+    const lecturaDiv = document.getElementById('lectura');
+    // 保留 white-space: pre-wrap，确保空格显示
+    lecturaDiv.innerHTML = `<div style="white-space: pre-wrap;">${textWithIndent.replace(/\n/g, '<br>')}</div>`;
+    lecturaDiv.style.display = 'block';
+},
 
             // 重置阅读状态（切换等级/返回时调用）
             reset() {
