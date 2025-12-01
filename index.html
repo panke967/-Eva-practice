@@ -721,7 +721,11 @@
                     if (!line) continue;
 
                     // 清理多余引号和空字符，保留短文完整格式
-                    const cleanLine = line.replace(/^"|"$/g, '').replace(/\s+/g, ' ').trim();
+                    const cleanLine = line
+                    .replace(/^"|"$/g, '') // 去掉CSV中包裹文章的双引号
+                    .replace(/\\n/g, '\n') // 把 \n 转成HTML能识别的换行符
+                    .trimEnd(); // 只清理末尾多余空格
+
                     if (cleanLine) {
                         this.texts.push(cleanLine);
                     }
@@ -807,11 +811,10 @@
                 const randomIdx = Math.floor(Math.random() * this.texts.length);
                 const text = this.texts[randomIdx];
                 const lecturaDiv = document.getElementById('lectura');
-                // 优化显示：保留短文换行和标点，提升阅读体验
-                lecturaDiv.innerHTML = text.replace(/—/g, '<span style="display: inline-block; margin: 0 5px;">—</span>')
-                                          .replace(/\n/g, '<br>');
-                
-                lecturaDiv.style.display = 'block';
+                // 关键：只把换行符 \n 转成HTML的 <br> 标签，保留开头空格
+               lecturaDiv.innerHTML = text.replace(/\n/g, '<br>');
+    
+               lecturaDiv.style.display = 'block';
             },
 
             // 重置阅读状态（切换等级/返回时调用）
