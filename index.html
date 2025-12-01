@@ -181,8 +181,8 @@
             transform: scale(1.05);
         }
 
-        /* 听写提示框样式（与输入框宽度一致） */
-        #dictadoPrompt {
+        /* 听写/翻译提示框样式（与输入框宽度一致） */
+        .prompt-box {
             font-size: 22px;
             color: #d93025;
             margin-bottom: 10px;
@@ -216,19 +216,60 @@
         </div>
     </div>
 
-    <!-- 翻译-词汇强化练习 -->
+    <!-- 翻译-词汇强化练习（完全模仿听写模式：无弹窗，页面内选择） -->
     <div class="section">
         <h3 class="section-title">🌐 翻译-词汇强化练习</h3>
-        <div style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: center;">
-            <button id="translationStart" class="btn">进入翻译练习</button>
+        
+        <!-- 初始状态：显示「进入翻译练习」按钮 -->
+        <div id="translationInit" style="text-align: center;">
+            <button id="translationStart" class="btn" style="display: block; margin: 0 auto;">进入翻译练习</button>
         </div>
+
+        <!-- 分册选择界面（默认隐藏） -->
+        <div id="translationBookSelect" style="display:none; text-align:center; margin-top:15px;">
+            <h4 style="margin-bottom: 20px; color: #333;">请选择分册</h4>
+            <!-- 返回按钮 -->
+            <button id="translationBackToInit" class="back-btn">← 返回</button>
+            <!-- 分册按钮组（仅第一册可用） -->
+            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px;">
+                <button class="book-btn enabled" data-book="1">第一册</button>
+                <button class="book-btn disabled" data-book="2">第二册（未开放）</button>
+                <button class="book-btn disabled" data-book="3">第三册（未开放）</button>
+            </div>
+        </div>
+
+        <!-- 单元选择界面（默认隐藏） -->
+        <div id="translationUnitSelect" style="display:none; text-align:center; margin-top:15px;">
+            <h4 style="margin-bottom: 15px; color: #333;">第一册 - 请选择要翻译的单元</h4>
+            <!-- 返回按钮（返回分册选择） -->
+            <button id="translationBackToBookSelect" class="back-btn">← 返回分册选择</button>
+            <!-- 单元按钮组（1-16单元） -->
+            <div style="display:flex; justify-content:center; flex-wrap:wrap; margin-top:10px; max-width: 650px; margin-left: auto; margin-right: auto;">
+                <button class="unit-btn" data-unit="1">1单元</button>
+                <button class="unit-btn" data-unit="2">2单元</button>
+                <button class="unit-btn" data-unit="3">3单元</button>
+                <button class="unit-btn" data-unit="4">4单元</button>
+                <button class="unit-btn" data-unit="5">5单元</button>
+                <button class="unit-btn" data-unit="6">6单元</button>
+                <button class="unit-btn" data-unit="7">7单元</button>
+                <button class="unit-btn" data-unit="8">8单元</button>
+                <button class="unit-btn" data-unit="9">9单元</button>
+                <button class="unit-btn" data-unit="10">10单元</button>
+                <button class="unit-btn" data-unit="11">11单元</button>
+                <button class="unit-btn" data-unit="12">12单元</button>
+                <button class="unit-btn" data-unit="13">13单元</button>
+                <button class="unit-btn" data-unit="14">14单元</button>
+                <button class="unit-btn" data-unit="15">15单元</button>
+                <button class="unit-btn" data-unit="16">16单元</button>
+            </div>
+        </div>
+
+        <!-- 翻译练习界面（默认隐藏） -->
         <div id="translationBox" style="display: none; margin-top: 15px;">
             <div style="font-size: 14px; color: #666; margin-bottom: 15px; text-align: center;">
                 已翻译：<span id="translationTotalCount">0</span> 题
             </div>
-            <div style="font-size: 20px; color: #d93025; margin-bottom: 10px; text-align: center;">
-                <span id="translationPrompt"></span>
-            </div>
+            <div class="prompt-box" id="translationPrompt"></div>
             <!-- 检查核对的按钮 -->
             <div style="display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;">
                 <textarea id="translationInput" placeholder="请输入西班牙语翻译"
@@ -336,7 +377,7 @@
                     已听写：<span id="dictadoTotalCount">0</span> 题
                 </div>
                 <!-- 听写提示框（与输入框宽度一致） -->
-                <div id="dictadoPrompt"></div>
+                <div class="prompt-box" id="dictadoPrompt"></div>
                 <div style="display:flex;align-items:center;gap:10px; width: 100%; max-width: 400px;">
                     <input id="dictadoInput" type="text" placeholder="请输入西语单词" 
                         style="
@@ -378,7 +419,7 @@
 
             async loadCSV(filePath) {
                 try {
-                    // 你的 GitHub 信息
+                    // GitHub 仓库信息
                     const githubUsername = "panke967";
                     const githubRepo = "-Eva-practice";
                     const githubBranch = "main";
@@ -569,12 +610,12 @@
 
             async cargarCSV(book, unit) {
                 try {
-                    // 你的 GitHub 信息（已填入）
+                    // GitHub 仓库信息
                     const githubUsername = "panke967";
                     const githubRepo = "-Eva-practice";
                     const githubBranch = "main";
                     
-                    // 第一册单元文件命名：1u1.csv ~ 1u16.csv（可根据实际调整）
+                    // 第一册单元文件命名：1u1.csv ~ 1u16.csv
                     const file = `${book}u${unit}.csv`;
                     const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${file}`;
                     
@@ -833,81 +874,130 @@
             }
         };
 
-        // 翻译模块
+        // 翻译模块（完全模仿听写模式：页面内选择，无弹窗）
         const TranslationHandler = {
-            words: [],
-            totalCount: 0,
-            usedIndexes: [],
-            countedIndexes: [],
-            currentIndex: 0,
+            words: [], // 存储当前单元的翻译数据
+            totalCount: 0, // 总翻译数量
+            usedIndexes: [], // 已使用的题目索引
+            countedIndexes: [], // 已计数的题目索引
+            selectedBook: '', // 选中的分册（1/2/3）
+            selectedUnit: '', // 选中的单元（1-16）
             init() {
-                this.loadCSV('fanyi.csv');
                 this.bindEvents();
             },
 
-            async loadCSV(filePath) {
-                try {
-                    // 你的 GitHub 信息
-                    const githubUsername = "panke967";
-                    const githubRepo = "-Eva-practice";
-                    const githubBranch = "main";
-                    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${filePath}`;
-                    
-                    const response = await fetch(rawUrl);
-                    if (!response.ok) throw new Error(`HTTP错误，状态码: ${response.status}（链接：${rawUrl}）`);
-                    
-                    const text = await response.text();
-                    const lines = text.trim().split('\n');
-                    this.words = [];
+            // 加载指定册数+单元的CSV文件（文件名格式：f1u1.csv → 第一册1单元）
+async loadCSV(book, unit) {
+    this.words = []; // 切换单元时清空旧数据
+    const fileName = `f${book}u${unit}.csv`;
+    // GitHub 仓库信息（和听写、阅读一致）
+    const githubUsername = "panke967";
+    const githubRepo = "-Eva-practice";
+    const githubBranch = "main";
+    const rawUrl = `https://raw.githubusercontent.com/${githubUsername}/${githubRepo}/${githubBranch}/${fileName}`;
+    
+    try { // try块开始
+        const response = await fetch(rawUrl);
+        if (!response.ok) throw new Error(`单元文件 ${fileName} 加载失败（链接：${rawUrl}）`);
+        
+        const text = await response.text();
+        const lines = text.trim().split('\n');
 
-                    for (let i = 1; i < lines.length; i++) {
-                        const line = lines[i].trim();
-                        if (!line) continue;
+        // 循环解析CSV行（这里要确保循环体的{}完全闭合）
+        for (let i = 1; i < lines.length; i++) { // 跳过表头
+            const line = lines[i].trim();
+            if (!line) continue;
 
-                        let parts = [];
-                        let inQuotes = false;
-                        let currentPart = '';
-                        for (const char of line) {
-                            if (char === '"') {
-                                inQuotes = !inQuotes;
-                            } else if (char === ',' && !inQuotes) {
-                                parts.push(currentPart.trim());
-                                currentPart = '';
-                            } else {
-                                currentPart += char;
-                            }
-                        }
-                        parts.push(currentPart.trim().replace(/^"|"$/g, ''));
+            // 解析双引号包裹的字段（支持字段内含逗号）
+            let parts = [];
+            let inQuotes = false;
+            let currentPart = '';
+            for (const char of line) {
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) {
+                    parts.push(currentPart.trim());
+                    currentPart = '';
+                } else currentPart += char;
+            }
+            parts.push(currentPart.trim().replace(/^"|"$/g, ''));
 
-                        if (parts.length === 3) {
-                            const [es, cn, pos] = parts;
-                            if (es && cn && pos) {
-                                this.words.push({ es, cn, pos });
-                            }
-                        } else {
-                            console.warn(`翻译CSV第${i+1}行格式错误：${line}（解析出${parts.length}列，需3列）`);
-                        }
-                    }
-
-                    console.log('翻译词汇加载完成，共', this.words.length, '个');
-                } catch (err) {
-                    alert('翻译CSV加载失败：' + err.message);
+            // 双列数据解析（关键：确保这个if块的{}完整闭合）
+            if (parts.length === 2) {
+                const [es, cn] = parts;
+                // 仅校验 es 和 cn 不为空，不处理词性
+                if (es.trim() && cn.trim()) {
+                    this.words.push({ 
+                        es: es.trim().replace(/[\u2000-\u206F\uFEFF\u00A0]/g, ''), // 清理特殊空格
+                        cn: cn.trim() 
+                    });
                 }
-            },
+            }
+        } // 循环体结束（这里之前可能漏了}）
+
+        console.log(`已加载第${book}册第${unit}单元，共${this.words.length}个翻译题`);
+        if (this.words.length === 0) alert(`⚠️ ${fileName} 中无有效翻译数据`);
+        return true; // 加载成功返回true
+    } catch (err) { // catch块开始（现在能正确匹配try块）
+        alert('翻译文件加载失败：' + err.message);
+        console.error(err);
+        return false;
+    } // catch块结束
+},
 
             bindEvents() {
+                // 1. 点击「进入翻译练习」→ 显示分册选择界面
                 document.getElementById('translationStart').addEventListener('click', () => {
-                    if (this.words.length === 0) {
-                        alert('词汇数据加载中，请稍后再试');
-                        return;
-                    }
-                    document.getElementById('translationBox').style.display = 'block';
-                    this.nextWord();
-                    this.totalCount = 0;
-                    document.getElementById('translationTotalCount').textContent = '0';
+                    document.getElementById('translationInit').style.display = 'none';
+                    document.getElementById('translationBookSelect').style.display = 'block';
                 });
 
+                // 2. 分册选择页返回 → 隐藏分册选择，显示初始按钮
+                document.getElementById('translationBackToInit').addEventListener('click', () => {
+                    document.getElementById('translationBookSelect').style.display = 'none';
+                    document.getElementById('translationInit').style.display = 'block';
+                    this.reset();
+                });
+
+                // 3. 选择分册（仅第一册可用）→ 显示单元选择界面
+                document.querySelectorAll('#translationBookSelect .book-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const book = e.currentTarget.dataset.book;
+                        if (e.currentTarget.classList.contains('disabled')) {
+                            alert(`第 ${book} 册暂未开放，敬请期待！`);
+                            return;
+                        }
+                        this.selectedBook = book;
+                        document.getElementById('translationBookSelect').style.display = 'none';
+                        document.getElementById('translationUnitSelect').style.display = 'block';
+                    });
+                });
+
+                // 4. 单元选择页返回 → 隐藏单元选择，显示分册选择
+                document.getElementById('translationBackToBookSelect').addEventListener('click', () => {
+                    document.getElementById('translationUnitSelect').style.display = 'none';
+                    document.getElementById('translationBookSelect').style.display = 'block';
+                    this.reset();
+                });
+
+                // 5. 选择单元 → 加载对应文件并显示练习界面
+                document.querySelectorAll('#translationUnitSelect .unit-btn').forEach(btn => {
+                    btn.addEventListener('click', async (e) => {
+                        const unit = e.currentTarget.dataset.unit;
+                        this.selectedUnit = unit;
+
+                        const loadSuccess = await this.loadCSV(this.selectedBook, this.selectedUnit);
+                        if (loadSuccess) {
+                            document.getElementById('translationUnitSelect').style.display = 'none';
+                            document.getElementById('translationBox').style.display = 'block';
+                            this.reset(); // 重置计数
+                            this.nextWord(); // 加载第一个翻译题
+                        }
+                    });
+                });
+
+                // 6. 检查核对按钮事件
                 document.getElementById('translationCheck').addEventListener('click', () => {
+                    if (this.words.length === 0) return;
                     const currentWord = this.words[this.currentIndex];
                     const answerEl = document.getElementById('translationAnswer');
                     answerEl.textContent = `正确答案：${currentWord.es}`;
@@ -918,31 +1008,31 @@
                         this.countedIndexes.push(this.currentIndex);
                         document.getElementById('translationTotalCount').textContent = this.totalCount;
                     }
-
                     document.getElementById('translationNext').disabled = false;
                 });
 
+                // 7. 下一句按钮事件
                 document.getElementById('translationNext').addEventListener('click', () => {
                     this.nextWord();
                 });
 
+                // 8. 结束练习按钮事件 → 返回单元选择界面
                 document.getElementById('translationEnd').addEventListener('click', () => {
                     if (confirm(`确定结束练习吗？已完成${this.totalCount}题`)) {
                         document.getElementById('translationBox').style.display = 'none';
                         this.reset();
+                        document.getElementById('translationUnitSelect').style.display = 'block'; // 返回单元选择
                     }
                 });
             },
 
+            // 切换下一个翻译题
             nextWord() {
                 document.getElementById('translationInput').value = '';
                 document.getElementById('translationAnswer').style.display = 'none';
                 document.getElementById('translationNext').disabled = true;
 
-                if (this.usedIndexes.length >= this.words.length) {
-                    this.usedIndexes = [];
-                    this.countedIndexes = [];
-                }
+                if (this.usedIndexes.length >= this.words.length) this.usedIndexes = [];
 
                 let randomIdx;
                 do {
@@ -951,14 +1041,12 @@
 
                 this.currentIndex = randomIdx;
                 this.usedIndexes.push(randomIdx);
-                
                 const currentWord = this.words[randomIdx];
-                document.getElementById('translationPrompt').textContent = 
-                    `${currentWord.cn}（${currentWord.pos}）`;
-                
+                document.getElementById('translationPrompt').textContent = currentWord.cn;
                 document.getElementById('translationInput').focus();
             },
 
+            // 重置练习状态（切换单元/结束练习时调用）
             reset() {
                 this.totalCount = 0;
                 this.usedIndexes = [];
