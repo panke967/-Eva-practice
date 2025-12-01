@@ -155,29 +155,48 @@
         }
 
         #musicBtn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: none;
-            background: #d93025;
-            color: #fff;
-            font-size: 22px;
-            cursor: pointer;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            transition: all 0.3s ease;
-            font-family: "Times New Roman", serif;
-        }
-        #musicBtn:hover {
-            background: #c02516;
-            transform: scale(1.05);
-        }
+    position: relative; /* 去掉原来的 fixed，因为外层容器已固定定位 */
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #d93025;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: "Times New Roman", serif;
+}
+#musicBtn:hover {
+    background: #c02516;
+    transform: scale(1.05);
+}
+
+/* 新增：下一首按钮样式（和播放按钮一致） */
+#nextSongBtn {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background: #d93025;
+    color: #fff;
+    font-size: 22px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    font-family: "Times New Roman", serif;
+}
+#nextSongBtn:hover {
+    background: #c02516;
+    transform: scale(1.05);
+}
 
         /* 听写模块提示框样式 */
         .prompt-box {
@@ -265,8 +284,12 @@
     <h1 class="page-title">欢迎来到Eva的练习小课堂</h1>
     <h2 class="page-subtitle">Bienvenidos al mini-aula de práctica de Eva</h2>
 
+    <!-- 原有播放/暂停按钮 + 新增下一首按钮 -->
+<div style="position: fixed; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 999;">
     <button id="musicBtn" title="播放/暂停">▶</button>
-    <audio id="bgMusic" loop>
+    <button id="nextSongBtn" title="下一首">➡️</button> <!-- 新增下一首按钮 -->
+</div>
+    <audio id="bgMusic">
         <source src="https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3" type="audio/mpeg">
         Tu navegador no soporta el audio.
     </audio>
@@ -466,6 +489,13 @@
     </div>
 
     <script>
+        // 歌曲列表：新增的歌曲直接添加到数组末尾即可
+const musicList = [
+    "https://raw.githubusercontent.com/panke967/-Eva-practice/main/river-flows-in-you.mp3", // 原有歌曲
+    "https://raw.githubusercontent.com/panke967/-Eva-practice/main/querido-tommy.mp3" // 新增歌曲
+];
+let currentMusicIndex = 0; // 当前播放的歌曲索引（默认从第一首开始）
+
         // 阅读模块：从 lectura.csv 读取短文
         const ReadingHandler = {
             texts: [],
@@ -511,10 +541,32 @@
             },
 
             bindEvents() {
-                document.getElementById('readingRefreshBtn').addEventListener('click', () => this.loadRandomText());
-                document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
-                document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
-            },
+    // 原有：阅读练习按钮事件（不变）
+    document.getElementById('readingRefreshBtn').addEventListener('click', () => this.loadRandomText());
+    document.getElementById('nextTextBtn').addEventListener('click', () => this.loadRandomText());
+    
+    // 原有：播放/暂停按钮事件（不变）
+    document.getElementById('musicBtn').addEventListener('click', this.toggleMusic);
+    
+    // 新增：下一首按钮事件
+    document.getElementById('nextSongBtn').addEventListener('click', () => {
+        const bgMusic = document.getElementById('bgMusic');
+        const musicBtn = document.getElementById('musicBtn');
+        
+        // 1. 索引+1，循环到列表开头（最后一首→第一首）
+        currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+        
+        // 2. 切换到下一首歌曲并播放
+        bgMusic.src = musicList[currentMusicIndex];
+        bgMusic.play().then(() => {
+            // 3. 同步更新播放按钮状态（显示暂停图标）
+            musicBtn.textContent = '❚❚';
+        }).catch(err => {
+            console.log('下一首播放失败：', err);
+            alert('请手动允许浏览器播放音频');
+        });
+    });
+}
 
             loadRandomText() {
                 if (this.texts.length === 0) {
@@ -549,6 +601,14 @@
                         alert('请手动允许浏览器播放音频');
                     });
                 }
+                 // 监听歌曲播放结束事件 → 自动播放下一首
+    bgMusic.onended = function() {
+        // 索引+1，循环到列表开头（最后一首放完回到第一首）
+        currentMusicIndex = (currentMusicIndex + 1) % musicList.length;
+        // 播放下一首
+        bgMusic.src = musicList[currentMusicIndex];
+        bgMusic.play();
+    };
             }
         };
 
