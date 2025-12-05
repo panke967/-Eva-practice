@@ -1158,36 +1158,46 @@
 
             // 加载下一个单词
             nuevaPalabra() {
-                if (this.palabras.length === 0) return;
+    if (this.palabras.length === 0) return;
 
-                this.isChecked = false;
-                const checkBtn = document.getElementById('dictadoCheck');
-                const nextBtn = document.getElementById('dictadoNext');
-                checkBtn.disabled = false;
-                nextBtn.disabled = true;
+    this.isChecked = false;
+    const checkBtn = document.getElementById('dictadoCheck');
+    const nextBtn = document.getElementById('dictadoNext');
+    checkBtn.disabled = false;
+    nextBtn.disabled = true;
 
-                let availableIndexes = this.palabras
-                    .map((_, index) => index)
-                    .filter(index => !this.usedIndexes.includes(index));
+    // 获取未使用的索引
+    let availableIndexes = this.palabras
+        .map((_, index) => index)
+        .filter(index => !this.usedIndexes.includes(index));
 
-                if (availableIndexes.length === 0) {
-                    this.usedIndexes = [];
-                    availableIndexes = this.palabras.map((_, index) => index);
-                }
+    // ⭐ 新增功能：所有单词已听写完毕
+    if (availableIndexes.length === 0) {
 
-                const randomIdx = availableIndexes[
-                    Math.floor(Math.random() * availableIndexes.length)
-                ];
-                this.currentWord = this.palabras[randomIdx];
-                this.usedIndexes.push(randomIdx);
+        // 禁用继续答题的按钮
+        checkBtn.disabled = true;
+        nextBtn.disabled = true;
 
-                document.getElementById('dictadoPrompt').innerHTML = 
-                    `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+        // 自动弹窗提示
+        alert("🎉 本单元所有单词已听写完毕！\n请点击「结束听写」查看本次听写情况。");
 
-                document.getElementById('dictadoInput').value = '';
-                document.getElementById('dictadoResult').textContent = '';
-                document.getElementById('dictadoInput').focus();
-            },
+        return; // ⚠ 停止执行，不再生成下一题
+    }
+
+    // 从剩余的可用索引中随机抽取
+    const randomIdx = availableIndexes[
+        Math.floor(Math.random() * availableIndexes.length)
+    ];
+    this.currentWord = this.palabras[randomIdx];
+    this.usedIndexes.push(randomIdx);
+
+    document.getElementById('dictadoPrompt').innerHTML = 
+        `<span style="color:#d93025;">${this.currentWord.cn}</span>　<span style="color:#666;">(${this.currentWord.pos})</span>`;
+
+    document.getElementById('dictadoInput').value = '';
+    document.getElementById('dictadoResult').textContent = '';
+    document.getElementById('dictadoInput').focus();
+},
 
             // 移除重音符号
             removeAccents(str) {
@@ -1549,27 +1559,36 @@
             },
 
             // 加载当前动词到界面
-            loadCurrentVerb() {
-                this.currentVerb = this.getRandomVerb();
-                document.getElementById('conjCurrentVerb').textContent = this.currentVerb.infinitive;
+            // 加载当前动词到界面（已加入：全部练习完后自动弹窗提醒）
+loadCurrentVerb() {
 
-                // 重置输入框和标记
-                const inputs = document.querySelectorAll('#conjPracticeBox input[data-person]');
-                inputs.forEach(input => {
-                    input.value = '';
-                    input.disabled = false;
-                    input.parentElement.querySelector('.conj-check-mark').style.display = 'none';
-                    input.parentElement.querySelector('.conj-error-mark').style.display = 'none';
-                });
+    // 判断是否已完成本单元全部动词
+    if (this.usedIndexes.length >= this.verbs.length) {
+        alert("🎉 已完成本单元所有动词练习！\n请点击“结束练习”以查看你的练习情况～");
+        return;
+    }
 
-                // 隐藏正确答案，启用核对按钮，禁用下一个按钮
-                document.getElementById('conjCorrectAnswers').style.display = 'none';
-                document.getElementById('conjCheck').disabled = false;
-                document.getElementById('conjNext').disabled = true;
+    // --- 原有功能保持不变 ---
+    this.currentVerb = this.getRandomVerb();
+    document.getElementById('conjCurrentVerb').textContent = this.currentVerb.infinitive;
 
-                // 聚焦第一个输入框
-                inputs[0].focus();
-            },
+    // 重置输入框和标记
+    const inputs = document.querySelectorAll('#conjPracticeBox input[data-person]');
+    inputs.forEach(input => {
+        input.value = '';
+        input.disabled = false;
+        input.parentElement.querySelector('.conj-check-mark').style.display = 'none';
+        input.parentElement.querySelector('.conj-error-mark').style.display = 'none';
+    });
+
+    // 隐藏正确答案，启用核对按钮，禁用下一个按钮
+    document.getElementById('conjCorrectAnswers').style.display = 'none';
+    document.getElementById('conjCheck').disabled = false;
+    document.getElementById('conjNext').disabled = true;
+
+    // 聚焦第一个输入框
+    inputs[0].focus();
+},
 
             // 核对答案（严格匹配重音和字符）
             checkAnswers() {
